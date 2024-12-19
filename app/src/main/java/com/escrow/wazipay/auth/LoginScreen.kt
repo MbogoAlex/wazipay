@@ -65,9 +65,9 @@ fun LoginScreen(
         Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
         TextFieldComposable(
             shape = RoundedCornerShape(screenWidth(x = 20.0)),
-            label = "Username",
+            label = "Phone number",
             value = "",
-            leadingIcon = R.drawable.person,
+            leadingIcon = R.drawable.phone,
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Next,
                 keyboardType = KeyboardType.Text
@@ -83,7 +83,7 @@ fun LoginScreen(
             value = "",
             leadingIcon = R.drawable.password,
             keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = ImeAction.Next,
+                imeAction = ImeAction.Done,
                 keyboardType = KeyboardType.Text
             ),
             onValueChange = {},

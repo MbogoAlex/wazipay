@@ -113,7 +113,7 @@ fun RegistrationScreen(
             value = "",
             leadingIcon = R.drawable.password,
             keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = ImeAction.Next,
+                imeAction = ImeAction.Done,
                 keyboardType = KeyboardType.Text
             ),
             onValueChange = {},
