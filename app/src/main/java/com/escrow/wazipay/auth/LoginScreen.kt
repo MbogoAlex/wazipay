@@ -30,24 +30,22 @@ import com.escrow.wazipay.utils.screenHeight
 import com.escrow.wazipay.utils.screenWidth
 
 @Composable
-fun RegistrationScreenComposable(
-    modifier: Modifier = Modifier
-) {
+fun LoginScreenComposable() {
     Box(
         modifier = Modifier
             .safeDrawingPadding()
     ) {
-        RegistrationScreen()
+        LoginScreen()
     }
 }
 
 @Composable
-fun RegistrationScreen(
+fun LoginScreen(
     modifier: Modifier = Modifier
 ) {
-    Column(
+    Column (
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier
+        modifier = Modifier
             .fillMaxSize()
             .padding(
                 horizontal = screenWidth(x = 16.0),
@@ -55,13 +53,13 @@ fun RegistrationScreen(
             )
     ) {
         Text(
-            text = "Sign up",
+            text = "Welcome Back",
             fontWeight = FontWeight.Bold,
             fontSize = screenFontSize(x = 24.0).sp
         )
         Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
         Text(
-            text = "Create your account",
+            text = "Enter your credential to login",
             fontSize = screenFontSize(x = 14.0).sp
         )
         Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
@@ -70,20 +68,6 @@ fun RegistrationScreen(
             label = "Username",
             value = "",
             leadingIcon = R.drawable.person,
-            keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = ImeAction.Next,
-                keyboardType = KeyboardType.Text
-            ),
-            onValueChange = {},
-            modifier = Modifier
-                .fillMaxWidth()
-        )
-        Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
-        TextFieldComposable(
-            shape = RoundedCornerShape(screenWidth(x = 20.0)),
-            label = "Phone number",
-            value = "",
-            leadingIcon = R.drawable.phone,
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Next,
                 keyboardType = KeyboardType.Text
@@ -107,30 +91,27 @@ fun RegistrationScreen(
                 .fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
-        TextFieldComposable(
-            shape = RoundedCornerShape(screenWidth(x = 20.0)),
-            label = "Confirm Password",
-            value = "",
-            leadingIcon = R.drawable.password,
-            keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = ImeAction.Next,
-                keyboardType = KeyboardType.Text
-            ),
-            onValueChange = {},
+        TextButton(
+            onClick = { /*TODO*/ },
             modifier = Modifier
-                .fillMaxWidth()
-        )
+                .align(Alignment.Start)
+        ) {
+            Text(
+                text = "Forgot password?",
+                fontSize = screenFontSize(x = 14.0).sp
+            )
+        }
         Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Already have an account?",
+                text = "Don't have an account?",
                 fontSize = screenFontSize(x = 14.0).sp
             )
             TextButton(onClick = { /*TODO*/ }) {
                 Text(
-                    text = "Login",
+                    text = "Sign up",
                     fontSize = screenFontSize(x = 14.0).sp
                 )
             }
@@ -141,7 +122,10 @@ fun RegistrationScreen(
             modifier = Modifier
                 .fillMaxWidth()
         ) {
-            Text(text = "Sign up")
+            Text(
+                text = "Login",
+                fontSize = screenFontSize(x = 14.0).sp
+            )
         }
 
     }
@@ -149,11 +133,8 @@ fun RegistrationScreen(
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun RegistrationScreenPreview() {
+fun LoginScreenPreview() {
     WazipayTheme {
-        RegistrationScreen(
-            modifier = Modifier
-                .safeDrawingPadding()
-        )
+        LoginScreen()
     }
 }
