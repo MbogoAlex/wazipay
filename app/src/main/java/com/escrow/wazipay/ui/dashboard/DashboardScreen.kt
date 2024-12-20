@@ -25,6 +25,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -97,6 +98,16 @@ fun DashboardScreen(
                         text = "Alex".uppercase(),
                         fontSize = screenFontSize(x = 14.0).sp
                     )
+                    Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
+                    ElevatedCard {
+                        Text(
+                            text = "VERIFIED",
+                            fontSize = screenFontSize(x = 12.0).sp,
+                            color = Color(0xFF0d421b),
+                            modifier = Modifier
+                                .padding(screenWidth(x = 3.0))
+                        )
+                    }
                     Spacer(modifier = Modifier.weight(1f))
                     Text(
                         text = "BUYER",
