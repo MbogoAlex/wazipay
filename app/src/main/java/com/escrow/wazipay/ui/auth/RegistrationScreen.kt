@@ -1,4 +1,4 @@
-package com.escrow.wazipay.auth
+package com.escrow.wazipay.ui.auth
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
