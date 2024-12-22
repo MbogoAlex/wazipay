@@ -5,8 +5,18 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
@@ -18,15 +28,20 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.escrow.wazipay.R
 import com.escrow.wazipay.ui.buyer.BuyerDashboardScreenComposable
 import com.escrow.wazipay.ui.buyer.NavBarItem
 import com.escrow.wazipay.ui.buyer.NavItem
+import com.escrow.wazipay.ui.general.OrdersScreenComposable
 import com.escrow.wazipay.ui.general.TransactionsScreenComposable
 import com.escrow.wazipay.ui.theme.WazipayTheme
 import com.escrow.wazipay.utils.screenFontSize
+import com.escrow.wazipay.utils.screenHeight
+import com.escrow.wazipay.utils.screenWidth
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -87,6 +102,43 @@ fun DashboardScreen(
         modifier = Modifier
             .fillMaxSize()
     ) {
+        ElevatedCard(
+            shape = RoundedCornerShape(0.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .padding(
+                        top = screenHeight(x = 16.0),
+                        start = screenWidth(x = 16.0),
+                        end = screenWidth(x = 16.0)
+                    )
+            ) {
+                Text(
+                    text = "Buyer Dashboard",
+                    fontSize = screenFontSize(x = 16.0).sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Buyer",
+                        fontSize = screenFontSize(x = 16.0).sp
+                    )
+                    IconButton(onClick = { /*TODO*/ }) {
+                        Icon(
+                            imageVector = Icons.Default.KeyboardArrowDown,
+                            contentDescription = "Switch role"
+                        )
+                    }
+                }
+            }
+        }
+//        Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
         when(selectedTab) {
             NavBarItem.HOME -> BuyerDashboardScreenComposable(
                 modifier = Modifier
@@ -98,16 +150,10 @@ fun DashboardScreen(
                 modifier = Modifier
                     .weight(1f)
             )
-            NavBarItem.ORDERS -> {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .weight(1f)
-                ) {
-                    Text(text = "Orders")
-                }
-            }
+            NavBarItem.ORDERS -> OrdersScreenComposable(
+                modifier = Modifier
+                    .weight(1f)
+            )
             NavBarItem.PROFILE -> {
                 Box(
                     contentAlignment = Alignment.Center,

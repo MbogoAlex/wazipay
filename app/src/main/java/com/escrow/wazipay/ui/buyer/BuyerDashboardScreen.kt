@@ -60,31 +60,6 @@ fun BuyerDashboardScreen(
                 vertical = screenHeight(x = 16.0)
             )
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "Buyer Dashboard",
-                fontSize = screenFontSize(x = 16.0).sp,
-                fontWeight = FontWeight.Bold
-            )
-            Spacer(modifier = Modifier.weight(1f))
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Buyer",
-                    fontSize = screenFontSize(x = 16.0).sp
-                )
-                IconButton(onClick = { /*TODO*/ }) {
-                    Icon(
-                        imageVector = Icons.Default.KeyboardArrowDown,
-                        contentDescription = "Switch role"
-                    )
-                }
-            }
-        }
-        Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
         Card(
             modifier = Modifier
                 .fillMaxWidth()
