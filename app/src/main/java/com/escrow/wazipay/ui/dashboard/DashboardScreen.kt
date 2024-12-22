@@ -1,14 +1,12 @@
 package com.escrow.wazipay.ui.dashboard
 
+import android.os.Build
+import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
@@ -20,19 +18,22 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import com.escrow.wazipay.R
 import com.escrow.wazipay.ui.buyer.BuyerDashboardScreenComposable
 import com.escrow.wazipay.ui.buyer.NavBarItem
 import com.escrow.wazipay.ui.buyer.NavItem
+import com.escrow.wazipay.ui.general.TransactionsScreenComposable
 import com.escrow.wazipay.ui.theme.WazipayTheme
 import com.escrow.wazipay.utils.screenFontSize
-import com.escrow.wazipay.utils.screenWidth
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun DashboardScreenComposable() {
+    var filtering by rememberSaveable {
+        mutableStateOf(false)
+    }
     val navItems = listOf(
         NavItem(
             name = "Home",
@@ -60,19 +61,26 @@ fun DashboardScreenComposable() {
     }
 
     DashboardScreen(
+        filtering = filtering,
         navItems = navItems,
         selectedTab = selectedTab,
         onSelectTab = {
             selectedTab = it
+        },
+        onFilter = {
+            filtering = !filtering
         }
     )
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun DashboardScreen(
+    filtering: Boolean,
     navItems: List<NavItem>,
     selectedTab: NavBarItem,
     onSelectTab: (tab: NavBarItem) -> Unit,
+    onFilter: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -84,16 +92,12 @@ fun DashboardScreen(
                 modifier = Modifier
                     .weight(1f)
             )
-            NavBarItem.TRANSACTIONS -> {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .weight(1f)
-                ) {
-                    Text(text = "Transactions")
-                }
-            }
+            NavBarItem.TRANSACTIONS -> TransactionsScreenComposable(
+                onFilter = onFilter,
+                filtering = filtering,
+                modifier = Modifier
+                    .weight(1f)
+            )
             NavBarItem.ORDERS -> {
                 Box(
                     contentAlignment = Alignment.Center,
@@ -115,11 +119,13 @@ fun DashboardScreen(
                 }
             }
         }
-        BottomNavBar(
-            navItems = navItems,
-            selectedTab = selectedTab,
-            onSelectTab = onSelectTab
-        )
+        if(!filtering) {
+            BottomNavBar(
+                navItems = navItems,
+                selectedTab = selectedTab,
+                onSelectTab = onSelectTab
+            )
+        }
     }
 }
 
@@ -154,9 +160,13 @@ fun BottomNavBar(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun DashboardScreenPreview() {
+    var filtering by rememberSaveable {
+        mutableStateOf(false)
+    }
     WazipayTheme {
         val navItems = listOf(
             NavItem(
@@ -185,10 +195,14 @@ fun DashboardScreenPreview() {
         }
 
         DashboardScreen(
+            filtering = filtering,
             navItems = navItems,
             selectedTab = selectedTab,
             onSelectTab = {
                 selectedTab = it
+            },
+            onFilter = {
+                filtering = !filtering
             }
         )
     }
