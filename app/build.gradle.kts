@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.10"
+    id("com.google.devtools.ksp") version "1.9.20-1.0.14"
 }
 
 android {
@@ -50,6 +52,62 @@ android {
 }
 
 dependencies {
+
+    // https://mvnrepository.com/artifact/com.google.android.play/review-ktx
+    implementation("com.google.android.play:review-ktx:2.0.1")
+
+
+    // https://mvnrepository.com/artifact/androidx.work/work-runtime-ktx
+    implementation("androidx.work:work-runtime-ktx:2.9.0")
+
+    // https://mvnrepository.com/artifact/com.squareup.retrofit2/retrofit
+    implementation("com.squareup.retrofit2:retrofit:2.11.0")
+
+    // https://mvnrepository.com/artifact/androidx.lifecycle/lifecycle-viewmodel-compose
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.4")
+
+    // https://mvnrepository.com/artifact/androidx.compose.runtime/runtime-livedata
+    implementation("androidx.compose.runtime:runtime-livedata:1.6.8")
+
+
+    // horizontal pager
+    implementation("com.google.accompanist:accompanist-pager:0.28.0")
+    implementation("com.google.accompanist:accompanist-pager-indicators:0.28.0")
+
+    // Retrofit
+    implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0")
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("io.coil-kt:coil-compose:2.4.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+
+    //Gson
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+
+    // Coil
+    implementation("io.coil-kt:coil-compose:2.5.0")
+
+    //SF
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+
+    //navigation
+    implementation("androidx.navigation:navigation-compose:2.6.0")
+
+    //Date
+    implementation ("androidx.compose.material3:material3:1.2.0-alpha02")
+
+    //Viewmodel
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
+
+    //Room
+    implementation("androidx.room:room-runtime:${rootProject.extra["room_version"]}")
+    ksp("androidx.room:room-compiler:${rootProject.extra["room_version"]}")
+    implementation("androidx.room:room-ktx:${rootProject.extra["room_version"]}")
+
+    //LiveData
+    implementation ("androidx.compose.runtime:runtime-livedata")
+
+    //Compose lifecycle
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.3")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
