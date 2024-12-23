@@ -9,6 +9,7 @@ import com.escrow.wazipay.data.network.repository.ApiRepository
 import com.escrow.wazipay.data.room.models.UserDetails
 import com.escrow.wazipay.data.room.repository.DBRepository
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -85,6 +86,7 @@ class LoginViewModel(
                         var user = dbRepository.getUser(userId = response.body()?.data?.user?.userId!!).first()
 
                         while(user.username == null) {
+                            delay(1000)
                             user = dbRepository.getUser(userId = response.body()?.data?.user?.userId!!).first()
                         }
 

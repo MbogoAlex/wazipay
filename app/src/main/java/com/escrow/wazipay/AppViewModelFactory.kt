@@ -6,6 +6,7 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.escrow.wazipay.ui.auth.LoginViewModel
+import com.escrow.wazipay.ui.auth.PinViewModel
 import com.escrow.wazipay.ui.auth.RegistrationViewModel
 
 object AppViewModelFactory {
@@ -22,6 +23,13 @@ object AppViewModelFactory {
                 apiRepository = wazipayApplication().container.apiRepository,
                 dbRepository = wazipayApplication().container.dbRepository,
                 savedStateHandle = this.createSavedStateHandle()
+            )
+        }
+
+        initializer {
+            PinViewModel(
+                apiRepository = wazipayApplication().container.apiRepository,
+                dbRepository = wazipayApplication().container.dbRepository
             )
         }
     }

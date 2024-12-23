@@ -8,6 +8,7 @@ import com.escrow.wazipay.data.network.repository.ApiRepository
 import com.escrow.wazipay.data.room.models.UserDetails
 import com.escrow.wazipay.data.room.repository.DBRepository
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -67,7 +68,8 @@ class RegistrationViewModel(
 
                 if(response.isSuccessful) {
                     val userDetails = UserDetails(
-                        userId = response.body()?.data?.userId!!
+                        userId = response.body()?.data?.userId!!,
+                        phoneNumber = uiState.value.phoneNumber
                     )
                     withContext(Dispatchers.IO) {
                         dbRepository.insertUser(
@@ -76,6 +78,7 @@ class RegistrationViewModel(
 
                         var users = dbRepository.getUsers().first()
                         while(users.isEmpty()) {
+                            delay(1000)
                             users = dbRepository.getUsers().first()
                         }
                     }
