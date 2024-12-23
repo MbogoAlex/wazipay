@@ -24,7 +24,7 @@ data class LoginResponseBodyDataUser(
     val roles: List<String>,
     val createdAt: String,
     val verified: Boolean,
-    val verifiedAt: String,
+    val verifiedAt: String?,
     val verificationStatus: String,
     val verificationDetails: UserVerificationDetails?,
     val suspended: Boolean,

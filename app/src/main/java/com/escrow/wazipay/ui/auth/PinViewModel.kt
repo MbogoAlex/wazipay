@@ -45,6 +45,8 @@ class PinViewModel(
                 pin = uiState.value.pin
             )
 
+            Log.d("setPin", setPinRequestBody.toString())
+
             try {
                 val response = apiRepository.setUserPin(setPinRequestBody = setPinRequestBody)
                 if(response.isSuccessful) {
@@ -114,7 +116,7 @@ class PinViewModel(
     fun enableButton() {
         _uiState.update {
             it.copy(
-                buttonEnabled = uiState.value.pin.length == 4
+                buttonEnabled = uiState.value.pin.length == 6
             )
         }
     }

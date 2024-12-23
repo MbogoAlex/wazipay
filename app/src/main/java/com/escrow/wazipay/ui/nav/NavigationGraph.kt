@@ -1,5 +1,7 @@
 package com.escrow.wazipay.ui.nav
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -13,10 +15,12 @@ import com.escrow.wazipay.ui.auth.PinScreenComposable
 import com.escrow.wazipay.ui.auth.PinScreenDestination
 import com.escrow.wazipay.ui.auth.RegistrationScreenComposable
 import com.escrow.wazipay.ui.auth.RegistrationScreenDestination
+import com.escrow.wazipay.ui.dashboard.DashboardScreenComposable
 import com.escrow.wazipay.ui.dashboard.DashboardScreenDestination
 import com.escrow.wazipay.ui.start.SplashScreenComposable
 import com.escrow.wazipay.ui.start.SplashScreenDestination
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun NavigationGraph(
     navController: NavHostController,
@@ -37,6 +41,9 @@ fun NavigationGraph(
                 },
                 navigateToDashboardScreen = {
                     navController.navigate(DashboardScreenDestination.route)
+                },
+                navigateToSetPinScreen = {
+                    navController.navigate(PinScreenDestination.route)
                 }
             )
         }
@@ -86,6 +93,9 @@ fun NavigationGraph(
                     navController.navigate("${LoginScreenDestination.route}/${phoneNumber}/${pin}")
                 }
             )
+        }
+        composable(DashboardScreenDestination.route) {
+            DashboardScreenComposable()
         }
     }
 }

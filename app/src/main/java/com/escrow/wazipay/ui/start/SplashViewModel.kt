@@ -2,9 +2,9 @@ package com.escrow.wazipay.ui.start
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.escrow.wazipay.data.room.models.UserDetails
 import com.escrow.wazipay.data.room.repository.DBRepository
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,15 +22,11 @@ class SplashViewModel(
     private fun getUser() {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                var users = dbRepository.getUsers().first()
-                while(users.isEmpty()) {
-                    delay(1000)
-                    users = dbRepository.getUsers().first()
-                }
+                val users = dbRepository.getUsers().first()
                 _uiState.update {
                     it.copy(
                         isLoading = false,
-                        userDetails = users[0]
+                        userDetails = if(users.isEmpty()) UserDetails() else users[0]
                     )
                 }
             }

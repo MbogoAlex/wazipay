@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -77,17 +78,22 @@ fun PinScreenComposable(
         }
     }
 
-    PinScreen(
-        context = context,
-        pin = uiState.pin,
-        onChangePin = {
-            viewModel.enableButton()
-            viewModel.updatePin(it)
-        },
-        onSetPin = viewModel::setPin,
-        buttonEnabled = uiState.buttonEnabled && uiState.pinSetStatus != PinSetStatus.LOADING,
-        pinSetStatus = uiState.pinSetStatus
-    )
+    Box(
+        modifier = Modifier
+            .safeDrawingPadding()
+    ) {
+        PinScreen(
+            context = context,
+            pin = uiState.pin,
+            onChangePin = {
+                viewModel.updatePin(it)
+                viewModel.enableButton()
+            },
+            onSetPin = viewModel::setPin,
+            buttonEnabled = uiState.buttonEnabled && uiState.pinSetStatus != PinSetStatus.LOADING,
+            pinSetStatus = uiState.pinSetStatus
+        )
+    }
 }
 
 
@@ -122,8 +128,8 @@ fun PinScreen(
         PinTextField(
             pinText = pin,
             onPinChange = { value, _ ->
-                if(pin.length > 4) {
-                    Toast.makeText(context!!, "Pin cannot exceed 4 digits", Toast.LENGTH_SHORT).show()
+                if(pin.length > 6) {
+                    Toast.makeText(context!!, "Pin cannot exceed 6 digits", Toast.LENGTH_SHORT).show()
                 } else {
                     onChangePin(value)
                 }
@@ -164,7 +170,7 @@ fun PinScreen(
 fun PinTextField(
     modifier: Modifier = Modifier,
     pinText: String,
-    pinCount: Int = 4,
+    pinCount: Int = 6,
     onPinChange: (String, Boolean) -> Unit
 ) {
     LaunchedEffect(Unit) {

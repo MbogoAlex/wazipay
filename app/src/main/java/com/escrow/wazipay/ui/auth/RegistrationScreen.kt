@@ -167,7 +167,7 @@ fun RegistrationScreen(
             value = email,
             leadingIcon = R.drawable.email,
             keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = ImeAction.Next,
+                imeAction = ImeAction.Done,
                 keyboardType = KeyboardType.Email
             ),
             onValueChange = onChangeEmail,

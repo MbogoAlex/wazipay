@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -79,17 +80,22 @@ fun DashboardScreenComposable() {
         mutableStateOf(NavBarItem.HOME)
     }
 
-    DashboardScreen(
-        filtering = filtering,
-        navItems = navItems,
-        selectedTab = selectedTab,
-        onSelectTab = {
-            selectedTab = it
-        },
-        onFilter = {
-            filtering = !filtering
-        }
-    )
+    Box(
+        modifier = Modifier
+            .safeDrawingPadding()
+    ) {
+        DashboardScreen(
+            filtering = filtering,
+            navItems = navItems,
+            selectedTab = selectedTab,
+            onSelectTab = {
+                selectedTab = it
+            },
+            onFilter = {
+                filtering = !filtering
+            }
+        )
+    }
 }
 
 @RequiresApi(Build.VERSION_CODES.O)

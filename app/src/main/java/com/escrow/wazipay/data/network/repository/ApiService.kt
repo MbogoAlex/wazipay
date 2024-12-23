@@ -17,12 +17,12 @@ interface ApiService {
         @Body registrationRequestBody: RegistrationRequestBody
     ): Response<RegistrationResponseBody>
 
-    @PUT("auth/pin")
+    @POST("auth/login")
     suspend fun login(
         @Body loginRequestBody: LoginRequestBody
     ): Response<LoginResponseBody>
 
-    @POST("auth/login")
+    @PUT("auth/pin")
     suspend fun setUserPin(
         @Body setPinRequestBody: SetPinRequestBody
     ): Response<SetPinResponseBody>

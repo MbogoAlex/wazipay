@@ -33,6 +33,7 @@ object SplashScreenDestination: AppNavigation {
 fun SplashScreenComposable(
     navigateToLoginScreen: () -> Unit,
     navigateToLoginScreenWithArgs: (phoneNumber: String, pin: String) -> Unit,
+    navigateToSetPinScreen: () -> Unit,
     navigateToDashboardScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -45,6 +46,8 @@ fun SplashScreenComposable(
             if(uiState.userDetails.username == null) {
                 if(uiState.userDetails.phoneNumber != null && uiState.userDetails.pin != null) {
                     navigateToLoginScreenWithArgs(uiState.userDetails.phoneNumber!!, uiState.userDetails.pin!!)
+                } else if(uiState.userDetails.phoneNumber != null && uiState.userDetails.pin == null) {
+                    navigateToSetPinScreen()
                 } else {
                     navigateToLoginScreen()
                 }
