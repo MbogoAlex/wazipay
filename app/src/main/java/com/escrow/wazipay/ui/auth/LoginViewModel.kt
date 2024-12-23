@@ -132,4 +132,14 @@ class LoginViewModel(
             )
         }
     }
+
+    init {
+        _uiState.update {
+            it.copy(
+                phoneNumber = savedStateHandle[LoginScreenDestination.phoneNumber] ?: "",
+                pin = savedStateHandle[LoginScreenDestination.pin] ?: ""
+            )
+        }
+        enableButton()
+    }
 }

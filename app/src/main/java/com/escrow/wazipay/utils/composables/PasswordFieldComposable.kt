@@ -33,6 +33,12 @@ fun PasswordFieldComposable(
     }
     TextField(
         shape = RoundedCornerShape(screenWidth(x = 20.0)),
+        leadingIcon = {
+            Icon(
+                painter = painterResource(id = R.drawable.lock),
+                contentDescription = "Password icon"
+            )
+        },
         label = {
             Text(
                 text = label

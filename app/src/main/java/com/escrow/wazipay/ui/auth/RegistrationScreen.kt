@@ -30,11 +30,17 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.escrow.wazipay.AppViewModelFactory
 import com.escrow.wazipay.R
+import com.escrow.wazipay.ui.nav.AppNavigation
 import com.escrow.wazipay.ui.theme.WazipayTheme
 import com.escrow.wazipay.utils.composables.TextFieldComposable
 import com.escrow.wazipay.utils.screenFontSize
 import com.escrow.wazipay.utils.screenHeight
 import com.escrow.wazipay.utils.screenWidth
+
+object RegistrationScreenDestination: AppNavigation {
+    override val title: String = "Registration screen"
+    override val route: String = "registration-screen"
+}
 
 @Composable
 fun RegistrationScreenComposable(
