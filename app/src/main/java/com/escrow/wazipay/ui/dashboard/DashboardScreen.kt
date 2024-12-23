@@ -121,9 +121,10 @@ fun DashboardScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .padding(
-                        top = screenHeight(x = 16.0),
+                        top = screenHeight(x = 8.0),
                         start = screenWidth(x = 16.0),
-                        end = screenWidth(x = 16.0)
+                        end = screenWidth(x = 16.0),
+                        bottom = screenHeight(x = 8.0)
                     )
             ) {
                 Text(
