@@ -1,7 +1,6 @@
 package com.escrow.wazipay.ui.dashboard
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,7 +8,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -38,10 +36,16 @@ import com.escrow.wazipay.ui.buyer.NavBarItem
 import com.escrow.wazipay.ui.buyer.NavItem
 import com.escrow.wazipay.ui.general.OrdersScreenComposable
 import com.escrow.wazipay.ui.general.TransactionsScreenComposable
+import com.escrow.wazipay.ui.nav.AppNavigation
 import com.escrow.wazipay.ui.theme.WazipayTheme
 import com.escrow.wazipay.utils.screenFontSize
 import com.escrow.wazipay.utils.screenHeight
 import com.escrow.wazipay.utils.screenWidth
+
+object DashboardScreenDestination: AppNavigation {
+    override val title: String = "Dashboard screen"
+    override val route: String = "dashboard-screen"
+}
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable

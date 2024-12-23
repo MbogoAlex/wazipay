@@ -1,5 +1,6 @@
 package com.escrow.wazipay.ui.auth
 
+import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -21,6 +22,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -38,28 +40,68 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.escrow.wazipay.AppViewModelFactory
+import com.escrow.wazipay.ui.nav.AppNavigation
 import com.escrow.wazipay.ui.theme.WazipayTheme
 import com.escrow.wazipay.utils.screenFontSize
 import com.escrow.wazipay.utils.screenHeight
 import com.escrow.wazipay.utils.screenWidth
 
+object PinScreenDestination: AppNavigation {
+    override val title: String = "Pin screen"
+    override val route: String = "pin-screen"
+
+}
 @Composable
 fun PinScreenComposable(
+    navigateToLoginScreenWithArgs: (phoneNumber: String, pin: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
 
+    val viewModel: PinViewModel = viewModel(factory = AppViewModelFactory.Factory)
+    val uiState by viewModel.uiState.collectAsState()
+
+    when(uiState.pinSetStatus) {
+        PinSetStatus.INITIAL -> {}
+        PinSetStatus.LOADING -> {}
+        PinSetStatus.SUCCESS -> {
+            viewModel.resetStatus()
+            Toast.makeText(context, uiState.pinSetMessage, Toast.LENGTH_SHORT).show()
+            navigateToLoginScreenWithArgs(uiState.userDetails.phoneNumber!!, uiState.pin)
+        }
+        PinSetStatus.FAIL -> {
+            viewModel.resetStatus()
+            Toast.makeText(context, uiState.pinSetMessage, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    PinScreen(
+        context = context,
+        pin = uiState.pin,
+        onChangePin = {
+            viewModel.enableButton()
+            viewModel.updatePin(it)
+        },
+        onSetPin = viewModel::setPin,
+        buttonEnabled = uiState.buttonEnabled && uiState.pinSetStatus != PinSetStatus.LOADING,
+        pinSetStatus = uiState.pinSetStatus
+    )
 }
 
 
 @Composable
 fun PinScreen(
+    context: Context?,
+    pin: String,
+    onChangePin: (pin: String) -> Unit,
     onSetPin: () -> Unit,
+    buttonEnabled: Boolean,
+    pinSetStatus: PinSetStatus,
     modifier: Modifier = Modifier
 ) {
-    val context = LocalContext.current
-    var pinText by rememberSaveable {
-        mutableStateOf("")
-    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -78,12 +120,12 @@ fun PinScreen(
         )
         Spacer(modifier = Modifier.height(screenHeight(x = 24.0)))
         PinTextField(
-            pinText = pinText,
+            pinText = pin,
             onPinChange = { value, _ ->
-                if(pinText.length > 4) {
-                    Toast.makeText(context, "Pin cannot exceed 4 digits", Toast.LENGTH_SHORT).show()
+                if(pin.length > 4) {
+                    Toast.makeText(context!!, "Pin cannot exceed 4 digits", Toast.LENGTH_SHORT).show()
                 } else {
-                    pinText = value
+                    onChangePin(value)
                 }
             },
             modifier = Modifier
@@ -98,15 +140,22 @@ fun PinScreen(
         )
         Spacer(modifier = Modifier.weight(1f))
         Button(
-            enabled = pinText.length == 4,
+            enabled = buttonEnabled,
             onClick = onSetPin,
             modifier = Modifier
                 .fillMaxWidth()
         ) {
-            Text(
-                text = "Set Pin",
-                fontSize = screenFontSize(x = 14.0).sp,
-            )
+            if(pinSetStatus == PinSetStatus.LOADING) {
+                Text(
+                    text = "Loading...",
+                    fontSize = screenFontSize(x = 14.0).sp,
+                )
+            } else {
+                Text(
+                    text = "Set Pin",
+                    fontSize = screenFontSize(x = 14.0).sp,
+                )
+            }
         }
     }
 }
@@ -187,7 +236,12 @@ private fun CharView(
 fun PinScreenPreview() {
     WazipayTheme {
         PinScreen(
-            onSetPin = {}
+            context = null,
+            pin = "",
+            onChangePin = {},
+            onSetPin = { /*TODO*/ },
+            buttonEnabled = false,
+            pinSetStatus = PinSetStatus.INITIAL
         )
     }
 }

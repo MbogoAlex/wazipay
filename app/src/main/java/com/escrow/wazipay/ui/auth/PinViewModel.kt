@@ -8,6 +8,7 @@ import com.escrow.wazipay.data.network.repository.ApiRepository
 import com.escrow.wazipay.data.room.models.UserDetails
 import com.escrow.wazipay.data.room.repository.DBRepository
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,7 +24,6 @@ class PinViewModel(
     private val _uiState = MutableStateFlow(PinUiData())
     val uiState: StateFlow<PinUiData> = _uiState.asStateFlow()
 
-    private var user = UserDetails()
 
     fun updatePin(pin: String) {
         _uiState.update {
@@ -41,7 +41,7 @@ class PinViewModel(
                 )
             }
             val setPinRequestBody = SetPinRequestBody(
-                userId = user.userId,
+                userId = uiState.value.userDetails.userId,
                 pin = uiState.value.pin
             )
 
@@ -50,11 +50,18 @@ class PinViewModel(
                 if(response.isSuccessful) {
                     withContext(Dispatchers.IO) {
                         dbRepository.updateUser(
-                            userDetails = user.copy(
+                            userDetails = uiState.value.userDetails.copy(
                                 pin = uiState.value.pin
                             )
                         )
                     }
+                    var user = dbRepository.getUser(userId = uiState.value.userDetails.userId).first()
+
+                    while(user.pin == null) {
+                        delay(1000)
+                        user = dbRepository.getUser(userId = uiState.value.userDetails.userId).first()
+                    }
+
                     _uiState.update {
                         it.copy(
                             pinSetMessage = "Pin set successfully",
@@ -85,7 +92,13 @@ class PinViewModel(
     private fun getUser() {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                user = dbRepository.getUsers().first()[0]
+                dbRepository.getUsers().collect() {users ->
+                    _uiState.update {
+                        it.copy(
+                            userDetails = users[0]
+                        )
+                    }
+                }
             }
         }
     }

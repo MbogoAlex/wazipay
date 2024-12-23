@@ -8,9 +8,15 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.escrow.wazipay.ui.auth.LoginViewModel
 import com.escrow.wazipay.ui.auth.PinViewModel
 import com.escrow.wazipay.ui.auth.RegistrationViewModel
+import com.escrow.wazipay.ui.start.SplashViewModel
 
 object AppViewModelFactory {
     val Factory = viewModelFactory {
+        initializer {
+            SplashViewModel(
+                dbRepository = wazipayApplication().container.dbRepository
+            )
+        }
         initializer {
             RegistrationViewModel(
                 apiRepository = wazipayApplication().container.apiRepository,

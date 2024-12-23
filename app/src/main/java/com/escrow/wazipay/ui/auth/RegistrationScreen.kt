@@ -60,6 +60,7 @@ fun RegistrationScreenComposable(
         RegistrationStatus.LOADING -> {}
         RegistrationStatus.SUCCESS -> {
             viewModel.resetStatus()
+            Toast.makeText(context, uiState.registrationMessage, Toast.LENGTH_LONG).show()
             navigateToSetPinScreen()
         }
         RegistrationStatus.FAIL -> {

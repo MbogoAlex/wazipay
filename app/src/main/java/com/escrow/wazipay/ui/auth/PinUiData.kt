@@ -1,5 +1,7 @@
 package com.escrow.wazipay.ui.auth
 
+import com.escrow.wazipay.data.room.models.UserDetails
+
 enum class PinSetStatus {
     INITIAL,
     LOADING,
@@ -8,6 +10,7 @@ enum class PinSetStatus {
 }
 
 data class PinUiData(
+    val userDetails: UserDetails = UserDetails(),
     val pin: String = "",
     val buttonEnabled: Boolean = false,
     val pinSetMessage: String = "",

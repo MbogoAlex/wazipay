@@ -50,7 +50,7 @@ object LoginScreenDestination: AppNavigation {
 @Composable
 fun LoginScreenComposable(
     navigateToRegistrationScreen: () -> Unit,
-    navigateToHomeScreen: () -> Unit,
+    navigateToDashboardScreen: () -> Unit,
 ) {
     val context = LocalContext.current
     BackHandler(onBack = {
@@ -65,7 +65,8 @@ fun LoginScreenComposable(
         LoginStatus.LOADING -> {}
         LoginStatus.SUCCESS -> {
             viewModel.resetStatus()
-            navigateToHomeScreen()
+            Toast.makeText(context, uiState.loginMessage, Toast.LENGTH_LONG).show()
+            navigateToDashboardScreen()
         }
         LoginStatus.FAIL -> {
             viewModel.resetStatus()
