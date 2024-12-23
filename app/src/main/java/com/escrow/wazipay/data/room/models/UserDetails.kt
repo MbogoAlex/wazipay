@@ -12,5 +12,5 @@ data class UserDetails(
     val phoneNumber: String? = null,
     val email: String? = null,
     val pin: String? = null,
-    val darkMode: Boolean = false,
+    val token: String? = null,
 )

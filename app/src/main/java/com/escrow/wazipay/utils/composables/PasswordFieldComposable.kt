@@ -1,5 +1,6 @@
 package com.escrow.wazipay.utils.composables
 
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -17,6 +18,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import com.escrow.wazipay.R
+import com.escrow.wazipay.utils.screenWidth
 
 @Composable
 fun PasswordFieldComposable(
@@ -30,6 +32,7 @@ fun PasswordFieldComposable(
         mutableStateOf(false)
     }
     TextField(
+        shape = RoundedCornerShape(screenWidth(x = 20.0)),
         label = {
             Text(
                 text = label

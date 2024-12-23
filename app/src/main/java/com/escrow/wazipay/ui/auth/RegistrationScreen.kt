@@ -72,12 +72,15 @@ fun RegistrationScreenComposable(
             email = uiState.email,
             onChangeUsername = {
                 viewModel.updateUsername(it)
+                viewModel.enableButton()
             },
             onChangePhoneNumber = {
                 viewModel.updatePhoneNumber(it)
+                viewModel.enableButton()
             },
             onChangeEmail = {
                 viewModel.updateEmail(it)
+                viewModel.enableButton()
             },
             registrationStatus = uiState.registrationStatus,
             buttonEnabled = uiState.buttonEnabled && uiState.registrationStatus != RegistrationStatus.LOADING,

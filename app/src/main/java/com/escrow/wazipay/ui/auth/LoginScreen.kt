@@ -24,6 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import com.escrow.wazipay.R
 import com.escrow.wazipay.ui.theme.WazipayTheme
+import com.escrow.wazipay.utils.composables.PasswordFieldComposable
 import com.escrow.wazipay.utils.composables.TextFieldComposable
 import com.escrow.wazipay.utils.screenFontSize
 import com.escrow.wazipay.utils.screenHeight
@@ -77,11 +78,9 @@ fun LoginScreen(
                 .fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
-        TextFieldComposable(
-            shape = RoundedCornerShape(screenWidth(x = 20.0)),
-            label = "Password",
+        PasswordFieldComposable(
+            label = "Pin",
             value = "",
-            leadingIcon = R.drawable.password,
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Done,
                 keyboardType = KeyboardType.Text
