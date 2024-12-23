@@ -95,26 +95,12 @@ fun RegistrationScreen(
         Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
         TextFieldComposable(
             shape = RoundedCornerShape(screenWidth(x = 20.0)),
-            label = "Password",
+            label = "Email",
             value = "",
-            leadingIcon = R.drawable.password,
+            leadingIcon = R.drawable.email,
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Next,
-                keyboardType = KeyboardType.Text
-            ),
-            onValueChange = {},
-            modifier = Modifier
-                .fillMaxWidth()
-        )
-        Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
-        TextFieldComposable(
-            shape = RoundedCornerShape(screenWidth(x = 20.0)),
-            label = "Confirm Password",
-            value = "",
-            leadingIcon = R.drawable.password,
-            keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = ImeAction.Done,
-                keyboardType = KeyboardType.Text
+                keyboardType = KeyboardType.Email
             ),
             onValueChange = {},
             modifier = Modifier

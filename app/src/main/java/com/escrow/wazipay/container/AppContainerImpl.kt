@@ -4,6 +4,9 @@ import android.content.Context
 import com.escrow.wazipay.data.network.repository.ApiRepository
 import com.escrow.wazipay.data.network.repository.ApiRepositoryImpl
 import com.escrow.wazipay.data.network.repository.ApiService
+import com.escrow.wazipay.data.room.AppDatabase
+import com.escrow.wazipay.data.room.repository.DBRepository
+import com.escrow.wazipay.data.room.repository.DBRepositoryImpl
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -28,5 +31,9 @@ class AppContainerImpl(context: Context): AppContainer {
 
     override val apiRepository: ApiRepository by lazy {
         ApiRepositoryImpl(retrofitService)
+    }
+
+    override val dbRepository: DBRepository by lazy {
+        DBRepositoryImpl(AppDatabase.getDatabase(context).appDao())
     }
 }
