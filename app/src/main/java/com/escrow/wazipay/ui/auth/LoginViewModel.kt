@@ -130,7 +130,7 @@ class LoginViewModel(
         _uiState.update {
             it.copy(
                 buttonEnabled = uiState.value.phoneNumber.isNotEmpty() &&
-                        uiState.value.pin.isNotEmpty()
+                        uiState.value.pin.length == 6
             )
         }
     }

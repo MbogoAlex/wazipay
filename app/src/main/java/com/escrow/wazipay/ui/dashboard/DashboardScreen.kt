@@ -1,6 +1,8 @@
 package com.escrow.wazipay.ui.dashboard
 
+import android.app.Activity
 import android.os.Build
+import androidx.activity.compose.BackHandler
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,6 +28,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -51,6 +54,12 @@ object DashboardScreenDestination: AppNavigation {
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun DashboardScreenComposable() {
+    val context = LocalContext.current
+
+    BackHandler(onBack = {
+        (context as? Activity)?.finish()
+    })
+
     var filtering by rememberSaveable {
         mutableStateOf(false)
     }
