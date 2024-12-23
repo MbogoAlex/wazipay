@@ -1,10 +1,15 @@
-package com.escrow.wazipay.ui.buyer
+package com.escrow.wazipay.ui.general
 
 enum class NavBarItem {
+//    Buyer
     HOME,
     TRANSACTIONS,
     ORDERS,
-    PROFILE
+    PROFILE,
+
+//    Seller
+    SHOPS,
+
 }
 
 data class NavItem(

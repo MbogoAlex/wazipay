@@ -4,6 +4,7 @@ import android.app.Activity
 import android.os.Build
 import androidx.activity.compose.BackHandler
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,9 +13,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -36,8 +40,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.escrow.wazipay.R
 import com.escrow.wazipay.ui.buyer.BuyerDashboardScreenComposable
-import com.escrow.wazipay.ui.buyer.NavBarItem
-import com.escrow.wazipay.ui.buyer.NavItem
+import com.escrow.wazipay.ui.general.NavBarItem
+import com.escrow.wazipay.ui.general.NavItem
 import com.escrow.wazipay.ui.general.OrdersScreenComposable
 import com.escrow.wazipay.ui.general.TransactionsScreenComposable
 import com.escrow.wazipay.ui.nav.AppNavigation
@@ -63,28 +67,77 @@ fun DashboardScreenComposable() {
     var filtering by rememberSaveable {
         mutableStateOf(false)
     }
-    val navItems = listOf(
-        NavItem(
-            name = "Home",
-            icon = R.drawable.home,
-            tab = NavBarItem.HOME
-        ),
-        NavItem(
-            name = "Transactions",
-            icon = R.drawable.transactions,
-            tab = NavBarItem.TRANSACTIONS
-        ),
-        NavItem(
-            name = "Orders",
-            icon = R.drawable.orders,
-            tab = NavBarItem.ORDERS
-        ),
-        NavItem(
-            name = "Profile",
-            icon = R.drawable.profile,
-            tab = NavBarItem.PROFILE
-        ),
+
+    val profiles = listOf(
+        "Buyer",
+        "Merchant",
+        "Courier"
     )
+
+    var dropdownExpanded by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+    var selectedProfile by rememberSaveable {
+        mutableStateOf("Buyer")
+    }
+
+
+    val navItems = when(selectedProfile) {
+        "Buyer" -> listOf(
+            NavItem(
+                name = "Home",
+                icon = R.drawable.home,
+                tab = NavBarItem.HOME
+            ),
+            NavItem(
+                name = "Transactions",
+                icon = R.drawable.transactions,
+                tab = NavBarItem.TRANSACTIONS
+            ),
+            NavItem(
+                name = "Orders",
+                icon = R.drawable.orders,
+                tab = NavBarItem.ORDERS
+            ),
+            NavItem(
+                name = "Profile",
+                icon = R.drawable.profile,
+                tab = NavBarItem.PROFILE
+            ),
+        )
+
+        "Merchant" -> listOf(
+            NavItem(
+                name = "Home",
+                icon = R.drawable.home,
+                tab = NavBarItem.HOME
+            ),
+            NavItem(
+                name = "Transactions",
+                icon = R.drawable.transactions,
+                tab = NavBarItem.TRANSACTIONS
+            ),
+            NavItem(
+                name = "Orders",
+                icon = R.drawable.orders,
+                tab = NavBarItem.ORDERS
+            ),
+            NavItem(
+                name = "Shops",
+                icon = R.drawable.shop,
+                tab = NavBarItem.SHOPS
+            ),
+            NavItem(
+                name = "Profile",
+                icon = R.drawable.profile,
+                tab = NavBarItem.PROFILE
+            ),
+        )
+
+        else -> listOf()
+    }
+
     var selectedTab by rememberSaveable {
         mutableStateOf(NavBarItem.HOME)
     }
@@ -94,11 +147,20 @@ fun DashboardScreenComposable() {
             .safeDrawingPadding()
     ) {
         DashboardScreen(
+            profiles = profiles,
+            selectedProfile = selectedProfile,
+            dropdownExpanded = dropdownExpanded,
+            onSelectProfile = {
+                selectedProfile = it
+            },
             filtering = filtering,
             navItems = navItems,
             selectedTab = selectedTab,
             onSelectTab = {
                 selectedTab = it
+            },
+            onExpandDropdown = {
+                dropdownExpanded = !dropdownExpanded
             },
             onFilter = {
                 filtering = !filtering
@@ -110,6 +172,11 @@ fun DashboardScreenComposable() {
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun DashboardScreen(
+    profiles: List<String>,
+    dropdownExpanded: Boolean,
+    onExpandDropdown: () -> Unit,
+    selectedProfile: String,
+    onSelectProfile: (profile: String) -> Unit,
     filtering: Boolean,
     navItems: List<NavItem>,
     selectedTab: NavBarItem,
@@ -137,23 +204,64 @@ fun DashboardScreen(
                     )
             ) {
                 Text(
-                    text = "Buyer Dashboard",
+                    text = "$selectedProfile Dashboard",
                     fontSize = screenFontSize(x = 16.0).sp,
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.weight(1f))
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Buyer",
-                        fontSize = screenFontSize(x = 16.0).sp
-                    )
-                    IconButton(onClick = { /*TODO*/ }) {
-                        Icon(
-                            imageVector = Icons.Default.KeyboardArrowDown,
-                            contentDescription = "Switch role"
+                Column {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .clickable {
+                                onExpandDropdown()
+                            }
+                    ) {
+                        Text(
+                            text = selectedProfile,
+                            fontSize = screenFontSize(x = 16.0).sp
                         )
+                        IconButton(onClick = onExpandDropdown) {
+                            Icon(
+                                imageVector = Icons.Default.KeyboardArrowDown,
+                                contentDescription = "Switch role"
+                            )
+                        }
+                    }
+                    DropdownMenu(
+                        expanded = dropdownExpanded,
+                        onDismissRequest = onExpandDropdown
+                    ) {
+                        profiles.forEach {
+                            DropdownMenuItem(
+                                text = {
+                                    if(it == selectedProfile) {
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Icon(
+                                                painter = painterResource(id = R.drawable.check), 
+                                                contentDescription = null
+                                            )
+                                            Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
+                                            Text(
+                                                text = it,
+                                                fontSize = screenFontSize(x = 14.0).sp
+                                            )
+                                        }
+                                    } else {
+                                        Text(
+                                            text = it,
+                                            fontSize = screenFontSize(x = 14.0).sp
+                                        )
+                                    }
+                                },
+                                onClick = {
+                                    onSelectProfile(it)
+                                    onExpandDropdown()
+                                }
+                            )
+                        }
                     }
                 }
             }
@@ -174,6 +282,15 @@ fun DashboardScreen(
                 modifier = Modifier
                     .weight(1f)
             )
+            NavBarItem.SHOPS -> {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .weight(1f)
+                ) {
+                    Text(text = "Shops")
+                }
+            }
             NavBarItem.PROFILE -> {
                 Box(
                     contentAlignment = Alignment.Center,
@@ -230,6 +347,11 @@ fun BottomNavBar(
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun DashboardScreenPreview() {
+    val profiles = listOf(
+        "Buyer",
+        "Merchant",
+        "Courier"
+    )
     var filtering by rememberSaveable {
         mutableStateOf(false)
     }
@@ -267,6 +389,11 @@ fun DashboardScreenPreview() {
             onSelectTab = {
                 selectedTab = it
             },
+            onExpandDropdown = {},
+            dropdownExpanded = true,
+            onSelectProfile = {},
+            profiles = profiles,
+            selectedProfile = "Buyer",
             onFilter = {
                 filtering = !filtering
             }
