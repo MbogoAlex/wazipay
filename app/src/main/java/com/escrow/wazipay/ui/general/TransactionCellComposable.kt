@@ -38,53 +38,48 @@ fun TransactionCellComposable(
         else -> "N/A"
     }.uppercase()
 
-    ElevatedCard(
-        onClick = { /*TODO*/ },
-        modifier = modifier
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(screenWidth(x = 8.0))
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(screenWidth(x = 8.0))
+                .weight(1f)
         ) {
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-            ) {
-                Text(
-                    text = if(transactionData.order != null)  if(transactionData.order.name.length > 25) transactionData.order.name.take(25) + "..." else transactionData.order.name else transactionType,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = screenFontSize(x = 14.0).sp
-                )
-                Text(
-                    text = transactionType,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = screenFontSize(x = 16.0).sp
-                )
-                Text(
-                    text = formatIsoDateTime(LocalDateTime.parse(transactionData.createdAt)),
-                    fontWeight = FontWeight.W300,
-                    fontSize = screenFontSize(x = 12.0).sp
-                )
-            }
-            Column(
-                horizontalAlignment = Alignment.End,
-                modifier = Modifier
-                    .weight(1f)
-            ) {
-                Text(
-                    text = transactionData.amount.toString(),
-                    color = if(transactionType.lowercase() == "withdrawal" || transactionType.lowercase() == "refund" || transactionType.lowercase() == "payment" || transactionType.lowercase() == "courier payment") MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = screenFontSize(x = 16.0).sp
-                )
-                Text(
-                    text = "KES",
-                    fontWeight = FontWeight.W300,
-                    fontSize = screenFontSize(x = 12.0).sp
-                )
-            }
+            Text(
+                text = if(transactionData.order != null)  if(transactionData.order.name.length > 25) transactionData.order.name.take(25) + "..." else transactionData.order.name else transactionType,
+                fontWeight = FontWeight.Bold,
+                fontSize = screenFontSize(x = 14.0).sp
+            )
+            Text(
+                text = transactionType,
+                fontWeight = FontWeight.Bold,
+                fontSize = screenFontSize(x = 16.0).sp
+            )
+            Text(
+                text = formatIsoDateTime(LocalDateTime.parse(transactionData.createdAt)),
+                fontWeight = FontWeight.W300,
+                fontSize = screenFontSize(x = 12.0).sp
+            )
+        }
+        Column(
+            horizontalAlignment = Alignment.End,
+            modifier = Modifier
+                .weight(1f)
+        ) {
+            Text(
+                text = transactionData.amount.toString(),
+                color = if(transactionType.lowercase() == "withdrawal" || transactionType.lowercase() == "refund" || transactionType.lowercase() == "payment" || transactionType.lowercase() == "courier payment") MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
+                fontWeight = FontWeight.Bold,
+                fontSize = screenFontSize(x = 16.0).sp
+            )
+            Text(
+                text = "KES",
+                fontWeight = FontWeight.W300,
+                fontSize = screenFontSize(x = 12.0).sp
+            )
         }
     }
 }
