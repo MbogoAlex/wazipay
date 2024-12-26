@@ -1,5 +1,8 @@
-package com.escrow.wazipay.ui.general
+package com.escrow.wazipay.ui.general.orders
 
+import android.os.Build
+import androidx.annotation.RequiresApi
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,54 +15,72 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
-import com.escrow.wazipay.R
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.escrow.wazipay.AppViewModelFactory
+import com.escrow.wazipay.data.network.models.order.OrderData
 import com.escrow.wazipay.data.network.models.order.orderData
+import com.escrow.wazipay.data.network.models.order.orders
+import com.escrow.wazipay.ui.buyer.LoadUserStatus
 import com.escrow.wazipay.ui.theme.WazipayTheme
 import com.escrow.wazipay.utils.screenFontSize
 import com.escrow.wazipay.utils.screenHeight
 import com.escrow.wazipay.utils.screenWidth
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun OrdersScreenComposable(
     profile: String,
+    navigateToLoginScreenWithArgs: (phoneNumber: String, pin: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+
+    val viewModel: OrdersViewModel = viewModel(factory = AppViewModelFactory.Factory)
+    val uiState by viewModel.uiState.collectAsState()
+
+    if(uiState.unauthorized && uiState.loadOrdersStatus == LoadOrdersStatus.FAIL) {
+        navigateToLoginScreenWithArgs(uiState.userDetails.phoneNumber!!, uiState.userDetails.pin!!)
+        viewModel.resetStatus()
+    }
+
     Box(
         modifier = modifier
             .safeDrawingPadding()
     ) {
         OrdersScreen(
+            orders = uiState.orders,
             profile = profile
         )
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun OrdersScreen(
     profile: String,
+    orders: List<OrderData>,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
         floatingActionButton = {
-            if(profile == "Merchant") {
+            if(profile == "Merchant" || profile == "Buyer") {
                 FloatingActionButton(onClick = { /*TODO*/ }) {
                     Icon(
                         imageVector = Icons.Default.Add,
@@ -92,23 +113,38 @@ fun OrdersScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
                         .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState())
                 ) {
                     Button(onClick = { /*TODO*/ }) {
+                        Text(text = "All")
+                    }
+                    Spacer(modifier = Modifier.width(screenWidth(x = 8.0)))
+                    OutlinedButton(onClick = { /*TODO*/ }) {
                         Text(text = "Completed")
                     }
+                    Spacer(modifier = Modifier.width(screenWidth(x = 8.0)))
                     OutlinedButton(onClick = { /*TODO*/ }) {
                         Text(text = "In Transit")
                     }
+                    Spacer(modifier = Modifier.width(screenWidth(x = 8.0)))
+                    OutlinedButton(onClick = { /*TODO*/ }) {
+                        Text(text = "Pending pickup")
+                    }
+                    Spacer(modifier = Modifier.width(screenWidth(x = 8.0)))
                     OutlinedButton(onClick = { /*TODO*/ }) {
                         Text(text = "Cancelled")
+                    }
+                    Spacer(modifier = Modifier.width(screenWidth(x = 8.0)))
+                    OutlinedButton(onClick = { /*TODO*/ }) {
+                        Text(text = "Refunded")
                     }
                 }
                 Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
                 LazyColumn {
-                    items(10) {
+                    items(orders) { order ->
                         OrderItemComposable(
                             homeScreen = false,
-                            orderData = orderData,
+                            orderData = order,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(
@@ -125,11 +161,13 @@ fun OrdersScreen(
 
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun OrdersScreenPreview() {
     WazipayTheme {
         OrdersScreen(
+            orders = orders,
             profile = "Buyer"
         )
     }

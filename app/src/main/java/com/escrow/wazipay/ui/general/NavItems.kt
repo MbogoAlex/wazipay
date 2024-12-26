@@ -6,6 +6,8 @@ enum class NavBarItem {
     TRANSACTIONS,
     ORDERS,
     PROFILE,
+    BUSINESSES,
+    INVOICES,
 
 //    Seller
     SHOPS,

@@ -7,6 +7,7 @@ import com.escrow.wazipay.data.network.models.user.UserContactData
 import com.escrow.wazipay.data.network.models.user.UserDetailsData
 import com.escrow.wazipay.data.network.models.wallet.UserWalletData
 import com.escrow.wazipay.data.room.models.UserDetails
+import com.escrow.wazipay.ui.general.orders.LoadOrdersStatus
 
 data class BuyerDashboardUiData(
     val userDetails: UserDetails = UserDetails(),

@@ -1,4 +1,4 @@
-package com.escrow.wazipay.ui.buyer
+package com.escrow.wazipay.ui.general.orders
 
 enum class LoadOrdersStatus {
     INITIAL,

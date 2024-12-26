@@ -25,7 +25,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -43,7 +42,7 @@ import com.escrow.wazipay.data.network.models.order.orders
 import com.escrow.wazipay.data.network.models.transaction.TransactionData
 import com.escrow.wazipay.data.network.models.transaction.transactions
 import com.escrow.wazipay.ui.general.InvoiceItemComposable
-import com.escrow.wazipay.ui.general.OrderItemComposable
+import com.escrow.wazipay.ui.general.orders.OrderItemComposable
 import com.escrow.wazipay.ui.general.TransactionCellComposable
 import com.escrow.wazipay.ui.theme.WazipayTheme
 import com.escrow.wazipay.utils.formatMoneyValue

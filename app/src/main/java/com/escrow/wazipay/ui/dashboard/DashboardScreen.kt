@@ -67,7 +67,7 @@ import com.escrow.wazipay.R
 import com.escrow.wazipay.ui.buyer.BuyerDashboardScreenComposable
 import com.escrow.wazipay.ui.general.NavBarItem
 import com.escrow.wazipay.ui.general.NavItem
-import com.escrow.wazipay.ui.general.OrdersScreenComposable
+import com.escrow.wazipay.ui.general.orders.OrdersScreenComposable
 import com.escrow.wazipay.ui.general.TransactionsScreenComposable
 import com.escrow.wazipay.ui.merchant.MerchantDashboardScreenComposable
 import com.escrow.wazipay.ui.nav.AppNavigation
@@ -128,14 +128,24 @@ fun DashboardScreenComposable(
                 tab = NavBarItem.HOME
             ),
             NavItem(
-                name = "Transactions",
-                icon = R.drawable.transactions,
-                tab = NavBarItem.TRANSACTIONS
-            ),
-            NavItem(
                 name = "Orders",
                 icon = R.drawable.orders,
                 tab = NavBarItem.ORDERS
+            ),
+            NavItem(
+                name = "Invoices",
+                icon = R.drawable.invoice,
+                tab = NavBarItem.INVOICES
+            ),
+            NavItem(
+                name = "Businesses",
+                icon = R.drawable.shop,
+                tab = NavBarItem.BUSINESSES
+            ),
+            NavItem(
+                name = "Transactions",
+                icon = R.drawable.transactions,
+                tab = NavBarItem.TRANSACTIONS
             ),
             NavItem(
                 name = "Profile",
@@ -151,14 +161,24 @@ fun DashboardScreenComposable(
                 tab = NavBarItem.HOME
             ),
             NavItem(
-                name = "Transactions",
-                icon = R.drawable.transactions,
-                tab = NavBarItem.TRANSACTIONS
-            ),
-            NavItem(
                 name = "Orders",
                 icon = R.drawable.orders,
                 tab = NavBarItem.ORDERS
+            ),
+            NavItem(
+                name = "Invoices",
+                icon = R.drawable.invoice,
+                tab = NavBarItem.INVOICES
+            ),
+            NavItem(
+                name = "Businesses",
+                icon = R.drawable.shop,
+                tab = NavBarItem.BUSINESSES
+            ),
+            NavItem(
+                name = "Transactions",
+                icon = R.drawable.transactions,
+                tab = NavBarItem.TRANSACTIONS
             ),
             NavItem(
                 name = "Shops",
@@ -433,6 +453,7 @@ fun DashboardScreen(
                 )
                 NavBarItem.ORDERS -> OrdersScreenComposable(
                     profile = selectedProfile,
+                    navigateToLoginScreenWithArgs = navigateToLoginScreenWithArgs,
                     modifier = Modifier
 //                        .weight(1f)
                 )
@@ -453,6 +474,27 @@ fun DashboardScreen(
 //                            .weight(1f)
                     ) {
                         Text(text = "Profile")
+                    }
+                }
+
+                NavBarItem.BUSINESSES -> {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .fillMaxSize()
+//                            .weight(1f)
+                    ) {
+                        Text(text = "Businesses")
+                    }
+                }
+                NavBarItem.INVOICES -> {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .fillMaxSize()
+//                            .weight(1f)
+                    ) {
+                        Text(text = "Invoices")
                     }
                 }
             }
