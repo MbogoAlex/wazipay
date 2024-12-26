@@ -12,10 +12,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -33,58 +38,82 @@ import com.escrow.wazipay.utils.screenWidth
 
 @Composable
 fun OrdersScreenComposable(
+    profile: String,
     modifier: Modifier = Modifier
 ) {
     Box(
         modifier = modifier
             .safeDrawingPadding()
     ) {
-        OrdersScreen()
+        OrdersScreen(
+            profile = profile
+        )
     }
 }
 
 @Composable
 fun OrdersScreen(
+    profile: String,
     modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(
-                vertical = screenHeight(x = 16.0),
-                horizontal = screenWidth(x = 16.0)
-            )
+    Scaffold(
+        floatingActionButton = {
+            if(profile == "Merchant") {
+                FloatingActionButton(onClick = { /*TODO*/ }) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Create Order"
+                    )
+                }
+            }
+        }
     ) {
-        Text(
-            text = "My Orders",
-            fontWeight = FontWeight.Bold,
-            fontSize = screenFontSize(x = 16.0).sp
-        )
-        Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
+                .padding(it)
         ) {
-            Button(onClick = { /*TODO*/ }) {
-                Text(text = "Completed")
-            }
-            OutlinedButton(onClick = { /*TODO*/ }) {
-                Text(text = "In Transit")
-            }
-            OutlinedButton(onClick = { /*TODO*/ }) {
-                Text(text = "Cancelled")
-            }
-        }
-        Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
-        LazyColumn {
-            items(10) {
-                OrderItem()
-            }
-        }
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(
+                        vertical = screenHeight(x = 16.0),
+                        horizontal = screenWidth(x = 16.0)
+                    )
+            ) {
+                Text(
+                    text = if(profile == "Buyer") "My Orders" else if(profile == "Merchant") "Created Orders" else "My Orders",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = screenFontSize(x = 16.0).sp
+                )
+                Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    Button(onClick = { /*TODO*/ }) {
+                        Text(text = "Completed")
+                    }
+                    OutlinedButton(onClick = { /*TODO*/ }) {
+                        Text(text = "In Transit")
+                    }
+                    OutlinedButton(onClick = { /*TODO*/ }) {
+                        Text(text = "Cancelled")
+                    }
+                }
+                Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+                LazyColumn {
+                    items(10) {
+                        OrderItem()
+                    }
+                }
 
+            }
+
+        }
     }
+
 }
 
 @Composable
@@ -167,6 +196,8 @@ fun OrderItem(
 @Composable
 fun OrdersScreenPreview() {
     WazipayTheme {
-        OrdersScreen()
+        OrdersScreen(
+            profile = "Buyer"
+        )
     }
 }

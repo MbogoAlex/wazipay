@@ -56,7 +56,7 @@ class RegistrationViewModel(
                 )
             }
             val registrationRequestBody = RegistrationRequestBody(
-                name = uiState.value.username,
+                username = uiState.value.username,
                 phoneNumber = uiState.value.phoneNumber,
                 email = uiState.value.email
             )

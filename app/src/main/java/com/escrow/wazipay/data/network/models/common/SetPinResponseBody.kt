@@ -12,7 +12,7 @@ data class SetPinResponseBody(
 @Serializable
 data class SetPinResponseBodyData(
     val userId: Int,
-    val name: String,
+    val username: String,
     val phoneNumber: String,
     val email: String,
     val roles: List<String>,

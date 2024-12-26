@@ -44,6 +44,7 @@ import com.escrow.wazipay.ui.general.NavBarItem
 import com.escrow.wazipay.ui.general.NavItem
 import com.escrow.wazipay.ui.general.OrdersScreenComposable
 import com.escrow.wazipay.ui.general.TransactionsScreenComposable
+import com.escrow.wazipay.ui.merchant.MerchantDashboardScreenComposable
 import com.escrow.wazipay.ui.nav.AppNavigation
 import com.escrow.wazipay.ui.theme.WazipayTheme
 import com.escrow.wazipay.utils.screenFontSize
@@ -152,6 +153,7 @@ fun DashboardScreenComposable() {
             dropdownExpanded = dropdownExpanded,
             onSelectProfile = {
                 selectedProfile = it
+                selectedTab = NavBarItem.HOME
             },
             filtering = filtering,
             navItems = navItems,
@@ -268,10 +270,17 @@ fun DashboardScreen(
         }
 //        Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
         when(selectedTab) {
-            NavBarItem.HOME -> BuyerDashboardScreenComposable(
-                modifier = Modifier
-                    .weight(1f)
-            )
+            NavBarItem.HOME -> when(selectedProfile) {
+                "Buyer" -> BuyerDashboardScreenComposable(
+                    modifier = Modifier
+                        .weight(1f)
+                )
+                "Merchant" -> MerchantDashboardScreenComposable(
+                    modifier = Modifier
+                        .weight(1f)
+                )
+
+            }
             NavBarItem.TRANSACTIONS -> TransactionsScreenComposable(
                 onFilter = onFilter,
                 filtering = filtering,
@@ -279,6 +288,7 @@ fun DashboardScreen(
                     .weight(1f)
             )
             NavBarItem.ORDERS -> OrdersScreenComposable(
+                profile = selectedProfile,
                 modifier = Modifier
                     .weight(1f)
             )

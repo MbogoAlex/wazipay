@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class RegistrationRequestBody(
-    val name: String,
+    val username: String,
     val phoneNumber: String,
     val email: String,
 )

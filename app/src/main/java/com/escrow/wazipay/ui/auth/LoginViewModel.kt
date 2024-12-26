@@ -64,7 +64,7 @@ class LoginViewModel(
                             dbRepository.insertUser(
                                 userDetails = UserDetails(
                                     userId = response.body()?.data?.user?.userId!!,
-                                    username = response.body()?.data?.user?.name,
+                                    username = response.body()?.data?.user?.username,
                                     phoneNumber = response.body()?.data?.user?.phoneNumber,
                                     email = response.body()?.data?.user?.email,
                                     token = response.body()?.data?.token,
@@ -74,7 +74,7 @@ class LoginViewModel(
                             val user = users[0]
                             dbRepository.updateUser(
                                 userDetails = user.copy(
-                                    username = response.body()?.data?.user?.name,
+                                    username = response.body()?.data?.user?.username,
                                     phoneNumber = response.body()?.data?.user?.phoneNumber,
                                     email = response.body()?.data?.user?.email,
                                     pin = uiState.value.pin,
