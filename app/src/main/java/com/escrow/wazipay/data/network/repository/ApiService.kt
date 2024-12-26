@@ -6,10 +6,23 @@ import com.escrow.wazipay.data.network.models.common.RegistrationRequestBody
 import com.escrow.wazipay.data.network.models.common.RegistrationResponseBody
 import com.escrow.wazipay.data.network.models.common.SetPinRequestBody
 import com.escrow.wazipay.data.network.models.common.SetPinResponseBody
+import com.escrow.wazipay.data.network.models.invoice.InvoiceResponseBody
+import com.escrow.wazipay.data.network.models.invoice.InvoicesResponseBody
+import com.escrow.wazipay.data.network.models.order.OrderResponseBody
+import com.escrow.wazipay.data.network.models.order.OrdersResponseBody
+import com.escrow.wazipay.data.network.models.transaction.TransactionResponseBody
+import com.escrow.wazipay.data.network.models.transaction.TransactionsResponseBody
+import com.escrow.wazipay.data.network.models.user.UserDetailsResponseBody
+import com.escrow.wazipay.data.network.models.wallet.UserWalletResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.GET
+import retrofit2.http.HEAD
+import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.PUT
+import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface ApiService {
     @POST("auth/register")
@@ -26,4 +39,86 @@ interface ApiService {
     suspend fun setUserPin(
         @Body setPinRequestBody: SetPinRequestBody
     ): Response<SetPinResponseBody>
+
+    //    Get user details
+
+    @GET("user/id/{id}")
+    suspend fun getUserDetails(
+        @Header("Authorization") token: String,
+        @Path("id") userId: Int
+    ): Response<UserDetailsResponseBody>
+
+//    Get user wallet
+
+    @GET("user/user-wallet")
+    suspend fun getUserWallet(
+        @Header("Authorization") token: String,
+        userId: Int
+    ): Response<UserWalletResponseBody>
+
+//    Get orders
+
+    @GET("user/order")
+    suspend fun getOrders(
+        @Header("Authorization") token: String,
+        @Query("query") query: String?,
+        @Query("code") code: String?,
+        @Query("merchantId") merchantId: Int?,
+        @Query("buyerId") buyerId: Int?,
+        @Query("courierId") courierId: Int?,
+        @Query("stage") stage: String?,
+        @Query("startDate") startDate: String?,
+        @Query("endDate") endDate: String
+    ): Response<OrdersResponseBody>
+
+//    Get order
+
+    @GET("user/order/{id}")
+    suspend fun getOrder (
+        @Header("Authorization") token: String,
+        @Path("id") orderId: Int
+    ): Response<OrderResponseBody>
+
+//    Get invoices
+
+    @GET("user/invoice")
+    suspend fun getInvoices(
+        @Header("Authorization") token: String,
+        @Query("query") query: String?,
+        @Query("businessId") businessId: Int?,
+        @Query("buyerId") buyerId: Int?,
+        @Query("merchantId") merchantId: Int?,
+        @Query("status") status: String?,
+        @Query("startDate") startDate: String?,
+        @Query("endDate") endDate: String?
+    ): Response<InvoicesResponseBody>
+
+//    Get invoice
+
+    @GET("user/invoice/{id}")
+    suspend fun getInvoice(
+        @Header("Authorization") token: String,
+        @Path("id") invoiceId: Int
+    ): Response<InvoiceResponseBody>
+
+//    Get transactions
+
+    @GET("user/transaction")
+    suspend fun getTransactions(
+        @Header("Authorization") token: String,
+        @Query("userId") userId: Int?,
+        @Query("query") query: String?,
+        @Query("transactionCode") transactionCode: String?,
+        @Query("transactionType") transactionType: String?,
+        @Query("startDate") startDate: String?,
+        @Query("endDate") endDate: String?
+    ): Response<TransactionsResponseBody>
+
+//    Get transactions
+
+    @GET("user/transaction/{id}")
+    suspend fun getTransaction(
+        @Header("Authorization") token: String,
+        @Path("id") transactionId: Int
+    ): Response<TransactionResponseBody>
 }
