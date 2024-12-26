@@ -89,6 +89,7 @@ object DashboardScreenDestination: AppNavigation {
 fun DashboardScreenComposable(
     darkMode: Boolean,
     onSwitchTheme: () -> Unit,
+    navigateToLoginScreenWithArgs: (phoneNumber: String, pin: String) -> Unit,
 ) {
     val context = LocalContext.current
 
@@ -212,7 +213,8 @@ fun DashboardScreenComposable(
             },
             onFilter = {
                 filtering = !filtering
-            }
+            },
+            navigateToLoginScreenWithArgs = navigateToLoginScreenWithArgs
         )
     }
 }
@@ -234,6 +236,7 @@ fun DashboardScreen(
     selectedTab: NavBarItem,
     onSelectTab: (tab: NavBarItem) -> Unit,
     onFilter: () -> Unit,
+    navigateToLoginScreenWithArgs: (phoneNumber: String, pin: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -412,6 +415,7 @@ fun DashboardScreen(
             when(selectedTab) {
                 NavBarItem.HOME -> when(selectedProfile) {
                     "Buyer" -> BuyerDashboardScreenComposable(
+                        navigateToLoginScreenWithArgs = navigateToLoginScreenWithArgs,
                         modifier = Modifier
 //                            .weight(1f)
                     )
@@ -625,7 +629,8 @@ fun DashboardScreenPreview() {
             selectedProfile = "Buyer",
             onFilter = {
                 filtering = !filtering
-            }
+            },
+            navigateToLoginScreenWithArgs = {phoneNumber, pin ->  }
         )
     }
 }

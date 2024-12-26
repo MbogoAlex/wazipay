@@ -36,12 +36,10 @@ class ApiRepositoryImpl(private val apiService: ApiService): ApiRepository {
         )
 
     override suspend fun getUserWallet(
-        token: String,
-        userId: Int
+        token: String
     ): Response<UserWalletResponseBody> =
         apiService.getUserWallet(
-            token = "Bearer $token",
-            userId = userId
+            token = "Bearer $token"
         )
 
     override suspend fun getOrders(
@@ -53,7 +51,7 @@ class ApiRepositoryImpl(private val apiService: ApiService): ApiRepository {
         courierId: Int?,
         stage: String?,
         startDate: String?,
-        endDate: String
+        endDate: String?
     ): Response<OrdersResponseBody> =
         apiService.getOrders(
             token = "Bearer $token",

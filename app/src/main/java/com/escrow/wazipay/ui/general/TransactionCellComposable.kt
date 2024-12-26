@@ -59,7 +59,7 @@ fun TransactionCellComposable(
                 fontSize = screenFontSize(x = 16.0).sp
             )
             Text(
-                text = formatIsoDateTime(LocalDateTime.parse(transactionData.createdAt)),
+                text = if(transactionData.createdAt != null) formatIsoDateTime(LocalDateTime.parse(transactionData.createdAt)) else "TIME: N/A",
                 fontWeight = FontWeight.W300,
                 fontSize = screenFontSize(x = 12.0).sp
             )

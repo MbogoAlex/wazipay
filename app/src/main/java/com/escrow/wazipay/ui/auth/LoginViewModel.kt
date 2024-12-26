@@ -54,6 +54,8 @@ class LoginViewModel(
                 pin = uiState.value.pin
             )
 
+            Log.d("login_request_body", loginRequestBody.toString())
+
             try {
                 val response = apiRepository.login(loginRequestBody = loginRequestBody)
                 if(response.isSuccessful) {
@@ -66,6 +68,7 @@ class LoginViewModel(
                                     userId = response.body()?.data?.user?.userId!!,
                                     username = response.body()?.data?.user?.username,
                                     phoneNumber = response.body()?.data?.user?.phoneNumber,
+                                    pin = uiState.value.pin,
                                     email = response.body()?.data?.user?.email,
                                     token = response.body()?.data?.token,
                                 )
@@ -110,7 +113,7 @@ class LoginViewModel(
                 _uiState.update {
                     Log.e("login_exception_err", e.toString())
                     it.copy(
-                        loginMessage = e.message.toString(),
+                        loginMessage = e.toString(),
                         loginStatus = LoginStatus.FAIL
                     )
                 }

@@ -6,8 +6,10 @@ import com.escrow.wazipay.data.network.models.transaction.TransactionData
 import com.escrow.wazipay.data.network.models.user.UserContactData
 import com.escrow.wazipay.data.network.models.user.UserDetailsData
 import com.escrow.wazipay.data.network.models.wallet.UserWalletData
+import com.escrow.wazipay.data.room.models.UserDetails
 
 data class BuyerDashboardUiData(
+    val userDetails: UserDetails = UserDetails(),
     val userDetailsData: UserDetailsData = UserDetailsData(
         userId = 1,
         username = "",
@@ -35,5 +37,6 @@ data class BuyerDashboardUiData(
     val loadInvoicesStatus: LoadInvoicesStatus = LoadInvoicesStatus.INITIAL,
     val loadOrdersStatus: LoadOrdersStatus = LoadOrdersStatus.INITIAL,
     val loadTransactionsStatus: LoadTransactionsStatus = LoadTransactionsStatus.INITIAL,
-    val loadWalletStatus: LoadWalletStatus = LoadWalletStatus.INITIAL
+    val loadWalletStatus: LoadWalletStatus = LoadWalletStatus.INITIAL,
+    val unauthorized: Boolean = false,
 )

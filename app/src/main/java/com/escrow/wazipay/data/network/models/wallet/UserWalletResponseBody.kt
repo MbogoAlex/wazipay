@@ -7,5 +7,5 @@ import kotlinx.serialization.Serializable
 data class UserWalletResponseBody(
     val statusCode: Int,
     val message: String,
-    val data: UserContactData
+    val data: UserWalletData
 )

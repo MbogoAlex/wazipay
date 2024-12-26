@@ -52,8 +52,7 @@ interface ApiService {
 
     @GET("user/user-wallet")
     suspend fun getUserWallet(
-        @Header("Authorization") token: String,
-        userId: Int
+        @Header("Authorization") token: String
     ): Response<UserWalletResponseBody>
 
 //    Get orders
@@ -68,7 +67,7 @@ interface ApiService {
         @Query("courierId") courierId: Int?,
         @Query("stage") stage: String?,
         @Query("startDate") startDate: String?,
-        @Query("endDate") endDate: String
+        @Query("endDate") endDate: String?
     ): Response<OrdersResponseBody>
 
 //    Get order

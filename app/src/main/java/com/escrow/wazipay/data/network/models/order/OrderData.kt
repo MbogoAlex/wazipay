@@ -18,6 +18,7 @@ data class OrderData(
     val courier: UserContactData?,
     val business: BusinessData,
     val createdAt: String,
+    val assignedAt: String?,
     val completedAt: String?,
     val refundedAt: String?,
     val cancelledAt: String?,

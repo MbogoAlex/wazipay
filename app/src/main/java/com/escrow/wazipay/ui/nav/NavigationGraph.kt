@@ -99,7 +99,10 @@ fun NavigationGraph(
         composable(DashboardScreenDestination.route) {
             DashboardScreenComposable(
                 darkMode = darkMode,
-                onSwitchTheme = onSwitchTheme
+                onSwitchTheme = onSwitchTheme,
+                navigateToLoginScreenWithArgs = {phoneNumber, pin ->
+                    navController.navigate("${LoginScreenDestination.route}/${phoneNumber}/${pin}")
+                }
             )
         }
     }

@@ -23,6 +23,9 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,14 +33,20 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.escrow.wazipay.AppViewModelFactory
 import com.escrow.wazipay.R
+import com.escrow.wazipay.data.network.models.invoice.InvoiceData
 import com.escrow.wazipay.data.network.models.invoice.invoices
+import com.escrow.wazipay.data.network.models.order.OrderData
 import com.escrow.wazipay.data.network.models.order.orders
+import com.escrow.wazipay.data.network.models.transaction.TransactionData
 import com.escrow.wazipay.data.network.models.transaction.transactions
 import com.escrow.wazipay.ui.general.InvoiceItemComposable
 import com.escrow.wazipay.ui.general.OrderItemComposable
 import com.escrow.wazipay.ui.general.TransactionCellComposable
 import com.escrow.wazipay.ui.theme.WazipayTheme
+import com.escrow.wazipay.utils.formatMoneyValue
 import com.escrow.wazipay.utils.screenFontSize
 import com.escrow.wazipay.utils.screenHeight
 import com.escrow.wazipay.utils.screenWidth
@@ -46,19 +55,43 @@ import com.escrow.wazipay.utils.screenWidth
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun BuyerDashboardScreenComposable(
+    navigateToLoginScreenWithArgs: (phoneNumber: String, pin: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+
+    val viewModel: BuyerDashboardViewModel = viewModel(factory = AppViewModelFactory.Factory)
+    val uiState by viewModel.uiState.collectAsState()
+
+
+    if(uiState.unauthorized && uiState.loadUserStatus == LoadUserStatus.FAIL) {
+        navigateToLoginScreenWithArgs(uiState.userDetails.phoneNumber!!, uiState.userDetails.pin!!)
+        viewModel.resetStatus()
+    }
+
     Box(
         modifier = modifier
             .safeDrawingPadding()
     ) {
-        BuyerDashboardScreen()
+        BuyerDashboardScreen(
+            walletBalance = formatMoneyValue(uiState.userWalletData.balance),
+            userVerified = uiState.userDetailsData.verified,
+            username = uiState.userDetails.username ?: "",
+            orders = uiState.orders,
+            invoices = uiState.invoices,
+            transactions = uiState.transactions
+        )
     }
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun BuyerDashboardScreen(
+    walletBalance: String,
+    userVerified: Boolean,
+    username: String,
+    orders: List<OrderData>,
+    invoices: List<InvoiceData>,
+    transactions: List<TransactionData>,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -86,13 +119,13 @@ fun BuyerDashboardScreen(
                         contentDescription = null
                     )
                     Text(
-                        text = "Alex".uppercase(),
+                        text = username.split(" ")[0].uppercase(),
                         fontSize = screenFontSize(x = 14.0).sp
                     )
                     Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
                     ElevatedCard {
                         Text(
-                            text = "VERIFIED",
+                            text = if(userVerified) "VERIFIED" else "UNVERIFIED",
                             fontSize = screenFontSize(x = 12.0).sp,
                             color = Color(0xFF0d421b),
                             modifier = Modifier
@@ -112,7 +145,7 @@ fun BuyerDashboardScreen(
                 )
                 Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
                 Text(
-                    text = "KES 1000.00",
+                    text = walletBalance,
                     fontWeight = FontWeight.Bold,
                     fontSize = screenFontSize(x = 24.0).sp
                 )
@@ -228,6 +261,13 @@ fun BuyerDashboardScreen(
 @Composable
 fun BuyerDashboardScreenPreview() {
     WazipayTheme {
-        BuyerDashboardScreen()
+        BuyerDashboardScreen(
+            walletBalance = "Ksh1,000",
+            userVerified = true,
+            username = "Alex Mbogo",
+            orders = orders,
+            invoices = invoices,
+            transactions = transactions
+        )
     }
 }

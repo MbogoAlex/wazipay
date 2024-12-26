@@ -9,7 +9,7 @@ data class TransactionData(
     val id: Int,
     val transactionCode: String,
     val transactionType: String,
-    val createdAt: String,
+    val createdAt: String?,
     val amount: Double,
     val order: OrderData?,
     val invoice: InvoiceData?

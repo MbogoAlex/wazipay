@@ -40,7 +40,6 @@ interface ApiRepository {
 
     suspend fun getUserWallet(
         token: String,
-        userId: Int
     ): Response<UserWalletResponseBody>
 
 //    Get orders
@@ -54,7 +53,7 @@ interface ApiRepository {
         courierId: Int?,
         stage: String?,
         startDate: String?,
-        endDate: String
+        endDate: String?
     ): Response<OrdersResponseBody>
 
 //    Get order
