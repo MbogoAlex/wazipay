@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ElevatedCard
@@ -27,6 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import com.escrow.wazipay.R
+import com.escrow.wazipay.data.network.models.transaction.transactions
 import com.escrow.wazipay.ui.general.TransactionCellComposable
 import com.escrow.wazipay.ui.theme.WazipayTheme
 import com.escrow.wazipay.utils.screenFontSize
@@ -160,8 +162,9 @@ fun MerchantDashboardScreen(
         )
         Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
         LazyColumn {
-            items(10) {
+            items(transactions) { transaction ->
                 TransactionCellComposable(
+                    transactionData = transaction,
                     modifier = Modifier
                         .padding(
                             top = screenHeight(x = 8.0)

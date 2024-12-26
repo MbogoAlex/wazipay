@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -49,7 +50,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.escrow.wazipay.R
+import com.escrow.wazipay.data.network.models.transaction.TransactionData
+import com.escrow.wazipay.data.network.models.transaction.transactions
 import com.escrow.wazipay.ui.theme.WazipayTheme
+import com.escrow.wazipay.utils.formatIsoDateTime
 import com.escrow.wazipay.utils.screenFontSize
 import com.escrow.wazipay.utils.screenHeight
 import com.escrow.wazipay.utils.screenWidth
@@ -223,67 +227,13 @@ fun TransactionsScreen(
 
                 )
         ) {
-            items(20) {
+            items(transactions) { item ->
                 TransactionCellComposable(
+                    transactionData = item,
                     modifier = Modifier
                         .padding(
                             top = screenHeight(x = 8.0)
                         )
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun TransactionCellComposable(
-    modifier: Modifier = Modifier
-) {
-    ElevatedCard(
-        onClick = { /*TODO*/ },
-        modifier = modifier
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(screenWidth(x = 8.0))
-        ) {
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-            ) {
-                Text(
-                    text = "6KG Total Gas Delivery",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = screenFontSize(x = 14.0).sp
-                )
-                Text(
-                    text = "PAYMENT",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = screenFontSize(x = 16.0).sp
-                )
-                Text(
-                    text = "20/12/2024",
-                    fontWeight = FontWeight.W300,
-                    fontSize = screenFontSize(x = 12.0).sp
-                )
-            }
-            Column(
-                horizontalAlignment = Alignment.End,
-                modifier = Modifier
-                    .weight(1f)
-            ) {
-                Text(
-                    text = "-1500.00",
-                    color = MaterialTheme.colorScheme.error,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = screenFontSize(x = 16.0).sp
-                )
-                Text(
-                    text = "KES",
-                    fontWeight = FontWeight.W300,
-                    fontSize = screenFontSize(x = 12.0).sp
                 )
             }
         }

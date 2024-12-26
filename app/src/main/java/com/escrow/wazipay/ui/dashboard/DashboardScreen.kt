@@ -187,8 +187,8 @@ fun DashboardScreenComposable(
             onSwitchTheme = {
                 scope.launch {
                     onSwitchTheme()
-                    delay(2000)
                     Toast.makeText(context, "Theme switched", Toast.LENGTH_SHORT).show()
+                    delay(1000)
                     drawerState.close()
                 }
             },
@@ -346,7 +346,7 @@ fun DashboardScreen(
                     }
                     Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
                     Text(
-                        text = "$selectedProfile Dashboard",
+                        text = "WAZIPAY",
                         fontSize = screenFontSize(x = 16.0).sp,
                         fontWeight = FontWeight.Bold
                     )

@@ -1,5 +1,8 @@
 package com.escrow.wazipay.ui.buyer
 
+import android.os.Build
+import androidx.annotation.RequiresApi
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,13 +14,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -30,11 +33,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import com.escrow.wazipay.R
+import com.escrow.wazipay.data.network.models.order.orderData
+import com.escrow.wazipay.data.network.models.order.orders
+import com.escrow.wazipay.data.network.models.transaction.transactions
+import com.escrow.wazipay.ui.general.OrderItemComposable
 import com.escrow.wazipay.ui.general.TransactionCellComposable
 import com.escrow.wazipay.ui.theme.WazipayTheme
 import com.escrow.wazipay.utils.screenFontSize
 import com.escrow.wazipay.utils.screenHeight
 import com.escrow.wazipay.utils.screenWidth
+
 
 @Composable
 fun BuyerDashboardScreenComposable(
@@ -48,6 +56,7 @@ fun BuyerDashboardScreenComposable(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun BuyerDashboardScreen(
     modifier: Modifier = Modifier
@@ -59,6 +68,7 @@ fun BuyerDashboardScreen(
                 horizontal = screenWidth(x = 16.0),
                 vertical = screenHeight(x = 16.0)
             )
+            .verticalScroll(rememberScrollState())
     ) {
         Card(
             modifier = Modifier
@@ -157,20 +167,42 @@ fun BuyerDashboardScreen(
         }
         Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
         Text(
+            text = "Recent Orders",
+            fontSize = screenFontSize(x = 16.0).sp,
+            fontWeight = FontWeight.Bold
+        )
+        Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+        Row(
+            modifier = Modifier
+                .horizontalScroll(rememberScrollState())
+        ) {
+            orders.take(5).forEach {
+                OrderItemComposable(
+                    homeScreen = true,
+                    orderData = it,
+                    modifier = Modifier
+                        .fillMaxWidth(0.7f)
+                        .padding(
+                            screenWidth(x = 8.0)
+                        )
+                )
+            }
+        }
+        Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+        Text(
             text = "Recent Transactions",
             fontSize = screenFontSize(x = 16.0).sp,
             fontWeight = FontWeight.Bold
         )
         Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
-        LazyColumn {
-            items(10) {
-                TransactionCellComposable(
-                    modifier = Modifier
-                        .padding(
-                            top = screenHeight(x = 8.0)
-                        )
-                )
-            }
+        transactions.take(5).forEach {
+            TransactionCellComposable(
+                transactionData = it,
+                modifier = Modifier
+                    .padding(
+                        top = screenHeight(x = 8.0)
+                    )
+            )
         }
     }
 }
