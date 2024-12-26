@@ -12,6 +12,13 @@ import com.escrow.wazipay.ui.start.SplashViewModel
 
 object AppViewModelFactory {
     val Factory = viewModelFactory {
+
+        initializer {
+            MainActivityViewModel(
+                dbRepository = wazipayApplication().container.dbRepository
+            )
+        }
+
         initializer {
             SplashViewModel(
                 dbRepository = wazipayApplication().container.dbRepository

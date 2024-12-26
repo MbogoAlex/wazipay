@@ -24,6 +24,8 @@ import com.escrow.wazipay.ui.start.SplashScreenDestination
 @Composable
 fun NavigationGraph(
     navController: NavHostController,
+    darkMode: Boolean,
+    onSwitchTheme: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     NavHost(
@@ -95,7 +97,10 @@ fun NavigationGraph(
             )
         }
         composable(DashboardScreenDestination.route) {
-            DashboardScreenComposable()
+            DashboardScreenComposable(
+                darkMode = darkMode,
+                onSwitchTheme = onSwitchTheme
+            )
         }
     }
 }

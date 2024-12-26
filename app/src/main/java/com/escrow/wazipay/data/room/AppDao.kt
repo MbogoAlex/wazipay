@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import com.escrow.wazipay.data.room.models.DarkMode
 import com.escrow.wazipay.data.room.models.UserDetails
 import kotlinx.coroutines.flow.Flow
 
@@ -24,4 +25,14 @@ interface AppDao {
 
     @Query("DELETE FROM userdetails")
     suspend fun deleteUsers();
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun createTheme(darkMode: DarkMode)
+
+    @Update
+    suspend fun changeTheme(darkMode: DarkMode)
+
+    @Query("SELECT * FROM DarkMode LIMIT 1")
+    fun getTheme(): Flow<DarkMode?>
+
 }
