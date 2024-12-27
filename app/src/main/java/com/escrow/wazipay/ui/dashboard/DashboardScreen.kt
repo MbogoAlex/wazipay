@@ -96,6 +96,7 @@ fun DashboardScreenComposable(
     onSwitchTheme: () -> Unit,
     navigateToLoginScreenWithArgs: (phoneNumber: String, pin: String) -> Unit,
     navigateToDepositScreenWithArgs: (profile: String) -> Unit,
+    navigateToWithdrawalScreenWithArgs: (profile: String) -> Unit,
 ) {
     val context = LocalContext.current
 
@@ -241,7 +242,8 @@ fun DashboardScreenComposable(
                 filtering = !filtering
             },
             navigateToLoginScreenWithArgs = navigateToLoginScreenWithArgs,
-            navigateToDepositScreenWithArgs = navigateToDepositScreenWithArgs
+            navigateToDepositScreenWithArgs = navigateToDepositScreenWithArgs,
+            navigateToWithdrawalScreenWithArgs = navigateToWithdrawalScreenWithArgs
         )
     }
 }
@@ -265,6 +267,7 @@ fun DashboardScreen(
     onFilter: () -> Unit,
     navigateToLoginScreenWithArgs: (phoneNumber: String, pin: String) -> Unit,
     navigateToDepositScreenWithArgs: (profile: String) -> Unit,
+    navigateToWithdrawalScreenWithArgs: (profile: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -445,6 +448,7 @@ fun DashboardScreen(
                     "Buyer" -> BuyerDashboardScreenComposable(
                         navigateToLoginScreenWithArgs = navigateToLoginScreenWithArgs,
                         navigateToDepositScreenWithArgs = navigateToDepositScreenWithArgs,
+                        navigateToWithdrawalScreenWithArgs = navigateToWithdrawalScreenWithArgs,
                         modifier = Modifier
 //                            .weight(1f)
                     )
@@ -682,7 +686,8 @@ fun DashboardScreenPreview() {
                 filtering = !filtering
             },
             navigateToLoginScreenWithArgs = {phoneNumber, pin ->  },
-            navigateToDepositScreenWithArgs = {}
+            navigateToDepositScreenWithArgs = {},
+            navigateToWithdrawalScreenWithArgs = {}
         )
     }
 }

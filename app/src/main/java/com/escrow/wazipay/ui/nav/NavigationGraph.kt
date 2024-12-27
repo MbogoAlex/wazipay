@@ -19,6 +19,8 @@ import com.escrow.wazipay.ui.dashboard.DashboardScreenComposable
 import com.escrow.wazipay.ui.dashboard.DashboardScreenDestination
 import com.escrow.wazipay.ui.general.wallet.deposit.DepositScreenComposable
 import com.escrow.wazipay.ui.general.wallet.deposit.DepositScreenDestination
+import com.escrow.wazipay.ui.general.wallet.withdrawal.WithdrawalScreenComposable
+import com.escrow.wazipay.ui.general.wallet.withdrawal.WithdrawalScreenDestination
 import com.escrow.wazipay.ui.start.SplashScreenComposable
 import com.escrow.wazipay.ui.start.SplashScreenDestination
 
@@ -107,6 +109,9 @@ fun NavigationGraph(
                 },
                 navigateToDepositScreenWithArgs = {
                     navController.navigate("${DepositScreenDestination.route}/${it}")
+                },
+                navigateToWithdrawalScreenWithArgs = {
+                    navController.navigate("${WithdrawalScreenDestination.route}/${it}")
                 }
             )
         }
@@ -127,6 +132,9 @@ fun NavigationGraph(
                 },
                 navigateToDepositScreenWithArgs = {
                     navController.navigate("${DepositScreenDestination.route}/${it}")
+                },
+                navigateToWithdrawalScreenWithArgs = {
+                    navController.navigate("${WithdrawalScreenDestination.route}/${it}")
                 }
             )
         }
@@ -142,6 +150,22 @@ fun NavigationGraph(
             DepositScreenComposable(
                 navigateToDashboardScreenWithArgs = {
                     navController.navigate("${DashboardScreenDestination.route}/${it}")
+                }
+            )
+        }
+
+        composable(
+            WithdrawalScreenDestination.routeWithArgs,
+            arguments = listOf(
+                navArgument(WithdrawalScreenDestination.profile) {
+                    type = NavType.StringType
+                }
+            )
+        ) {
+            WithdrawalScreenComposable(
+                navigateToDashboardScreenWithArgs = {
+                    navController.navigate("${DashboardScreenDestination.route}/${it}")
+
                 }
             )
         }

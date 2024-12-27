@@ -1,10 +1,10 @@
-package com.escrow.wazipay.ui.general.wallet.deposit
+package com.escrow.wazipay.ui.general.wallet.withdrawal
 
 import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.escrow.wazipay.data.network.models.wallet.DepositRequestBody
+import com.escrow.wazipay.data.network.models.wallet.WithdrawalRequestBody
 import com.escrow.wazipay.data.network.repository.ApiRepository
 import com.escrow.wazipay.data.room.models.UserDetails
 import com.escrow.wazipay.data.room.repository.DBRepository
@@ -17,68 +17,77 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class DepositViewModel(
+class WithdrawalViewModel(
     private val apiRepository: ApiRepository,
     private val dbRepository: DBRepository,
     private val savedStateHandle: SavedStateHandle
 ): ViewModel() {
-    private val _uiState = MutableStateFlow(DepositUiData())
-    val uiState: StateFlow<DepositUiData> = _uiState.asStateFlow()
 
-    fun updateAmount(amount: String) {
+    private val _uiState = MutableStateFlow(WithdrawalUiData())
+    val uiState: StateFlow<WithdrawalUiData> = _uiState.asStateFlow()
+
+    fun updatePhoneNumber(phone: String) {
         _uiState.update {
             it.copy(
-                amount = amount
+                phoneNumber = phone
             )
         }
     }
 
-    fun deposit() {
+    fun updateWithdrawalAmount(amount: String) {
         _uiState.update {
             it.copy(
-                depositStatus = DepositStatus.LOADING
+                withdrawalAmount = amount.ifEmpty { uiState.value.userDetails.phoneNumber ?: "" }
+            )
+        }
+    }
+
+    fun withdraw() {
+        _uiState.update {
+            it.copy(
+                withdrawalStatus = WithdrawalStatus.LOADING
             )
         }
 
         viewModelScope.launch {
             try {
 
-               val depositRequestBody = DepositRequestBody(
-                   amount = uiState.value.amount.toDouble()
-               )
+                val withdrawalRequestBody = WithdrawalRequestBody(
+                    amount = uiState.value.withdrawalAmount.toDouble()
+                )
 
-               val response = apiRepository.deposit(
-                   token = uiState.value.userDetails.token!!,
-                   depositRequestBody = depositRequestBody
-               )
+                val response = apiRepository.withdraw(
+                    token = uiState.value.userDetails.token!!,
+                    withdrawalRequestBody = withdrawalRequestBody
+                )
 
-               if(response.isSuccessful) {
-                   _uiState.update {
-                       it.copy(
-                           depositMessage = "Deposit successful",
-                           newBalance = response.body()?.data?.balance!!,
-                           userWalletData = response.body()?.data!!,
-                           depositStatus = DepositStatus.SUCCESS
-                       )
-                   }
-               } else {
-                   _uiState.update {
-                       it.copy(
-                           depositMessage = "Deposit failed.",
-                           depositStatus = DepositStatus.FAIL
-                       )
-                   }
-                   Log.e("depositResponse_err", response.toString())
-               }
+                if(response.isSuccessful) {
+                    _uiState.update {
+                        it.copy(
+                            withdrawMessage = "Withdrawal successful",
+                            newBalance = response.body()?.data?.balance!!,
+                            userWalletData = response.body()?.data!!,
+                            withdrawalStatus = WithdrawalStatus.SUCCESS
+                        )
+                    }
+                } else {
+                    _uiState.update {
+                        it.copy(
+                            withdrawMessage = "Withdrawal failed.",
+                            withdrawalStatus = WithdrawalStatus.FAIL
+                        )
+                    }
+                    Log.e("withdrawalResponse_err", response.toString())
+                }
 
             } catch (e: Exception) {
                 _uiState.update {
                     it.copy(
-                        depositMessage = "Deposit failed.",
-                        depositStatus = DepositStatus.FAIL
+                        withdrawMessage = "Withdrawal failed.",
+                        withdrawalStatus = WithdrawalStatus.FAIL
                     )
                 }
-                Log.e("depositException_err", e.toString())
+                Log.e("withdrawalException_err", e.toString())
             }
         }
     }
@@ -113,7 +122,8 @@ class DepositViewModel(
                 dbRepository.getUsers().collect {users ->
                     _uiState.update {
                         it.copy(
-                            userDetails = if(users.isEmpty()) UserDetails() else users[0]
+                            userDetails = if(users.isEmpty()) UserDetails() else users[0],
+                            phoneNumber = uiState.value.phoneNumber.ifEmpty { users[0].phoneNumber ?: "" }
                         )
                     }
                 }
@@ -133,7 +143,9 @@ class DepositViewModel(
     fun enableButton() {
         _uiState.update {
             it.copy(
-                buttonEnabled = uiState.value.amount.isNotEmpty() && uiState.value.amount != "0"
+                buttonEnabled = uiState.value.withdrawalAmount.isNotEmpty() &&
+                        uiState.value.withdrawalAmount != "0" &&
+                uiState.value.phoneNumber.length == 10
             )
         }
     }
@@ -141,7 +153,7 @@ class DepositViewModel(
     fun resetStatus() {
         _uiState.update {
             it.copy(
-                depositStatus = DepositStatus.INITIAL
+                withdrawalStatus = WithdrawalStatus.INITIAL
             )
         }
     }
@@ -152,7 +164,7 @@ class DepositViewModel(
 
         _uiState.update {
             it.copy(
-                profile = savedStateHandle[DepositScreenDestination.profile]
+                profile = savedStateHandle[WithdrawalScreenDestination.profile]
             )
         }
     }

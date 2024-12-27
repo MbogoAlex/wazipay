@@ -56,6 +56,7 @@ import com.escrow.wazipay.utils.screenWidth
 fun BuyerDashboardScreenComposable(
     navigateToLoginScreenWithArgs: (phoneNumber: String, pin: String) -> Unit,
     navigateToDepositScreenWithArgs: (profile: String) -> Unit,
+    navigateToWithdrawalScreenWithArgs: (profile: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -79,7 +80,8 @@ fun BuyerDashboardScreenComposable(
             orders = uiState.orders,
             invoices = uiState.invoices,
             transactions = uiState.transactions,
-            navigateToDepositScreenWithArgs = navigateToDepositScreenWithArgs
+            navigateToDepositScreenWithArgs = navigateToDepositScreenWithArgs,
+            navigateToWithdrawalScreenWithArgs = navigateToWithdrawalScreenWithArgs
         )
     }
 }
@@ -94,6 +96,7 @@ fun BuyerDashboardScreen(
     invoices: List<InvoiceData>,
     transactions: List<TransactionData>,
     navigateToDepositScreenWithArgs: (profile: String) -> Unit,
+    navigateToWithdrawalScreenWithArgs: (profile: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -173,7 +176,9 @@ fun BuyerDashboardScreen(
                         }
                     }
                     Spacer(modifier = Modifier.width(screenWidth(x = 8.0)))
-                    OutlinedButton(onClick = { /*TODO*/ }) {
+                    OutlinedButton(onClick = {
+                        navigateToWithdrawalScreenWithArgs("Buyer")
+                    }) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
@@ -272,7 +277,8 @@ fun BuyerDashboardScreenPreview() {
             orders = orders,
             invoices = invoices,
             transactions = transactions,
-            navigateToDepositScreenWithArgs = {}
+            navigateToDepositScreenWithArgs = {},
+            navigateToWithdrawalScreenWithArgs = {}
         )
     }
 }

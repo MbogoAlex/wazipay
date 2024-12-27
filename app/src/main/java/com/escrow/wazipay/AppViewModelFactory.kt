@@ -12,6 +12,7 @@ import com.escrow.wazipay.ui.buyer.BuyerDashboardViewModel
 import com.escrow.wazipay.ui.dashboard.DashboardViewModel
 import com.escrow.wazipay.ui.general.order.OrdersViewModel
 import com.escrow.wazipay.ui.general.wallet.deposit.DepositViewModel
+import com.escrow.wazipay.ui.general.wallet.withdrawal.WithdrawalViewModel
 import com.escrow.wazipay.ui.start.SplashViewModel
 
 object AppViewModelFactory {
@@ -72,6 +73,14 @@ object AppViewModelFactory {
 
         initializer {
             DepositViewModel(
+                apiRepository = wazipayApplication().container.apiRepository,
+                dbRepository = wazipayApplication().container.dbRepository,
+                savedStateHandle = this.createSavedStateHandle()
+            )
+        }
+
+        initializer {
+            WithdrawalViewModel(
                 apiRepository = wazipayApplication().container.apiRepository,
                 dbRepository = wazipayApplication().container.dbRepository,
                 savedStateHandle = this.createSavedStateHandle()

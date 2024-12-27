@@ -15,6 +15,7 @@ import com.escrow.wazipay.data.network.models.transaction.TransactionsResponseBo
 import com.escrow.wazipay.data.network.models.user.UserDetailsResponseBody
 import com.escrow.wazipay.data.network.models.wallet.DepositRequestBody
 import com.escrow.wazipay.data.network.models.wallet.UserWalletResponseBody
+import com.escrow.wazipay.data.network.models.wallet.WithdrawalRequestBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -127,5 +128,12 @@ interface ApiService {
     suspend fun deposit(
         @Header("Authorization") token: String,
         @Body depositRequestBody: DepositRequestBody,
+    ): Response<UserWalletResponseBody>
+
+//    Withdraw from user wallet
+    @POST("user/withdrawal")
+    suspend fun withdraw(
+        @Header("Authorization") token: String,
+        @Body withdrawalRequestBody: WithdrawalRequestBody
     ): Response<UserWalletResponseBody>
 }
