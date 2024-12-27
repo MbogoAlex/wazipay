@@ -66,6 +66,10 @@ fun OrdersScreenComposable(
     ) {
         OrdersScreen(
             orders = uiState.orders,
+            orderStage = uiState.orderStage,
+            onChangeOrderStage = {
+                viewModel.changeOrderStage(it)
+            },
             profile = profile
         )
     }
@@ -76,6 +80,8 @@ fun OrdersScreenComposable(
 fun OrdersScreen(
     profile: String,
     orders: List<OrderData>,
+    orderStage: OrderStage,
+    onChangeOrderStage: (orderStage: OrderStage) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -115,28 +121,95 @@ fun OrdersScreen(
                         .fillMaxWidth()
                         .horizontalScroll(rememberScrollState())
                 ) {
-                    Button(onClick = { /*TODO*/ }) {
-                        Text(text = "All")
+                    if(orderStage == OrderStage.All) {
+                        Button(onClick = {
+                            onChangeOrderStage(OrderStage.All)
+                        }) {
+                            Text(text = "All")
+                        }
+                    } else {
+                        OutlinedButton(onClick = {
+                            onChangeOrderStage(OrderStage.All)
+                        }) {
+                            Text(text = "All")
+                        }
                     }
                     Spacer(modifier = Modifier.width(screenWidth(x = 8.0)))
-                    OutlinedButton(onClick = { /*TODO*/ }) {
-                        Text(text = "Completed")
+
+                    if(orderStage == OrderStage.COMPLETE) {
+                        Button(onClick = {
+                            onChangeOrderStage(OrderStage.COMPLETE)
+                        }) {
+                            Text(text = "Completed")
+                        }
+                    } else {
+                        OutlinedButton(onClick = {
+                            onChangeOrderStage(OrderStage.COMPLETE)
+                        }) {
+                            Text(text = "Completed")
+                        }
                     }
                     Spacer(modifier = Modifier.width(screenWidth(x = 8.0)))
-                    OutlinedButton(onClick = { /*TODO*/ }) {
-                        Text(text = "In Transit")
+
+                    if(orderStage == OrderStage.IN_TRANSIT) {
+                        Button(onClick = {
+                            onChangeOrderStage(OrderStage.IN_TRANSIT)
+                        }) {
+                            Text(text = "In Transit")
+                        }
+                    } else {
+                        OutlinedButton(onClick = {
+                            onChangeOrderStage(OrderStage.IN_TRANSIT)
+                        }) {
+                            Text(text = "In Transit")
+                        }
                     }
                     Spacer(modifier = Modifier.width(screenWidth(x = 8.0)))
-                    OutlinedButton(onClick = { /*TODO*/ }) {
-                        Text(text = "Pending pickup")
+
+                    if(orderStage == OrderStage.PENDING_PICKUP) {
+                        Button(onClick = {
+                            onChangeOrderStage(OrderStage.PENDING_PICKUP)
+                        }) {
+                            Text(text = "Pending pickup")
+                        }
+                    } else {
+                        OutlinedButton(onClick = {
+                            onChangeOrderStage(OrderStage.PENDING_PICKUP)
+                        }) {
+                            Text(text = "Pending pickup")
+                        }
                     }
+
                     Spacer(modifier = Modifier.width(screenWidth(x = 8.0)))
-                    OutlinedButton(onClick = { /*TODO*/ }) {
-                        Text(text = "Cancelled")
+
+                    if(orderStage == OrderStage.CANCELLED) {
+                        Button(onClick = {
+                            onChangeOrderStage(OrderStage.CANCELLED)
+                        }) {
+                            Text(text = "Cancelled")
+                        }
+                    } else {
+                        OutlinedButton(onClick = {
+                            onChangeOrderStage(OrderStage.CANCELLED)
+                        }) {
+                            Text(text = "Cancelled")
+                        }
                     }
+
                     Spacer(modifier = Modifier.width(screenWidth(x = 8.0)))
-                    OutlinedButton(onClick = { /*TODO*/ }) {
-                        Text(text = "Refunded")
+
+                    if(orderStage == OrderStage.REFUNDED) {
+                        Button(onClick = {
+                            onChangeOrderStage(OrderStage.REFUNDED)
+                        }) {
+                            Text(text = "Refunded")
+                        }
+                    } else {
+                        OutlinedButton(onClick = {
+                            onChangeOrderStage(OrderStage.REFUNDED)
+                        }) {
+                            Text(text = "Refunded")
+                        }
                     }
                 }
                 Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
@@ -168,6 +241,8 @@ fun OrdersScreenPreview() {
     WazipayTheme {
         OrdersScreen(
             orders = orders,
+            orderStage = OrderStage.All,
+            onChangeOrderStage = {},
             profile = "Buyer"
         )
     }

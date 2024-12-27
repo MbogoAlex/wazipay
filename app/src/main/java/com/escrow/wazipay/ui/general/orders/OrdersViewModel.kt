@@ -39,7 +39,7 @@ class OrdersViewModel(
                     merchantId = null,
                     buyerId = uiState.value.userDetails.userId,
                     courierId = null,
-                    stage = null,
+                    stage = if(uiState.value.orderStage == OrderStage.All) null else uiState.value.orderStage.name,
                     startDate = null,
                     endDate = null
                 )
@@ -79,6 +79,15 @@ class OrdersViewModel(
                 Log.e("getOrdersException_err", e.toString())
             }
         }
+    }
+
+    fun changeOrderStage(orderStage: OrderStage) {
+        _uiState.update {
+            it.copy(
+                orderStage = orderStage
+            )
+        }
+        getOrders()
     }
 
     private fun getUserDetails() {
