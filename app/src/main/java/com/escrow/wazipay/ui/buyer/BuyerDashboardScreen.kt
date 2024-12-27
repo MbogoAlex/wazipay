@@ -41,9 +41,9 @@ import com.escrow.wazipay.data.network.models.order.OrderData
 import com.escrow.wazipay.data.network.models.order.orders
 import com.escrow.wazipay.data.network.models.transaction.TransactionData
 import com.escrow.wazipay.data.network.models.transaction.transactions
-import com.escrow.wazipay.ui.general.InvoiceItemComposable
-import com.escrow.wazipay.ui.general.orders.OrderItemComposable
-import com.escrow.wazipay.ui.general.TransactionCellComposable
+import com.escrow.wazipay.ui.general.invoice.InvoiceItemComposable
+import com.escrow.wazipay.ui.general.order.OrderItemComposable
+import com.escrow.wazipay.ui.general.transaction.TransactionCellComposable
 import com.escrow.wazipay.ui.theme.WazipayTheme
 import com.escrow.wazipay.utils.formatMoneyValue
 import com.escrow.wazipay.utils.screenFontSize

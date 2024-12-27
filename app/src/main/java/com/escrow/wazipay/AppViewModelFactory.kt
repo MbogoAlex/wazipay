@@ -9,7 +9,7 @@ import com.escrow.wazipay.ui.auth.LoginViewModel
 import com.escrow.wazipay.ui.auth.PinViewModel
 import com.escrow.wazipay.ui.auth.RegistrationViewModel
 import com.escrow.wazipay.ui.buyer.BuyerDashboardViewModel
-import com.escrow.wazipay.ui.general.orders.OrdersViewModel
+import com.escrow.wazipay.ui.general.order.OrdersViewModel
 import com.escrow.wazipay.ui.start.SplashViewModel
 
 object AppViewModelFactory {

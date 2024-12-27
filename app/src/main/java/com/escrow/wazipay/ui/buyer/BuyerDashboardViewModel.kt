@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.escrow.wazipay.data.network.repository.ApiRepository
 import com.escrow.wazipay.data.room.repository.DBRepository
-import com.escrow.wazipay.ui.general.orders.LoadOrdersStatus
+import com.escrow.wazipay.ui.general.order.LoadOrdersStatus
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow

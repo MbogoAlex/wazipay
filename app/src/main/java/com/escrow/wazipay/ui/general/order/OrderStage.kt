@@ -1,4 +1,4 @@
-package com.escrow.wazipay.ui.general.orders
+package com.escrow.wazipay.ui.general.order
 
 enum class OrderStage {
     All,

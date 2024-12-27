@@ -29,7 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import com.escrow.wazipay.R
 import com.escrow.wazipay.data.network.models.transaction.transactions
-import com.escrow.wazipay.ui.general.TransactionCellComposable
+import com.escrow.wazipay.ui.general.transaction.TransactionCellComposable
 import com.escrow.wazipay.ui.theme.WazipayTheme
 import com.escrow.wazipay.utils.screenFontSize
 import com.escrow.wazipay.utils.screenHeight

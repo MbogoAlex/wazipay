@@ -1,4 +1,4 @@
-package com.escrow.wazipay.ui.general
+package com.escrow.wazipay.ui.general.transaction
 
 import android.app.DatePickerDialog
 import android.os.Build
@@ -50,10 +50,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.escrow.wazipay.R
-import com.escrow.wazipay.data.network.models.transaction.TransactionData
 import com.escrow.wazipay.data.network.models.transaction.transactions
 import com.escrow.wazipay.ui.theme.WazipayTheme
-import com.escrow.wazipay.utils.formatIsoDateTime
 import com.escrow.wazipay.utils.screenFontSize
 import com.escrow.wazipay.utils.screenHeight
 import com.escrow.wazipay.utils.screenWidth

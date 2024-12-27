@@ -1,4 +1,4 @@
-package com.escrow.wazipay.ui.general.orders
+package com.escrow.wazipay.ui.general.order
 
 import com.escrow.wazipay.data.network.models.order.OrderData
 import com.escrow.wazipay.data.room.models.UserDetails

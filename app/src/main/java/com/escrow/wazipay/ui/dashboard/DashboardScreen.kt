@@ -67,8 +67,8 @@ import com.escrow.wazipay.R
 import com.escrow.wazipay.ui.buyer.BuyerDashboardScreenComposable
 import com.escrow.wazipay.ui.general.NavBarItem
 import com.escrow.wazipay.ui.general.NavItem
-import com.escrow.wazipay.ui.general.orders.OrdersScreenComposable
-import com.escrow.wazipay.ui.general.TransactionsScreenComposable
+import com.escrow.wazipay.ui.general.order.OrdersScreenComposable
+import com.escrow.wazipay.ui.general.transaction.TransactionsScreenComposable
 import com.escrow.wazipay.ui.merchant.MerchantDashboardScreenComposable
 import com.escrow.wazipay.ui.nav.AppNavigation
 import com.escrow.wazipay.ui.theme.WazipayTheme

@@ -1,4 +1,4 @@
-package com.escrow.wazipay.ui.general.orders
+package com.escrow.wazipay.ui.general.order
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -36,9 +36,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.escrow.wazipay.AppViewModelFactory
 import com.escrow.wazipay.data.network.models.order.OrderData
-import com.escrow.wazipay.data.network.models.order.orderData
 import com.escrow.wazipay.data.network.models.order.orders
-import com.escrow.wazipay.ui.buyer.LoadUserStatus
 import com.escrow.wazipay.ui.theme.WazipayTheme
 import com.escrow.wazipay.utils.screenFontSize
 import com.escrow.wazipay.utils.screenHeight
