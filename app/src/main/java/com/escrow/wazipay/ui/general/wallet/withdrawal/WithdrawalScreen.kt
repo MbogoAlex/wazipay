@@ -1,5 +1,6 @@
 package com.escrow.wazipay.ui.general.wallet.withdrawal
 
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -32,6 +33,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -62,6 +64,8 @@ fun WithdrawalScreenComposable(
     navigateToDashboardScreenWithArgs: (profile: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
+
     val viewModel: WithdrawalViewModel = viewModel(factory = AppViewModelFactory.Factory)
     val uiState by viewModel.uiState.collectAsState()
 
@@ -141,7 +145,12 @@ fun WithdrawalScreenComposable(
                 navigateToDashboardScreenWithArgs(uiState.profile ?: "Buyer")
             },
             onWithdraw = {
-                showConfirmDialog = !showConfirmDialog
+                if(uiState.withdrawalAmount.toDouble() > uiState.userWalletData.balance) {
+                    Toast.makeText(context, "Insufficient balance in your wallet", Toast.LENGTH_LONG).show()
+                } else {
+                    showConfirmDialog = !showConfirmDialog
+                }
+
             }
         )
     }
