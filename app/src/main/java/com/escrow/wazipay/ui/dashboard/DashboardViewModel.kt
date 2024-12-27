@@ -25,7 +25,7 @@ class DashboardViewModel(
     init {
         _uiState.update {
             it.copy(
-                profile = savedStateHandle[DashboardScreenDestination.profile]
+                profile = savedStateHandle[DashboardScreenDestination.profile] ?: "Buyer"
             )
         }
     }
