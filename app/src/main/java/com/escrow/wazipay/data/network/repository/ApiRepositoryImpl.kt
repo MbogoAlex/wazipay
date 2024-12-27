@@ -13,6 +13,7 @@ import com.escrow.wazipay.data.network.models.order.OrdersResponseBody
 import com.escrow.wazipay.data.network.models.transaction.TransactionResponseBody
 import com.escrow.wazipay.data.network.models.transaction.TransactionsResponseBody
 import com.escrow.wazipay.data.network.models.user.UserDetailsResponseBody
+import com.escrow.wazipay.data.network.models.wallet.DepositRequestBody
 import com.escrow.wazipay.data.network.models.wallet.UserWalletResponseBody
 import retrofit2.Response
 
@@ -130,5 +131,14 @@ class ApiRepositoryImpl(private val apiService: ApiService): ApiRepository {
         apiService.getTransaction(
             token = "Bearer $token",
             transactionId = transactionId
+        )
+
+    override suspend fun deposit(
+        token: String,
+        depositRequestBody: DepositRequestBody
+    ): Response<UserWalletResponseBody> =
+        apiService.deposit(
+            token = "Bearer $token",
+            depositRequestBody = depositRequestBody
         )
 }

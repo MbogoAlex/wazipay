@@ -17,6 +17,8 @@ import com.escrow.wazipay.ui.auth.RegistrationScreenComposable
 import com.escrow.wazipay.ui.auth.RegistrationScreenDestination
 import com.escrow.wazipay.ui.dashboard.DashboardScreenComposable
 import com.escrow.wazipay.ui.dashboard.DashboardScreenDestination
+import com.escrow.wazipay.ui.general.wallet.DepositScreenComposable
+import com.escrow.wazipay.ui.general.wallet.DepositScreenDestination
 import com.escrow.wazipay.ui.start.SplashScreenComposable
 import com.escrow.wazipay.ui.start.SplashScreenDestination
 
@@ -102,6 +104,44 @@ fun NavigationGraph(
                 onSwitchTheme = onSwitchTheme,
                 navigateToLoginScreenWithArgs = {phoneNumber, pin ->
                     navController.navigate("${LoginScreenDestination.route}/${phoneNumber}/${pin}")
+                },
+                navigateToDepositScreenWithArgs = {
+                    navController.navigate("${DepositScreenDestination.route}/${it}")
+                }
+            )
+        }
+
+        composable(
+            DashboardScreenDestination.routeWithArgs,
+            arguments = listOf(
+                navArgument(DashboardScreenDestination.profile) {
+                    type = NavType.StringType
+                }
+            )
+        ) {
+            DashboardScreenComposable(
+                darkMode = darkMode,
+                onSwitchTheme = onSwitchTheme,
+                navigateToLoginScreenWithArgs = {phoneNumber, pin ->
+                    navController.navigate("${LoginScreenDestination.route}/${phoneNumber}/${pin}")
+                },
+                navigateToDepositScreenWithArgs = {
+                    navController.navigate("${DepositScreenDestination.route}/${it}")
+                }
+            )
+        }
+
+        composable(
+            DepositScreenDestination.routeWithArgs,
+            arguments = listOf(
+                navArgument(DepositScreenDestination.profile) {
+                    type = NavType.StringType
+                }
+            )
+        ) {
+            DepositScreenComposable(
+                navigateToDashboardScreenWithArgs = {
+                    navController.navigate("${DashboardScreenDestination.route}/${it}")
                 }
             )
         }

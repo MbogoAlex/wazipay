@@ -47,6 +47,7 @@ import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
@@ -63,6 +64,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.escrow.wazipay.AppViewModelFactory
 import com.escrow.wazipay.R
 import com.escrow.wazipay.ui.buyer.BuyerDashboardScreenComposable
 import com.escrow.wazipay.ui.general.NavBarItem
@@ -82,6 +85,8 @@ import kotlinx.coroutines.launch
 object DashboardScreenDestination: AppNavigation {
     override val title: String = "Dashboard screen"
     override val route: String = "dashboard-screen"
+    val profile: String = "profile"
+    val routeWithArgs: String = "$route/{$profile}"
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -90,8 +95,12 @@ fun DashboardScreenComposable(
     darkMode: Boolean,
     onSwitchTheme: () -> Unit,
     navigateToLoginScreenWithArgs: (phoneNumber: String, pin: String) -> Unit,
+    navigateToDepositScreenWithArgs: (profile: String) -> Unit,
 ) {
     val context = LocalContext.current
+
+    val viewModel: DashboardViewModel = viewModel(factory = AppViewModelFactory.Factory)
+    val uiState by viewModel.uiState.collectAsState()
 
     BackHandler(onBack = {
         (context as? Activity)?.finish()
@@ -115,12 +124,9 @@ fun DashboardScreenComposable(
         mutableStateOf(false)
     }
 
-    var selectedProfile by rememberSaveable {
-        mutableStateOf("Buyer")
-    }
 
 
-    val navItems = when(selectedProfile) {
+    val navItems = when(uiState.profile) {
         "Buyer" -> listOf(
             NavItem(
                 name = "Home",
@@ -216,10 +222,10 @@ fun DashboardScreenComposable(
             drawerState = drawerState,
             scope = scope,
             profiles = profiles,
-            selectedProfile = selectedProfile,
+            selectedProfile = uiState.profile ?: "Buyer",
             dropdownExpanded = dropdownExpanded,
             onSelectProfile = {
-                selectedProfile = it
+                viewModel.switchProfile(it)
                 selectedTab = NavBarItem.HOME
             },
             filtering = filtering,
@@ -234,7 +240,8 @@ fun DashboardScreenComposable(
             onFilter = {
                 filtering = !filtering
             },
-            navigateToLoginScreenWithArgs = navigateToLoginScreenWithArgs
+            navigateToLoginScreenWithArgs = navigateToLoginScreenWithArgs,
+            navigateToDepositScreenWithArgs = navigateToDepositScreenWithArgs
         )
     }
 }
@@ -257,6 +264,7 @@ fun DashboardScreen(
     onSelectTab: (tab: NavBarItem) -> Unit,
     onFilter: () -> Unit,
     navigateToLoginScreenWithArgs: (phoneNumber: String, pin: String) -> Unit,
+    navigateToDepositScreenWithArgs: (profile: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -436,6 +444,7 @@ fun DashboardScreen(
                 NavBarItem.HOME -> when(selectedProfile) {
                     "Buyer" -> BuyerDashboardScreenComposable(
                         navigateToLoginScreenWithArgs = navigateToLoginScreenWithArgs,
+                        navigateToDepositScreenWithArgs = navigateToDepositScreenWithArgs,
                         modifier = Modifier
 //                            .weight(1f)
                     )
@@ -672,7 +681,8 @@ fun DashboardScreenPreview() {
             onFilter = {
                 filtering = !filtering
             },
-            navigateToLoginScreenWithArgs = {phoneNumber, pin ->  }
+            navigateToLoginScreenWithArgs = {phoneNumber, pin ->  },
+            navigateToDepositScreenWithArgs = {}
         )
     }
 }

@@ -55,6 +55,7 @@ import com.escrow.wazipay.utils.screenWidth
 @Composable
 fun BuyerDashboardScreenComposable(
     navigateToLoginScreenWithArgs: (phoneNumber: String, pin: String) -> Unit,
+    navigateToDepositScreenWithArgs: (profile: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -77,7 +78,8 @@ fun BuyerDashboardScreenComposable(
             username = uiState.userDetails.username ?: "",
             orders = uiState.orders,
             invoices = uiState.invoices,
-            transactions = uiState.transactions
+            transactions = uiState.transactions,
+            navigateToDepositScreenWithArgs = navigateToDepositScreenWithArgs
         )
     }
 }
@@ -91,6 +93,7 @@ fun BuyerDashboardScreen(
     orders: List<OrderData>,
     invoices: List<InvoiceData>,
     transactions: List<TransactionData>,
+    navigateToDepositScreenWithArgs: (profile: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -152,7 +155,9 @@ fun BuyerDashboardScreen(
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Button(onClick = { /*TODO*/ }) {
+                    Button(onClick = {
+                        navigateToDepositScreenWithArgs("Buyer")
+                    }) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
@@ -266,7 +271,8 @@ fun BuyerDashboardScreenPreview() {
             username = "Alex Mbogo",
             orders = orders,
             invoices = invoices,
-            transactions = transactions
+            transactions = transactions,
+            navigateToDepositScreenWithArgs = {}
         )
     }
 }

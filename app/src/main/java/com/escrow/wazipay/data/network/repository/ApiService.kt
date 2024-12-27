@@ -13,6 +13,7 @@ import com.escrow.wazipay.data.network.models.order.OrdersResponseBody
 import com.escrow.wazipay.data.network.models.transaction.TransactionResponseBody
 import com.escrow.wazipay.data.network.models.transaction.TransactionsResponseBody
 import com.escrow.wazipay.data.network.models.user.UserDetailsResponseBody
+import com.escrow.wazipay.data.network.models.wallet.DepositRequestBody
 import com.escrow.wazipay.data.network.models.wallet.UserWalletResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
@@ -120,4 +121,11 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Path("id") transactionId: Int
     ): Response<TransactionResponseBody>
+
+//    Deposit to user wallet
+    @POST("user/deposit")
+    suspend fun deposit(
+        @Header("Authorization") token: String,
+        @Body depositRequestBody: DepositRequestBody,
+    ): Response<UserWalletResponseBody>
 }

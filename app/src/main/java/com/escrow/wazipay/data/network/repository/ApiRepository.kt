@@ -13,6 +13,7 @@ import com.escrow.wazipay.data.network.models.order.OrdersResponseBody
 import com.escrow.wazipay.data.network.models.transaction.TransactionResponseBody
 import com.escrow.wazipay.data.network.models.transaction.TransactionsResponseBody
 import com.escrow.wazipay.data.network.models.user.UserDetailsResponseBody
+import com.escrow.wazipay.data.network.models.wallet.DepositRequestBody
 import com.escrow.wazipay.data.network.models.wallet.UserWalletResponseBody
 import retrofit2.Response
 
@@ -101,4 +102,10 @@ interface ApiRepository {
         token: String,
         transactionId: Int
     ): Response<TransactionResponseBody>
+
+    //    Deposit to user wallet
+    suspend fun deposit(
+        token: String,
+        depositRequestBody: DepositRequestBody,
+    ): Response<UserWalletResponseBody>
 }
