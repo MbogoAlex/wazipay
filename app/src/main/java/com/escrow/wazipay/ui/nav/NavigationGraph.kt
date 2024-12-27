@@ -17,8 +17,8 @@ import com.escrow.wazipay.ui.auth.RegistrationScreenComposable
 import com.escrow.wazipay.ui.auth.RegistrationScreenDestination
 import com.escrow.wazipay.ui.dashboard.DashboardScreenComposable
 import com.escrow.wazipay.ui.dashboard.DashboardScreenDestination
-import com.escrow.wazipay.ui.general.wallet.DepositScreenComposable
-import com.escrow.wazipay.ui.general.wallet.DepositScreenDestination
+import com.escrow.wazipay.ui.general.wallet.deposit.DepositScreenComposable
+import com.escrow.wazipay.ui.general.wallet.deposit.DepositScreenDestination
 import com.escrow.wazipay.ui.start.SplashScreenComposable
 import com.escrow.wazipay.ui.start.SplashScreenDestination
 

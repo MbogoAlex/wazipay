@@ -1,4 +1,4 @@
-package com.escrow.wazipay.ui.general.wallet
+package com.escrow.wazipay.ui.general.wallet.deposit
 
 import com.escrow.wazipay.data.network.models.user.userContactData
 import com.escrow.wazipay.data.network.models.wallet.UserWalletData

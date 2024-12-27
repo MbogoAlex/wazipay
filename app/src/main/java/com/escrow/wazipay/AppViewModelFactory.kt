@@ -11,7 +11,7 @@ import com.escrow.wazipay.ui.auth.RegistrationViewModel
 import com.escrow.wazipay.ui.buyer.BuyerDashboardViewModel
 import com.escrow.wazipay.ui.dashboard.DashboardViewModel
 import com.escrow.wazipay.ui.general.order.OrdersViewModel
-import com.escrow.wazipay.ui.general.wallet.DepositViewModel
+import com.escrow.wazipay.ui.general.wallet.deposit.DepositViewModel
 import com.escrow.wazipay.ui.start.SplashViewModel
 
 object AppViewModelFactory {

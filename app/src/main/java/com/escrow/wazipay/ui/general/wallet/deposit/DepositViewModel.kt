@@ -1,4 +1,4 @@
-package com.escrow.wazipay.ui.general.wallet
+package com.escrow.wazipay.ui.general.wallet.deposit
 
 import android.util.Log
 import androidx.lifecycle.SavedStateHandle

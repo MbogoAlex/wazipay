@@ -2,7 +2,7 @@ package com.escrow.wazipay.ui.dashboard
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import com.escrow.wazipay.ui.general.wallet.DepositUiData
+import com.escrow.wazipay.ui.general.wallet.deposit.DepositUiData
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
