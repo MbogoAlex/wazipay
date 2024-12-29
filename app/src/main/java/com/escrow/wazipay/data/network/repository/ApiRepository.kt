@@ -1,5 +1,6 @@
 package com.escrow.wazipay.data.network.repository
 
+import com.escrow.wazipay.data.network.models.business.BusinessesResponseBody
 import com.escrow.wazipay.data.network.models.common.LoginRequestBody
 import com.escrow.wazipay.data.network.models.common.LoginResponseBody
 import com.escrow.wazipay.data.network.models.common.RegistrationRequestBody
@@ -115,4 +116,14 @@ interface ApiRepository {
         token: String,
         withdrawalRequestBody: WithdrawalRequestBody
     ): Response<UserWalletResponseBody>
+
+    //    Get businesses
+    suspend fun getBusinesses(
+        token: String,
+        query: String?,
+        ownerId: Int?,
+        archived: Boolean?,
+        startDate: String?,
+        endDate: String?
+    ): Response<BusinessesResponseBody>
 }

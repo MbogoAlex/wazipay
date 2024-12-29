@@ -1,11 +1,13 @@
 package com.escrow.wazipay.ui.general.business
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -17,12 +19,16 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.escrow.wazipay.AppViewModelFactory
 import com.escrow.wazipay.R
 import com.escrow.wazipay.data.network.models.business.BusinessData
 import com.escrow.wazipay.data.network.models.business.businesses
@@ -32,14 +38,27 @@ import com.escrow.wazipay.utils.screenHeight
 import com.escrow.wazipay.utils.screenWidth
 
 @Composable
-fun BusinessScreenComposable(
+fun BusinessesScreenComposable(
     modifier: Modifier = Modifier
 ) {
+    val viewModel: BusinessViewModel = viewModel(factory = AppViewModelFactory.Factory)
+    val uiState by viewModel.uiState.collectAsState()
 
+    Box(
+        modifier = Modifier
+            .safeDrawingPadding()
+    ) {
+        BusinessesScreen(
+            userId = uiState.userDetails.userId,
+            businesses = uiState.businesses
+        )
+    }
 }
 
 @Composable
-fun BusinessScreen(
+fun BusinessesScreen(
+    userId: Int,
+    businesses: List<BusinessData>,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -53,6 +72,7 @@ fun BusinessScreen(
         LazyColumn {
             items(businesses) {
                 BusinessCellComposable(
+                    userId = 1,
                     businessData = it
                 )
                 HorizontalDivider()
@@ -63,6 +83,7 @@ fun BusinessScreen(
 
 @Composable
 fun BusinessCellComposable(
+    userId: Int,
     businessData: BusinessData,
     modifier: Modifier = Modifier
 ) {
@@ -78,7 +99,7 @@ fun BusinessCellComposable(
                 .padding(screenWidth(x = 8.0))
                 .weight(1f)
         ) {
-            if(businessData.owner.id == 1) {
+            if(businessData.owner.id == userId) {
                 Text(
                     text = "My Business",
                     fontSize = screenFontSize(x = 14.0).sp,
@@ -141,6 +162,9 @@ fun BusinessCellComposable(
 @Composable
 fun BusinessScreenPreview() {
     WazipayTheme {
-        BusinessScreen()
+        BusinessesScreen(
+            userId = 1,
+            businesses = businesses
+        )
     }
 }

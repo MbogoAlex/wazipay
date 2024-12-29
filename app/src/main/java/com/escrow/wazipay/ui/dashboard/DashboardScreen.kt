@@ -70,6 +70,7 @@ import com.escrow.wazipay.R
 import com.escrow.wazipay.ui.buyer.BuyerDashboardScreenComposable
 import com.escrow.wazipay.ui.general.NavBarItem
 import com.escrow.wazipay.ui.general.NavItem
+import com.escrow.wazipay.ui.general.business.BusinessesScreenComposable
 import com.escrow.wazipay.ui.general.order.OrdersScreenComposable
 import com.escrow.wazipay.ui.general.transaction.TransactionsScreenComposable
 import com.escrow.wazipay.ui.merchant.MerchantDashboardScreenComposable
@@ -490,16 +491,7 @@ fun DashboardScreen(
                     }
                 }
 
-                NavBarItem.BUSINESSES -> {
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier
-                            .fillMaxSize()
-//                            .weight(1f)
-                    ) {
-                        Text(text = "Businesses")
-                    }
-                }
+                NavBarItem.BUSINESSES -> BusinessesScreenComposable()
                 NavBarItem.INVOICES -> {
                     Box(
                         contentAlignment = Alignment.Center,

@@ -1,5 +1,6 @@
 package com.escrow.wazipay.data.network.repository
 
+import com.escrow.wazipay.data.network.models.business.BusinessesResponseBody
 import com.escrow.wazipay.data.network.models.common.LoginRequestBody
 import com.escrow.wazipay.data.network.models.common.LoginResponseBody
 import com.escrow.wazipay.data.network.models.common.RegistrationRequestBody
@@ -150,5 +151,22 @@ class ApiRepositoryImpl(private val apiService: ApiService): ApiRepository {
         apiService.withdraw(
             token = "Bearer $token",
             withdrawalRequestBody = withdrawalRequestBody
+        )
+
+    override suspend fun getBusinesses(
+        token: String,
+        query: String?,
+        ownerId: Int?,
+        archived: Boolean?,
+        startDate: String?,
+        endDate: String?
+    ): Response<BusinessesResponseBody> =
+        apiService.getBusinesses(
+            token = "Bearer $token",
+            query = query,
+            ownerId = ownerId,
+            archived = archived,
+            startDate = startDate,
+            endDate = endDate
         )
 }
