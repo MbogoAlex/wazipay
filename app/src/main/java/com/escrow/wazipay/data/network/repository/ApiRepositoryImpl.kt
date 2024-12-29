@@ -10,6 +10,8 @@ import com.escrow.wazipay.data.network.models.common.SetPinRequestBody
 import com.escrow.wazipay.data.network.models.common.SetPinResponseBody
 import com.escrow.wazipay.data.network.models.invoice.InvoiceResponseBody
 import com.escrow.wazipay.data.network.models.invoice.InvoicesResponseBody
+import com.escrow.wazipay.data.network.models.order.OrderCreationRequestBody
+import com.escrow.wazipay.data.network.models.order.OrderCreationResponseBody
 import com.escrow.wazipay.data.network.models.order.OrderResponseBody
 import com.escrow.wazipay.data.network.models.order.OrdersResponseBody
 import com.escrow.wazipay.data.network.models.transaction.TransactionResponseBody
@@ -180,5 +182,14 @@ class ApiRepositoryImpl(private val apiService: ApiService): ApiRepository {
         apiService.getBusiness(
             token = "Bearer $token",
             businessId = businessId
+        )
+
+    override suspend fun createOrder(
+        token: String,
+        orderCreationRequestBody: OrderCreationRequestBody
+    ): Response<OrderCreationResponseBody> =
+        apiService.createOrder(
+            token = "Bearer $token",
+            orderCreationRequestBody = orderCreationRequestBody
         )
 }
