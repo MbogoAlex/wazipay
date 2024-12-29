@@ -107,7 +107,7 @@ fun OrdersScreen(
                     )
             ) {
                 Text(
-                    text = if(profile == "Buyer") "My Orders" else if(profile == "Merchant") "Created Orders" else "My Orders",
+                    text = if(profile == "Buyer") "My Orders" else if(profile == "Merchant") "Received Orders" else "My Orders",
                     fontWeight = FontWeight.Bold,
                     fontSize = screenFontSize(x = 16.0).sp
                 )

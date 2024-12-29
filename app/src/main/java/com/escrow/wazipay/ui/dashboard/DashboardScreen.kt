@@ -491,7 +491,9 @@ fun DashboardScreen(
                     }
                 }
 
-                NavBarItem.BUSINESSES -> BusinessesScreenComposable()
+                NavBarItem.BUSINESSES -> BusinessesScreenComposable(
+                    profile = selectedProfile
+                )
                 NavBarItem.INVOICES -> {
                     Box(
                         contentAlignment = Alignment.Center,

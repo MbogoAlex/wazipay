@@ -21,12 +21,21 @@ class BusinessViewModel(
     private val _uiState = MutableStateFlow(BusinessUiData())
     val uiState: StateFlow<BusinessUiData> = _uiState.asStateFlow()
 
+    fun updateSearchQuery(query: String?) {
+        _uiState.update {
+            it.copy(
+                searchQuery = query
+            )
+        }
+        getBusinesses()
+    }
+
     private fun getBusinesses() {
         viewModelScope.launch {
             try {
                val response = apiRepository.getBusinesses(
                    token = uiState.value.userDetails.token!!,
-                   query = null,
+                   query = uiState.value.searchQuery,
                    ownerId = null,
                    archived = null,
                    startDate = null,
