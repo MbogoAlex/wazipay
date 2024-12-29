@@ -30,7 +30,7 @@ class WithdrawalViewModel(
     fun updatePhoneNumber(phone: String) {
         _uiState.update {
             it.copy(
-                phoneNumber = phone
+                phoneNumber = phone.ifEmpty { uiState.value.userDetails.phoneNumber ?: "" }
             )
         }
     }
@@ -38,7 +38,7 @@ class WithdrawalViewModel(
     fun updateWithdrawalAmount(amount: String) {
         _uiState.update {
             it.copy(
-                withdrawalAmount = amount.ifEmpty { uiState.value.userDetails.phoneNumber ?: "" }
+                withdrawalAmount = amount
             )
         }
     }
