@@ -1,5 +1,6 @@
 package com.escrow.wazipay.data.network.repository
 
+import com.escrow.wazipay.data.network.models.business.BusinessResponseBody
 import com.escrow.wazipay.data.network.models.business.BusinessesResponseBody
 import com.escrow.wazipay.data.network.models.common.LoginRequestBody
 import com.escrow.wazipay.data.network.models.common.LoginResponseBody
@@ -168,5 +169,14 @@ class ApiRepositoryImpl(private val apiService: ApiService): ApiRepository {
             archived = archived,
             startDate = startDate,
             endDate = endDate
+        )
+
+    override suspend fun getBusiness(
+        token: String,
+        businessId: Int
+    ): Response<BusinessResponseBody> =
+        apiService.getBusiness(
+            token = "Bearer $token",
+            businessId = businessId
         )
 }

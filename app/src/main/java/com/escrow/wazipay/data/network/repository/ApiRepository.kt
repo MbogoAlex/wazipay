@@ -1,5 +1,6 @@
 package com.escrow.wazipay.data.network.repository
 
+import com.escrow.wazipay.data.network.models.business.BusinessResponseBody
 import com.escrow.wazipay.data.network.models.business.BusinessesResponseBody
 import com.escrow.wazipay.data.network.models.common.LoginRequestBody
 import com.escrow.wazipay.data.network.models.common.LoginResponseBody
@@ -126,4 +127,10 @@ interface ApiRepository {
         startDate: String?,
         endDate: String?
     ): Response<BusinessesResponseBody>
+
+    //    Get business
+    suspend fun getBusiness(
+        token: String,
+        businessId: Int
+    ): Response<BusinessResponseBody>
 }

@@ -54,6 +54,7 @@ import com.escrow.wazipay.utils.screenWidth
 @Composable
 fun BusinessesScreenComposable(
     profile: String,
+    navigateToBusinessDetailsScreen: (businessId: Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val viewModel: BusinessViewModel = viewModel(factory = AppViewModelFactory.Factory)
@@ -71,7 +72,8 @@ fun BusinessesScreenComposable(
                 viewModel.updateSearchQuery(null)
             },
             userId = uiState.userDetails.userId,
-            businesses = uiState.businesses
+            businesses = uiState.businesses,
+            navigateToBusinessDetailsScreen = navigateToBusinessDetailsScreen
         )
     }
 }
@@ -84,6 +86,7 @@ fun BusinessesScreen(
     onClearSearchQuery: () -> Unit,
     userId: Int,
     businesses: List<BusinessData>,
+    navigateToBusinessDetailsScreen: (businessId: Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -154,7 +157,8 @@ fun BusinessesScreen(
             items(businesses) {
                 BusinessCellComposable(
                     userId = userId,
-                    businessData = it
+                    businessData = it,
+                    navigateToBusinessDetailsScreen = navigateToBusinessDetailsScreen
                 )
                 HorizontalDivider()
             }
@@ -166,6 +170,7 @@ fun BusinessesScreen(
 fun BusinessCellComposable(
     userId: Int,
     businessData: BusinessData,
+    navigateToBusinessDetailsScreen: (businessId: Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -174,6 +179,9 @@ fun BusinessCellComposable(
             .padding(
                 vertical = screenHeight(x = 8.0)
             )
+            .clickable {
+                navigateToBusinessDetailsScreen(businessData.id)
+            }
     ) {
         Column(
             modifier = Modifier
@@ -229,7 +237,7 @@ fun BusinessCellComposable(
             }
         }
         IconButton(
-            onClick = { /*TODO*/ },
+            onClick = { navigateToBusinessDetailsScreen(businessData.id) },
         ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
@@ -249,7 +257,8 @@ fun BusinessScreenPreview() {
             onClearSearchQuery = {},
             onChangeSearchQuery = {},
             userId = 1,
-            businesses = businesses
+            businesses = businesses,
+            navigateToBusinessDetailsScreen = {}
         )
     }
 }
