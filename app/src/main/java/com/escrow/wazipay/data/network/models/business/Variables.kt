@@ -1,6 +1,7 @@
 package com.escrow.wazipay.data.network.models.business
 
 import com.escrow.wazipay.data.network.models.order.userContactData
+import com.escrow.wazipay.data.network.models.user.UserContactData
 
 val businessData = BusinessData(
     id = 1,
@@ -10,7 +11,12 @@ val businessData = BusinessData(
     createdAt = "2024-12-26T08:57:48.085977",
     archived = false,
     archivedAt = null,
-    owner = userContactData
+    owner = UserContactData(
+        id = 1,
+        username = "Alex Mbogo",
+        phoneNumber = "0794649026",
+        email = "alex@gmail.com"
+    )
 )
 
 val businesses = List(10) {index ->
@@ -22,6 +28,11 @@ val businesses = List(10) {index ->
         createdAt = "2024-12-26T08:57:48.085977",
         archived = false,
         archivedAt = null,
-        owner = userContactData
+        owner = UserContactData(
+            id = 1,
+            username = "Alex Mbogo",
+            phoneNumber = "0794649026",
+            email = "alex@gmail.com"
+        )
     )
 }
