@@ -200,7 +200,7 @@ fun DepositScreen(
             leadingIcon = R.drawable.money,
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Done,
-                keyboardType = KeyboardType.Number
+                keyboardType = KeyboardType.NumberPassword
             ),
             onValueChange = onChangeAmount,
             modifier = Modifier

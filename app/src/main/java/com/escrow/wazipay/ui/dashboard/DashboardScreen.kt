@@ -98,6 +98,7 @@ fun DashboardScreenComposable(
     navigateToLoginScreenWithArgs: (phoneNumber: String, pin: String) -> Unit,
     navigateToDepositScreenWithArgs: (profile: String) -> Unit,
     navigateToWithdrawalScreenWithArgs: (profile: String) -> Unit,
+    navigateToBusinessDetailsScreen: (businessId: String) -> Unit,
 ) {
     val context = LocalContext.current
 
@@ -244,7 +245,8 @@ fun DashboardScreenComposable(
             },
             navigateToLoginScreenWithArgs = navigateToLoginScreenWithArgs,
             navigateToDepositScreenWithArgs = navigateToDepositScreenWithArgs,
-            navigateToWithdrawalScreenWithArgs = navigateToWithdrawalScreenWithArgs
+            navigateToWithdrawalScreenWithArgs = navigateToWithdrawalScreenWithArgs,
+            navigateToBusinessDetailsScreen = navigateToBusinessDetailsScreen
         )
     }
 }
@@ -269,6 +271,7 @@ fun DashboardScreen(
     navigateToLoginScreenWithArgs: (phoneNumber: String, pin: String) -> Unit,
     navigateToDepositScreenWithArgs: (profile: String) -> Unit,
     navigateToWithdrawalScreenWithArgs: (profile: String) -> Unit,
+    navigateToBusinessDetailsScreen: (businessId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -492,7 +495,8 @@ fun DashboardScreen(
                 }
 
                 NavBarItem.BUSINESSES -> BusinessesScreenComposable(
-                    profile = selectedProfile
+                    profile = selectedProfile,
+                    navigateToBusinessDetailsScreen = navigateToBusinessDetailsScreen
                 )
                 NavBarItem.INVOICES -> {
                     Box(
@@ -681,7 +685,8 @@ fun DashboardScreenPreview() {
             },
             navigateToLoginScreenWithArgs = {phoneNumber, pin ->  },
             navigateToDepositScreenWithArgs = {},
-            navigateToWithdrawalScreenWithArgs = {}
+            navigateToWithdrawalScreenWithArgs = {},
+            navigateToBusinessDetailsScreen = {}
         )
     }
 }

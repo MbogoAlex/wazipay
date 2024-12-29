@@ -7,6 +7,7 @@ import com.escrow.wazipay.data.room.models.UserDetails
 data class BusinessDetailsUiData(
     val userDetails: UserDetails = UserDetails(),
     val businessData: BusinessData = businesses[0],
+    val businessId: String? = null,
     val unauthorized: Boolean = false,
     val loadBusinessStatus: LoadBusinessStatus = LoadBusinessStatus.INITIAL
 )

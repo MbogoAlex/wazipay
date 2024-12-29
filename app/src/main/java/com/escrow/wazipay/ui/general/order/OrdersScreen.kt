@@ -37,10 +37,18 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.escrow.wazipay.AppViewModelFactory
 import com.escrow.wazipay.data.network.models.order.OrderData
 import com.escrow.wazipay.data.network.models.order.orders
+import com.escrow.wazipay.ui.nav.AppNavigation
 import com.escrow.wazipay.ui.theme.WazipayTheme
 import com.escrow.wazipay.utils.screenFontSize
 import com.escrow.wazipay.utils.screenHeight
 import com.escrow.wazipay.utils.screenWidth
+
+object OrdersScreenDestination: AppNavigation {
+    override val title: String = "Orders screen"
+    override val route: String = "orders-screen"
+    val businessId: String = "businessId"
+    val routeWithArgs: String = "$route/{$businessId}"
+}
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable

@@ -213,7 +213,7 @@ fun WithdrawalScreen(
             leadingIcon = R.drawable.money,
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Done,
-                keyboardType = KeyboardType.Number
+                keyboardType = KeyboardType.NumberPassword
             ),
             onValueChange = onChangeWithdrawalAmount,
             modifier = Modifier

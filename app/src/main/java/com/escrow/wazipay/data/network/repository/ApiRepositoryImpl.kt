@@ -53,6 +53,7 @@ class ApiRepositoryImpl(private val apiService: ApiService): ApiRepository {
         merchantId: Int?,
         buyerId: Int?,
         courierId: Int?,
+        businessId: Int?,
         stage: String?,
         startDate: String?,
         endDate: String?
@@ -64,6 +65,7 @@ class ApiRepositoryImpl(private val apiService: ApiService): ApiRepository {
             merchantId = merchantId,
             buyerId = buyerId,
             courierId = courierId,
+            businessId = businessId,
             stage = stage,
             startDate = startDate,
             endDate = endDate

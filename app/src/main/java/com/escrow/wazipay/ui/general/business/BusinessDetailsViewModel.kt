@@ -1,4 +1,4 @@
-package com.escrow.wazipay.ui.general.order
+package com.escrow.wazipay.ui.general.business
 
 import android.util.Log
 import androidx.lifecycle.SavedStateHandle
@@ -15,43 +15,27 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class OrdersViewModel(
+class BusinessDetailsViewModel(
     private val apiRepository: ApiRepository,
     private val dbRepository: DBRepository,
-    private val savedStateHandle: SavedStateHandle
+    private val savedStateHandle: SavedStateHandle,
 ): ViewModel() {
-    private val _uiState = MutableStateFlow(OrdersUiData())
-    val uiState: StateFlow<OrdersUiData> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(BusinessDetailsUiData())
+    val uiState: StateFlow<BusinessDetailsUiData> = _uiState.asStateFlow()
 
-    private fun getOrders() {
-
-        _uiState.update {
-            it.copy(
-                loadOrdersStatus = LoadOrdersStatus.INITIAL
-            )
-        }
-
-        Log.d("fetchingOrders", uiState.value.userDetails.toString())
+    private fun getBusiness() {
         viewModelScope.launch {
             try {
-                val response = apiRepository.getOrders(
+                val response = apiRepository.getBusiness(
                     token = uiState.value.userDetails.token!!,
-                    query = null,
-                    code = null,
-                    merchantId = null,
-                    buyerId = uiState.value.userDetails.userId,
-                    courierId = null,
-                    businessId = if(uiState.value.businessId != null) uiState.value.businessId!!.toInt() else null,
-                    stage = if(uiState.value.orderStage == OrderStage.All) null else uiState.value.orderStage.name,
-                    startDate = null,
-                    endDate = null
+                    businessId = if(uiState.value.businessId != null) uiState.value.businessId!!.toInt() else 1
                 )
 
                 if(response.isSuccessful) {
                     _uiState.update {
                         it.copy(
-                            orders = response.body()?.data!!,
-                            loadOrdersStatus = LoadOrdersStatus.SUCCESS
+                            businessData = response.body()?.data!!,
+                            loadBusinessStatus = LoadBusinessStatus.SUCCESS
                         )
                     }
                 } else {
@@ -62,35 +46,22 @@ class OrdersViewModel(
                             )
                         }
                     }
-
                     _uiState.update {
                         it.copy(
-                            loadOrdersStatus = LoadOrdersStatus.FAIL
+                            loadBusinessStatus = LoadBusinessStatus.FAIL
                         )
                     }
-
-                    Log.e("getOrdersResponse_err", response.toString())
+                    Log.e("loadBusinessResponse_err", response.toString())
                 }
-
             } catch (e: Exception) {
                 _uiState.update {
                     it.copy(
-                        loadOrdersStatus = LoadOrdersStatus.FAIL
+                        loadBusinessStatus = LoadBusinessStatus.FAIL
                     )
                 }
-
-                Log.e("getOrdersException_err", e.toString())
+                Log.e("loadBusinessException_err", e.toString())
             }
         }
-    }
-
-    fun changeOrderStage(orderStage: OrderStage) {
-        _uiState.update {
-            it.copy(
-                orderStage = orderStage
-            )
-        }
-        getOrders()
     }
 
     private fun getUserDetails() {
@@ -107,20 +78,19 @@ class OrdersViewModel(
         }
     }
 
-    private fun getOrdersScreenData() {
+    private fun getBusinessScreenData() {
         viewModelScope.launch {
             while (uiState.value.userDetails.userId == 0) {
                 delay(1000)
             }
-
-            getOrders()
+            getBusiness()
         }
     }
 
     fun resetStatus() {
         _uiState.update {
             it.copy(
-                loadOrdersStatus = LoadOrdersStatus.INITIAL
+                loadBusinessStatus = LoadBusinessStatus.INITIAL
             )
         }
     }
@@ -128,10 +98,10 @@ class OrdersViewModel(
     init {
         _uiState.update {
             it.copy(
-                businessId = savedStateHandle[OrdersScreenDestination.businessId]
+                businessId = savedStateHandle[BusinessDetailsScreenDestination.businessId]
             )
         }
         getUserDetails()
-        getOrdersScreenData()
+        getBusinessScreenData()
     }
 }

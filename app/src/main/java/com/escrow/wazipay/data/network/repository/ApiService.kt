@@ -69,6 +69,7 @@ interface ApiService {
         @Query("merchantId") merchantId: Int?,
         @Query("buyerId") buyerId: Int?,
         @Query("courierId") courierId: Int?,
+        @Query("businessId") businessId: Int?,
         @Query("stage") stage: String?,
         @Query("startDate") startDate: String?,
         @Query("endDate") endDate: String?

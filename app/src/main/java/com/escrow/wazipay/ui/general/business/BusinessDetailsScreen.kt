@@ -1,11 +1,13 @@
 package com.escrow.wazipay.ui.general.business
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
@@ -14,11 +16,15 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.escrow.wazipay.AppViewModelFactory
 import com.escrow.wazipay.data.network.models.business.BusinessData
 import com.escrow.wazipay.data.network.models.business.businessData
 import com.escrow.wazipay.ui.nav.AppNavigation
@@ -36,20 +42,34 @@ object BusinessDetailsScreenDestination: AppNavigation {
 
 @Composable
 fun BusinessDetailsScreenComposable(
-    navigateToOrdersScreenWithArgs: (userId: Int, businessId: Int) -> Unit,
-    navigateToCreateOrderScreenWithArgs: (userId: Int, businessId: Int) -> Unit,
+    navigateToOrdersScreenWithArgs: (businessId: String) -> Unit,
+    navigateToCreateOrderScreenWithArgs: (businessId: String) -> Unit,
     navigateToPreviousScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val viewModel: BusinessDetailsViewModel = viewModel(factory = AppViewModelFactory.Factory)
+    val uiState by viewModel.uiState.collectAsState()
 
+    Box(
+        modifier = Modifier
+            .safeDrawingPadding()
+    ) {
+        BusinessDetailsScreen(
+            userId = uiState.userDetails.userId,
+            businessData = uiState.businessData,
+            navigateToOrdersScreenWithArgs = navigateToOrdersScreenWithArgs,
+            navigateToCreateOrderScreenWithArgs = navigateToCreateOrderScreenWithArgs,
+            navigateToPreviousScreen = navigateToPreviousScreen
+        )
+    }
 }
 
 @Composable
 fun BusinessDetailsScreen(
     userId: Int,
     businessData: BusinessData,
-    navigateToOrdersScreenWithArgs: (userId: Int, businessId: Int) -> Unit,
-    navigateToCreateOrderScreenWithArgs: (userId: Int, businessId: Int) -> Unit,
+    navigateToOrdersScreenWithArgs: (businessId: String) -> Unit,
+    navigateToCreateOrderScreenWithArgs: (businessId: String) -> Unit,
     navigateToPreviousScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -126,7 +146,7 @@ fun BusinessDetailsScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             OutlinedButton(onClick = { 
-                navigateToOrdersScreenWithArgs(userId, businessData.id)
+                navigateToOrdersScreenWithArgs(businessData.id.toString())
             }) {
                 Text(
                     text = "My Orders",
@@ -135,7 +155,7 @@ fun BusinessDetailsScreen(
             }
             Spacer(modifier = Modifier.weight(1f))
             Button(onClick = {
-                navigateToCreateOrderScreenWithArgs(userId, businessData.id)
+                navigateToCreateOrderScreenWithArgs(businessData.id.toString())
             }) {
                 Text(
                     text = "Create New Order",
@@ -153,8 +173,8 @@ fun BusinessDetailsScreenPreview() {
         BusinessDetailsScreen(
             userId = 1,
             businessData = businessData,
-            navigateToOrdersScreenWithArgs = {userId, businessId ->  },
-            navigateToCreateOrderScreenWithArgs = {userId, businessId ->  },
+            navigateToOrdersScreenWithArgs = {businessId ->  },
+            navigateToCreateOrderScreenWithArgs = {businessId ->  },
             navigateToPreviousScreen = { /*TODO*/ }
         )
     }

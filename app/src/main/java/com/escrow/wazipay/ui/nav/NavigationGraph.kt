@@ -17,6 +17,8 @@ import com.escrow.wazipay.ui.auth.RegistrationScreenComposable
 import com.escrow.wazipay.ui.auth.RegistrationScreenDestination
 import com.escrow.wazipay.ui.dashboard.DashboardScreenComposable
 import com.escrow.wazipay.ui.dashboard.DashboardScreenDestination
+import com.escrow.wazipay.ui.general.business.BusinessDetailsScreenComposable
+import com.escrow.wazipay.ui.general.business.BusinessDetailsScreenDestination
 import com.escrow.wazipay.ui.general.wallet.deposit.DepositScreenComposable
 import com.escrow.wazipay.ui.general.wallet.deposit.DepositScreenDestination
 import com.escrow.wazipay.ui.general.wallet.withdrawal.WithdrawalScreenComposable
@@ -112,6 +114,9 @@ fun NavigationGraph(
                 },
                 navigateToWithdrawalScreenWithArgs = {
                     navController.navigate("${WithdrawalScreenDestination.route}/${it}")
+                },
+                navigateToBusinessDetailsScreen = {
+                    navController.navigate("${BusinessDetailsScreenDestination.route}/${it}")
                 }
             )
         }
@@ -135,6 +140,9 @@ fun NavigationGraph(
                 },
                 navigateToWithdrawalScreenWithArgs = {
                     navController.navigate("${WithdrawalScreenDestination.route}/${it}")
+                },
+                navigateToBusinessDetailsScreen = {
+                    navController.navigate("${BusinessDetailsScreenDestination.route}/${it}")
                 }
             )
         }
@@ -167,6 +175,21 @@ fun NavigationGraph(
                     navController.navigate("${DashboardScreenDestination.route}/${it}")
 
                 }
+            )
+        }
+
+        composable(
+            BusinessDetailsScreenDestination.routeWithArgs,
+            arguments = listOf(
+                navArgument(BusinessDetailsScreenDestination.businessId) {
+                    type = NavType.StringType
+                }
+            )
+        ) {
+            BusinessDetailsScreenComposable(
+                navigateToOrdersScreenWithArgs = {},
+                navigateToCreateOrderScreenWithArgs = {},
+                navigateToPreviousScreen = { /*TODO*/ }
             )
         }
     }

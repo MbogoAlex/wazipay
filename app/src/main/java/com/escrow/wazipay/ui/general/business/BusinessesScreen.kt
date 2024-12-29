@@ -19,7 +19,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.HorizontalDivider
@@ -54,7 +53,7 @@ import com.escrow.wazipay.utils.screenWidth
 @Composable
 fun BusinessesScreenComposable(
     profile: String,
-    navigateToBusinessDetailsScreen: (businessId: Int) -> Unit,
+    navigateToBusinessDetailsScreen: (businessId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val viewModel: BusinessViewModel = viewModel(factory = AppViewModelFactory.Factory)
@@ -86,7 +85,7 @@ fun BusinessesScreen(
     onClearSearchQuery: () -> Unit,
     userId: Int,
     businesses: List<BusinessData>,
-    navigateToBusinessDetailsScreen: (businessId: Int) -> Unit,
+    navigateToBusinessDetailsScreen: (businessId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -162,87 +161,6 @@ fun BusinessesScreen(
                 )
                 HorizontalDivider()
             }
-        }
-    }
-}
-
-@Composable
-fun BusinessCellComposable(
-    userId: Int,
-    businessData: BusinessData,
-    navigateToBusinessDetailsScreen: (businessId: Int) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .padding(
-                vertical = screenHeight(x = 8.0)
-            )
-            .clickable {
-                navigateToBusinessDetailsScreen(businessData.id)
-            }
-    ) {
-        Column(
-            modifier = Modifier
-                .padding(screenWidth(x = 8.0))
-                .weight(1f)
-        ) {
-            if(businessData.owner.id == userId) {
-                Text(
-                    text = "My Business",
-                    fontSize = screenFontSize(x = 14.0).sp,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
-                )
-                Spacer(modifier = Modifier.height(screenWidth(x = 4.0)))
-            }
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.shop),
-                    contentDescription = null
-                )
-                Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
-                Text(
-                    text = businessData.name,
-                    fontSize = screenFontSize(x = 14.0).sp,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-            Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
-            Text(
-                text = businessData.description,
-                fontSize = screenFontSize(x = 14.0).sp,
-                maxLines = 2
-            )
-            Spacer(modifier = Modifier.height(screenHeight(x = 4.0)))
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.person),
-                    contentDescription = null
-                )
-                Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
-                Text(text = businessData.owner.username)
-                Spacer(modifier = Modifier.width(screenWidth(x = 8.0)))
-                Icon(
-                    painter = painterResource(id = R.drawable.phone),
-                    contentDescription = null
-                )
-                Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
-                Text(text = businessData.owner.phoneNumber)
-            }
-        }
-        IconButton(
-            onClick = { navigateToBusinessDetailsScreen(businessData.id) },
-        ) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                contentDescription = "Business details"
-            )
         }
     }
 }

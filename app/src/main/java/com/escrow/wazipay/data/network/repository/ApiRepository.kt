@@ -55,6 +55,7 @@ interface ApiRepository {
         merchantId: Int?,
         buyerId: Int?,
         courierId: Int?,
+        businessId: Int?,
         stage: String?,
         startDate: String?,
         endDate: String?

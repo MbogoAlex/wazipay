@@ -96,6 +96,7 @@ class BuyerDashboardViewModel(
                    merchantId = null,
                    buyerId = uiState.value.userDetails.userId,
                    courierId = null,
+                   businessId = null,
                    stage = null,
                    startDate = null,
                    endDate = null
