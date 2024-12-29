@@ -43,6 +43,7 @@ import com.escrow.wazipay.AppViewModelFactory
 import com.escrow.wazipay.R
 import com.escrow.wazipay.data.network.models.business.BusinessData
 import com.escrow.wazipay.data.network.models.business.businessData
+import com.escrow.wazipay.ui.general.NavBarItem
 import com.escrow.wazipay.ui.nav.AppNavigation
 import com.escrow.wazipay.ui.theme.WazipayTheme
 import com.escrow.wazipay.utils.formatMoneyValue
@@ -74,6 +75,10 @@ fun OrderCreationScreenComposable(
         mutableStateOf(false)
     }
 
+    if(uiState.orderCreationStatus == OrderCreationStatus.SUCCESS) {
+        showSuccessDialog = true
+    }
+
     if(showConfirmDialog) {
         OrderConfirmationDialog(
             onConfirm = {
@@ -91,10 +96,12 @@ fun OrderCreationScreenComposable(
     if(showSuccessDialog) {
         OrderCreationSuccessDialog(
             onConfirm = {
-                navigateToDashboardWithChildScreen("Buyer", "Orders")
+                viewModel.resetStatus()
+                navigateToDashboardWithChildScreen("Buyer", NavBarItem.ORDERS.name)
             },
             onDismiss = {
-                navigateToDashboardWithChildScreen("Buyer", "Orders")
+                viewModel.resetStatus()
+                navigateToDashboardWithChildScreen("Buyer", NavBarItem.ORDERS.name)
             },
             order = uiState.productName,
             cost = formatMoneyValue(uiState.amount.toDouble())

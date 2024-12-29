@@ -1,6 +1,7 @@
 package com.escrow.wazipay.ui.nav
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -19,6 +20,10 @@ import com.escrow.wazipay.ui.dashboard.DashboardScreenComposable
 import com.escrow.wazipay.ui.dashboard.DashboardScreenDestination
 import com.escrow.wazipay.ui.general.business.BusinessDetailsScreenComposable
 import com.escrow.wazipay.ui.general.business.BusinessDetailsScreenDestination
+import com.escrow.wazipay.ui.general.order.OrderCreationScreenComposable
+import com.escrow.wazipay.ui.general.order.OrderCreationScreenDestination
+import com.escrow.wazipay.ui.general.order.OrdersScreenComposable
+import com.escrow.wazipay.ui.general.order.OrdersScreenDestination
 import com.escrow.wazipay.ui.general.wallet.deposit.DepositScreenComposable
 import com.escrow.wazipay.ui.general.wallet.deposit.DepositScreenDestination
 import com.escrow.wazipay.ui.general.wallet.withdrawal.WithdrawalScreenComposable
@@ -187,9 +192,76 @@ fun NavigationGraph(
             )
         ) {
             BusinessDetailsScreenComposable(
-                navigateToOrdersScreenWithArgs = {},
-                navigateToCreateOrderScreenWithArgs = {},
-                navigateToPreviousScreen = { /*TODO*/ }
+                navigateToOrdersScreenWithArgs = {
+                    navController.navigate("${OrdersScreenDestination.route}/${it}")
+                },
+                navigateToCreateOrderScreenWithArgs = {
+                    navController.navigate("${OrderCreationScreenDestination.route}/${it}")
+                },
+                navigateToPreviousScreen = {
+                    navController.navigateUp()
+                }
+            )
+        }
+        composable(
+            OrdersScreenDestination.routeWithArgs,
+            arguments = listOf(
+                navArgument(OrdersScreenDestination.businessId) {
+                    type = NavType.StringType
+                }
+            )
+        ) {
+            OrdersScreenComposable(
+                profile = null,
+                navigateToLoginScreenWithArgs = {phoneNumber, pin ->
+                    navController.navigate("${LoginScreenDestination.route}/${phoneNumber}/${pin}")
+                }
+            )
+        }
+        composable(
+            OrderCreationScreenDestination.routeWithArgs,
+            arguments = listOf(
+                navArgument(OrderCreationScreenDestination.businessId) {
+                    type = NavType.StringType
+                }
+            )
+        ) {
+            OrderCreationScreenComposable(
+                navigateToDashboardWithChildScreen = {profile, child ->
+                    navController.navigate("${DashboardScreenDestination.route}/${profile}/${child}")
+                },
+                navigateToPreviousScreen = {
+                    navController.navigateUp()
+                }
+            )
+        }
+        composable(
+            DashboardScreenDestination.routeWithChild,
+            arguments = listOf(
+                navArgument(DashboardScreenDestination.profile) {
+                    type = NavType.StringType
+                },
+                navArgument(DashboardScreenDestination.child) {
+                    type = NavType.StringType
+                }
+            )
+        ) {
+            Log.d("dashboardScreenNavigation", DashboardScreenDestination.routeWithChild)
+            DashboardScreenComposable(
+                darkMode = darkMode,
+                onSwitchTheme = onSwitchTheme,
+                navigateToLoginScreenWithArgs = {phoneNumber, pin ->
+                    navController.navigate("${LoginScreenDestination.route}/${phoneNumber}/${pin}")
+                },
+                navigateToDepositScreenWithArgs = {
+                    navController.navigate("${DepositScreenDestination.route}/${it}")
+                },
+                navigateToWithdrawalScreenWithArgs = {
+                    navController.navigate("${WithdrawalScreenDestination.route}/${it}")
+                },
+                navigateToBusinessDetailsScreen = {
+                    navController.navigate("${BusinessDetailsScreenDestination.route}/${it}")
+                }
             )
         }
     }

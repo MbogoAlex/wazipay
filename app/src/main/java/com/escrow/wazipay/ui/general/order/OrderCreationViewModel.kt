@@ -183,6 +183,6 @@ class OrderCreationViewModel(
             )
         }
         getUserDetails()
-        getBusiness()
+        getOrderCreationScreenData()
     }
 }

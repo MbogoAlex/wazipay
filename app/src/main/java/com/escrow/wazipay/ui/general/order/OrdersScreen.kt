@@ -53,7 +53,7 @@ object OrdersScreenDestination: AppNavigation {
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun OrdersScreenComposable(
-    profile: String,
+    profile: String?,
     navigateToLoginScreenWithArgs: (phoneNumber: String, pin: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -84,7 +84,7 @@ fun OrdersScreenComposable(
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun OrdersScreen(
-    profile: String,
+    profile: String?,
     orders: List<OrderData>,
     orderStage: OrderStage,
     onChangeOrderStage: (orderStage: OrderStage) -> Unit,

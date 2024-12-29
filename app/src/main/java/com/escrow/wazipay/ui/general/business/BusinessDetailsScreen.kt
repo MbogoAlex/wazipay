@@ -145,7 +145,7 @@ fun BusinessDetailsScreen(
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
-            OutlinedButton(onClick = { 
+            OutlinedButton(onClick = {
                 navigateToOrdersScreenWithArgs(businessData.id.toString())
             }) {
                 Text(

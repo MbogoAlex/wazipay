@@ -88,6 +88,8 @@ object DashboardScreenDestination: AppNavigation {
     override val route: String = "dashboard-screen"
     val profile: String = "profile"
     val routeWithArgs: String = "$route/{$profile}"
+    val child: String = "child"
+    val routeWithChild: String = "$route/{$profile}/{$child}"
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -204,10 +206,6 @@ fun DashboardScreenComposable(
         else -> listOf()
     }
 
-    var selectedTab by rememberSaveable {
-        mutableStateOf(NavBarItem.HOME)
-    }
-
     Box(
         modifier = Modifier
             .safeDrawingPadding()
@@ -229,13 +227,13 @@ fun DashboardScreenComposable(
             dropdownExpanded = dropdownExpanded,
             onSelectProfile = {
                 viewModel.switchProfile(it)
-                selectedTab = NavBarItem.HOME
+                viewModel.changeTab(NavBarItem.HOME)
             },
             filtering = filtering,
             navItems = navItems,
-            selectedTab = selectedTab,
+            selectedTab = uiState.child,
             onSelectTab = {
-                selectedTab = it
+                viewModel.changeTab(it)
             },
             onExpandDropdown = {
                 dropdownExpanded = !dropdownExpanded
