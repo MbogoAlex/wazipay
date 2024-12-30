@@ -68,6 +68,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.escrow.wazipay.AppViewModelFactory
 import com.escrow.wazipay.R
+import com.escrow.wazipay.data.room.models.Role
 import com.escrow.wazipay.ui.buyer.BuyerDashboardScreenComposable
 import com.escrow.wazipay.ui.general.NavBarItem
 import com.escrow.wazipay.ui.general.NavItem
@@ -133,77 +134,81 @@ fun DashboardScreenComposable(
 
 
 
-    val navItems = when(uiState.profile) {
-        "Buyer" -> listOf(
-            NavItem(
-                name = "Home",
-                icon = R.drawable.home,
-                tab = NavBarItem.HOME
-            ),
-            NavItem(
-                name = "Orders",
-                icon = R.drawable.orders,
-                tab = NavBarItem.ORDERS
-            ),
-            NavItem(
-                name = "Invoices",
-                icon = R.drawable.invoice,
-                tab = NavBarItem.INVOICES
-            ),
-            NavItem(
-                name = "Businesses",
-                icon = R.drawable.shop,
-                tab = NavBarItem.BUSINESSES
-            ),
-            NavItem(
-                name = "Transactions",
-                icon = R.drawable.transactions,
-                tab = NavBarItem.TRANSACTIONS
-            ),
-            NavItem(
-                name = "Profile",
-                icon = R.drawable.profile,
-                tab = NavBarItem.PROFILE
-            ),
-        )
+    val navItems = when(uiState.userRole.role) {
+        Role.BUYER -> {
+            listOf(
+                NavItem(
+                    name = "Home",
+                    icon = R.drawable.home,
+                    tab = NavBarItem.HOME
+                ),
+                NavItem(
+                    name = "Orders",
+                    icon = R.drawable.orders,
+                    tab = NavBarItem.ORDERS
+                ),
+                NavItem(
+                    name = "Invoices",
+                    icon = R.drawable.invoice,
+                    tab = NavBarItem.INVOICES
+                ),
+                NavItem(
+                    name = "Businesses",
+                    icon = R.drawable.shop,
+                    tab = NavBarItem.BUSINESSES
+                ),
+                NavItem(
+                    name = "Transactions",
+                    icon = R.drawable.transactions,
+                    tab = NavBarItem.TRANSACTIONS
+                ),
+                NavItem(
+                    name = "Profile",
+                    icon = R.drawable.profile,
+                    tab = NavBarItem.PROFILE
+                ),
+            )
+        }
 
-        "Merchant" -> listOf(
-            NavItem(
-                name = "Home",
-                icon = R.drawable.home,
-                tab = NavBarItem.HOME
-            ),
-            NavItem(
-                name = "Orders",
-                icon = R.drawable.orders,
-                tab = NavBarItem.ORDERS
-            ),
-            NavItem(
-                name = "Invoices",
-                icon = R.drawable.invoice,
-                tab = NavBarItem.INVOICES
-            ),
-            NavItem(
-                name = "Businesses",
-                icon = R.drawable.shop,
-                tab = NavBarItem.BUSINESSES
-            ),
-            NavItem(
-                name = "Transactions",
-                icon = R.drawable.transactions,
-                tab = NavBarItem.TRANSACTIONS
-            ),
-            NavItem(
-                name = "Shops",
-                icon = R.drawable.shop,
-                tab = NavBarItem.SHOPS
-            ),
-            NavItem(
-                name = "Profile",
-                icon = R.drawable.profile,
-                tab = NavBarItem.PROFILE
-            ),
-        )
+        Role.MERCHANT -> {
+            listOf(
+                NavItem(
+                    name = "Home",
+                    icon = R.drawable.home,
+                    tab = NavBarItem.HOME
+                ),
+                NavItem(
+                    name = "Orders",
+                    icon = R.drawable.orders,
+                    tab = NavBarItem.ORDERS
+                ),
+                NavItem(
+                    name = "Invoices",
+                    icon = R.drawable.invoice,
+                    tab = NavBarItem.INVOICES
+                ),
+                NavItem(
+                    name = "Businesses",
+                    icon = R.drawable.shop,
+                    tab = NavBarItem.BUSINESSES
+                ),
+                NavItem(
+                    name = "Transactions",
+                    icon = R.drawable.transactions,
+                    tab = NavBarItem.TRANSACTIONS
+                ),
+                NavItem(
+                    name = "Shops",
+                    icon = R.drawable.shop,
+                    tab = NavBarItem.SHOPS
+                ),
+                NavItem(
+                    name = "Profile",
+                    icon = R.drawable.profile,
+                    tab = NavBarItem.PROFILE
+                ),
+            )
+        }
 
         else -> listOf()
     }
@@ -226,10 +231,10 @@ fun DashboardScreenComposable(
             drawerState = drawerState,
             scope = scope,
             profiles = profiles,
-            selectedProfile = uiState.profile ?: "Buyer",
+            role = uiState.userRole.role,
             dropdownExpanded = dropdownExpanded,
-            onSelectProfile = {
-                viewModel.switchProfile(it)
+            onSelectRole = {
+                viewModel.switchRole(it)
                 viewModel.changeTab(NavBarItem.HOME)
             },
             filtering = filtering,
@@ -262,8 +267,8 @@ fun DashboardScreen(
     profiles: List<String>,
     dropdownExpanded: Boolean,
     onExpandDropdown: () -> Unit,
-    selectedProfile: String,
-    onSelectProfile: (profile: String) -> Unit,
+    role: Role,
+    onSelectRole: (role: Role) -> Unit,
     filtering: Boolean,
     navItems: List<NavItem>,
     selectedTab: NavBarItem,
@@ -298,7 +303,7 @@ fun DashboardScreen(
 //                        )
 //                        Spacer(modifier = Modifier.width(screenWidth(x = 3.0)))
                         Text(
-                            text = selectedProfile.uppercase(),
+                            text = role.name.lowercase().replaceFirstChar { it.uppercase() },
                             fontSize = screenFontSize(x = 16.0).sp,
                             color = MaterialTheme.colorScheme.onBackground,
                             fontWeight = FontWeight.Bold
@@ -403,7 +408,7 @@ fun DashboardScreen(
                                 }
                         ) {
                             Text(
-                                text = selectedProfile,
+                                text = role.name.lowercase().replaceFirstChar { it.uppercase() },
                                 color = MaterialTheme.colorScheme.onBackground,
                                 fontSize = screenFontSize(x = 16.0).sp
                             )
@@ -422,7 +427,7 @@ fun DashboardScreen(
                             profiles.forEach {
                                 DropdownMenuItem(
                                     text = {
-                                        if(it == selectedProfile) {
+                                        if(it.lowercase() == role.name.lowercase()) {
                                             Row(
                                                 verticalAlignment = Alignment.CenterVertically
                                             ) {
@@ -446,7 +451,7 @@ fun DashboardScreen(
                                         }
                                     },
                                     onClick = {
-                                        onSelectProfile(it)
+                                        onSelectRole(Role.valueOf(it.uppercase()))
                                         onExpandDropdown()
                                     }
                                 )
@@ -457,19 +462,20 @@ fun DashboardScreen(
             }
 //        Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
             when(selectedTab) {
-                NavBarItem.HOME -> when(selectedProfile) {
-                    "Buyer" -> BuyerDashboardScreenComposable(
+                NavBarItem.HOME -> when(role) {
+                    Role.BUYER -> BuyerDashboardScreenComposable(
                         navigateToLoginScreenWithArgs = navigateToLoginScreenWithArgs,
                         navigateToDepositScreenWithArgs = navigateToDepositScreenWithArgs,
                         navigateToWithdrawalScreenWithArgs = navigateToWithdrawalScreenWithArgs,
                         modifier = Modifier
 //                            .weight(1f)
                     )
-                    "Merchant" -> MerchantDashboardScreenComposable(
+                    Role.MERCHANT -> MerchantDashboardScreenComposable(
                         modifier = Modifier
 //                            .weight(1f)
                     )
 
+                    Role.COURIER -> {}
                 }
                 NavBarItem.TRANSACTIONS -> TransactionsScreenComposable(
                     onFilter = onFilter,
@@ -478,7 +484,6 @@ fun DashboardScreen(
 //                        .weight(1f)
                 )
                 NavBarItem.ORDERS -> OrdersScreenComposable(
-                    profile = selectedProfile,
                     navigateToLoginScreenWithArgs = navigateToLoginScreenWithArgs,
                     modifier = Modifier
 //                        .weight(1f)
@@ -510,12 +515,9 @@ fun DashboardScreen(
                 }
 
                 NavBarItem.BUSINESSES -> BusinessesScreenComposable(
-                    profile = selectedProfile,
                     navigateToBusinessDetailsScreen = navigateToBusinessDetailsScreen
                 )
-                NavBarItem.INVOICES -> InvoicesScreenComposable(
-                    profile = selectedProfile
-                )
+                NavBarItem.INVOICES -> InvoicesScreenComposable()
             }
         }
     }
@@ -685,9 +687,9 @@ fun DashboardScreenPreview() {
             },
             onExpandDropdown = {},
             dropdownExpanded = true,
-            onSelectProfile = {},
+            onSelectRole = {},
             profiles = profiles,
-            selectedProfile = "Buyer",
+            role = Role.BUYER,
             onFilter = {
                 filtering = !filtering
             },

@@ -212,7 +212,6 @@ fun NavigationGraph(
             )
         ) {
             OrdersScreenComposable(
-                profile = null,
                 navigateToLoginScreenWithArgs = {phoneNumber, pin ->
                     navController.navigate("${LoginScreenDestination.route}/${phoneNumber}/${pin}")
                 }

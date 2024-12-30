@@ -37,6 +37,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.escrow.wazipay.AppViewModelFactory
 import com.escrow.wazipay.data.network.models.order.OrderData
 import com.escrow.wazipay.data.network.models.order.orders
+import com.escrow.wazipay.data.room.models.Role
 import com.escrow.wazipay.ui.nav.AppNavigation
 import com.escrow.wazipay.ui.theme.WazipayTheme
 import com.escrow.wazipay.utils.screenFontSize
@@ -53,7 +54,6 @@ object OrdersScreenDestination: AppNavigation {
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun OrdersScreenComposable(
-    profile: String?,
     navigateToLoginScreenWithArgs: (phoneNumber: String, pin: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -77,7 +77,7 @@ fun OrdersScreenComposable(
             onChangeOrderStage = {
                 viewModel.changeOrderStage(it)
             },
-            profile = profile
+            role = uiState.role
         )
     }
 }
@@ -85,7 +85,7 @@ fun OrdersScreenComposable(
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun OrdersScreen(
-    profile: String?,
+    role: Role,
     orders: List<OrderData>,
     stages: List<String>,
     selectedStage: String,
@@ -94,7 +94,7 @@ fun OrdersScreen(
 ) {
     Scaffold(
         floatingActionButton = {
-            if(profile == "Merchant" || profile == "Buyer") {
+            if(role == Role.MERCHANT || role == Role.BUYER) {
                 FloatingActionButton(onClick = { /*TODO*/ }) {
                     Icon(
                         imageVector = Icons.Default.Add,
@@ -117,7 +117,7 @@ fun OrdersScreen(
                     )
             ) {
                 Text(
-                    text = "${if(profile == "Buyer") "My Orders" else if(profile == "Merchant") "Received Orders" else "My Orders"} / $selectedStage",
+                    text = "${if(role == Role.BUYER) "My Orders" else if(role == Role.MERCHANT) "Received Orders" else "My Orders"} / $selectedStage",
                     fontWeight = FontWeight.Bold,
                     fontSize = screenFontSize(x = 16.0).sp
                 )
@@ -175,7 +175,7 @@ fun OrdersScreenPreview() {
             selectedStage = "All",
             stages = stages,
             onChangeOrderStage = {},
-            profile = "Buyer"
+            role = Role.BUYER
         )
     }
 }

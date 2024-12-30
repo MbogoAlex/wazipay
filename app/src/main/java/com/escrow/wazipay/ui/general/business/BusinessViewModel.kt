@@ -100,6 +100,20 @@ class BusinessViewModel(
         }
     }
 
+    private fun getUserRole() {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                dbRepository.getUserRole().collect { userRole ->
+                    _uiState.update {
+                        it.copy(
+                            userRole = userRole!!
+                        )
+                    }
+                }
+            }
+        }
+    }
+
     fun resetStatus() {
         _uiState.update {
             it.copy(
@@ -110,6 +124,7 @@ class BusinessViewModel(
 
     init {
         getUserDetails()
+        getUserRole()
         getBusinessesScreenData()
     }
 }

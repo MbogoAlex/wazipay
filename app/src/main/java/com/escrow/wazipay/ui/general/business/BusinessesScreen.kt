@@ -1,10 +1,11 @@
 package com.escrow.wazipay.ui.general.business
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,18 +13,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -35,24 +33,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.escrow.wazipay.AppViewModelFactory
-import com.escrow.wazipay.R
 import com.escrow.wazipay.data.network.models.business.BusinessData
 import com.escrow.wazipay.data.network.models.business.businesses
+import com.escrow.wazipay.data.room.models.Role
 import com.escrow.wazipay.ui.theme.WazipayTheme
 import com.escrow.wazipay.utils.screenFontSize
 import com.escrow.wazipay.utils.screenHeight
 import com.escrow.wazipay.utils.screenWidth
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun BusinessesScreenComposable(
-    profile: String,
     navigateToBusinessDetailsScreen: (businessId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -64,7 +61,7 @@ fun BusinessesScreenComposable(
             .safeDrawingPadding()
     ) {
         BusinessesScreen(
-            profile = profile,
+            role = uiState.userRole.role,
             searchQuery = uiState.searchQuery ?: "",
             onChangeSearchQuery = viewModel::updateSearchQuery,
             onClearSearchQuery = {
@@ -79,7 +76,7 @@ fun BusinessesScreenComposable(
 
 @Composable
 fun BusinessesScreen(
-    profile: String,
+    role: Role,
     searchQuery: String,
     onChangeSearchQuery: (query: String) -> Unit,
     onClearSearchQuery: () -> Unit,
@@ -97,7 +94,7 @@ fun BusinessesScreen(
             )
     ) {
         Text(
-            text = if(profile == "Buyer") "Businesses" else if(profile == "Merchant") "My Businesses" else "Businesses",
+            text = if(role == Role.BUYER) "Businesses" else if(role == Role.MERCHANT) "My Businesses" else "Businesses",
             fontWeight = FontWeight.Bold,
             fontSize = screenFontSize(x = 16.0).sp
         )
@@ -170,7 +167,7 @@ fun BusinessesScreen(
 fun BusinessScreenPreview() {
     WazipayTheme {
         BusinessesScreen(
-            profile = "Buyer",
+            role = Role.BUYER,
             searchQuery = "",
             onClearSearchQuery = {},
             onChangeSearchQuery = {},

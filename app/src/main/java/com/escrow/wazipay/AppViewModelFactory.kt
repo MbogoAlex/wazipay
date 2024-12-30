@@ -68,6 +68,7 @@ object AppViewModelFactory {
 
         initializer {
             DashboardViewModel(
+                dbRepository = wazipayApplication().container.dbRepository,
                 savedStateHandle = this.createSavedStateHandle()
             )
         }

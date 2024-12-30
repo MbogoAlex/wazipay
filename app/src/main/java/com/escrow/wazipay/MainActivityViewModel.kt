@@ -3,6 +3,8 @@ package com.escrow.wazipay
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.escrow.wazipay.data.room.models.DarkMode
+import com.escrow.wazipay.data.room.models.Role
+import com.escrow.wazipay.data.room.models.UserRole
 import com.escrow.wazipay.data.room.repository.DBRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -52,7 +54,23 @@ class MainActivityViewModel(
         }
     }
 
+    private fun initializeUserRole() {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                val userRole = dbRepository.getUserRole().first()
+
+                if(userRole == null) {
+                    val role = UserRole(
+                        role = Role.BUYER
+                    )
+                    dbRepository.insertUserRole(role)
+                }
+            }
+        }
+    }
+
     init {
         getTheme()
+        initializeUserRole()
     }
 }

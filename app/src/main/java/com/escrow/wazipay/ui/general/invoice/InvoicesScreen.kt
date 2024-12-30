@@ -33,6 +33,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.escrow.wazipay.AppViewModelFactory
 import com.escrow.wazipay.data.network.models.invoice.InvoiceData
 import com.escrow.wazipay.data.network.models.invoice.invoices
+import com.escrow.wazipay.data.room.models.Role
 import com.escrow.wazipay.ui.theme.WazipayTheme
 import com.escrow.wazipay.utils.screenFontSize
 import com.escrow.wazipay.utils.screenHeight
@@ -41,7 +42,6 @@ import com.escrow.wazipay.utils.screenWidth
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun InvoicesScreenComposable(
-    profile: String,
     modifier: Modifier = Modifier
 ) {
 
@@ -54,7 +54,7 @@ fun InvoicesScreenComposable(
             .safeDrawingPadding()
     ) {
         InvoicesScreen(
-            profile = profile,
+            role = invoicesUiState.userRole.role,
             invoices = invoicesUiState.invoices,
             statuses = invoicesUiState.statuses,
             selectedStatus = invoicesUiState.selectedStatus,
@@ -70,7 +70,7 @@ fun InvoicesScreenComposable(
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun InvoicesScreen(
-    profile: String,
+    role: Role,
     invoices: List<InvoiceData>,
     statuses: List<String>,
     selectedStatus: String,
@@ -88,7 +88,7 @@ fun InvoicesScreen(
             )
     ) {
         Text(
-            text = "${if(profile == "Buyer") "Received Invoices" else "Received Invoices"} / $selectedStatus",
+            text = "${if(role == Role.BUYER) "Received Invoices" else "Received Invoices"} / $selectedStatus",
             fontWeight = FontWeight.Bold,
             fontSize = screenFontSize(x = 14.0).sp
         )
@@ -133,7 +133,7 @@ fun InvoicesScreenPreview() {
             mutableStateOf("All")
         }
         InvoicesScreen(
-            profile = "Buyer",
+            role = Role.BUYER,
             statuses = statuses,
             selectedStatus = selectedStatus,
             onChangeStatus = {

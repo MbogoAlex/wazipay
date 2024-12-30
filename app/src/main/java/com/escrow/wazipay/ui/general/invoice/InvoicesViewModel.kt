@@ -118,8 +118,23 @@ class InvoicesViewModel(
         }
     }
 
+    private fun getUserRole() {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                dbRepository.getUserRole().collect { userRole ->
+                    _uiState.update {
+                        it.copy(
+                            userRole = userRole!!
+                        )
+                    }
+                }
+            }
+        }
+    }
+
     init {
         getUserDetails()
+        getUserRole()
         getInvoicesScreenStartupData()
     }
 }
