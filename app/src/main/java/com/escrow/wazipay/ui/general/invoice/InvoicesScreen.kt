@@ -2,19 +2,35 @@ package com.escrow.wazipay.ui.general.invoice
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.escrow.wazipay.AppViewModelFactory
 import com.escrow.wazipay.data.network.models.invoice.InvoiceData
 import com.escrow.wazipay.data.network.models.invoice.invoices
 import com.escrow.wazipay.ui.theme.WazipayTheme
@@ -22,10 +38,42 @@ import com.escrow.wazipay.utils.screenFontSize
 import com.escrow.wazipay.utils.screenHeight
 import com.escrow.wazipay.utils.screenWidth
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun InvoicesScreenComposable(
+    profile: String,
     modifier: Modifier = Modifier
 ) {
+
+    val invoicesViewModel: InvoicesViewModel = viewModel(factory = AppViewModelFactory.Factory)
+    val invoicesUiState by invoicesViewModel.uiState.collectAsState()
+
+    val statuses = listOf("All", "Pending", "Accepted", "Rejected", "Cancelled")
+
+    var selectedStatus by rememberSaveable {
+        mutableStateOf("All")
+    }
+
+    Box(
+        modifier = Modifier
+            .safeDrawingPadding()
+    ) {
+        InvoicesScreen(
+            profile = profile,
+            invoices = invoicesUiState.invoices,
+            statuses = statuses,
+            selectedStatus = selectedStatus,
+            onChangeStatus = {
+                selectedStatus = it
+                when(selectedStatus) {
+                    "All" -> invoicesViewModel.filterInvoices(null)
+                    "Pending" -> invoicesViewModel.filterInvoices(InvoiceStatus.PENDING)
+                    "Accepted" -> invoicesViewModel.filterInvoices(InvoiceStatus.ACCEPTED)
+                    "Rejected" -> invoicesViewModel.filterInvoices(InvoiceStatus.REJECTED)
+                }
+            }
+        )
+    }
 
 }
 
@@ -34,8 +82,13 @@ fun InvoicesScreenComposable(
 fun InvoicesScreen(
     profile: String,
     invoices: List<InvoiceData>,
+    statuses: List<String>,
+    selectedStatus: String,
+    onChangeStatus: (status: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -45,10 +98,29 @@ fun InvoicesScreen(
             )
     ) {
         Text(
-            text = if(profile == "Buyer") "My Invoices" else "Received Invoices",
+            text = if(profile == "Buyer") "Received Invoices" else "Received Invoices",
             fontWeight = FontWeight.Bold,
             fontSize = screenFontSize(x = 14.0).sp
         )
+        Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .horizontalScroll(rememberScrollState())
+        ) {
+            statuses.forEach {
+                if(selectedStatus == it) {
+                    Button(onClick = { onChangeStatus(it) }) {
+                        Text(text = it)
+                    }
+                } else {
+                    OutlinedButton(onClick = { onChangeStatus(it) }) {
+                        Text(text = it)
+                    }
+                }
+                Spacer(modifier = Modifier.width(screenWidth(x = 8.0)))
+            }
+        }
         Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
         LazyColumn {
             items(invoices) {
@@ -65,8 +137,18 @@ fun InvoicesScreen(
 @Composable
 fun InvoicesScreenPreview() {
     WazipayTheme {
+        val statuses = listOf("All", "Pending", "Accepted", "Rejected", "Cancelled")
+
+        var selectedStatus by rememberSaveable {
+            mutableStateOf("All")
+        }
         InvoicesScreen(
             profile = "Buyer",
+            statuses = statuses,
+            selectedStatus = selectedStatus,
+            onChangeStatus = {
+                selectedStatus = it
+            },
             invoices = invoices
         )
     }

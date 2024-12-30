@@ -1,6 +1,5 @@
-package com.escrow.wazipay.ui.general.business
+package com.escrow.wazipay.ui.general.invoice
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.escrow.wazipay.data.network.repository.ApiRepository
@@ -14,30 +13,37 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class BusinessViewModel(
+class InvoicesViewModel(
     private val apiRepository: ApiRepository,
     private val dbRepository: DBRepository
 ): ViewModel() {
-    private val _uiState = MutableStateFlow(BusinessUiData())
-    val uiState: StateFlow<BusinessUiData> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(InvoicesUiData())
+    val uiState: StateFlow<InvoicesUiData> = _uiState.asStateFlow()
 
-    fun updateSearchQuery(query: String?) {
+    fun filterInvoices(invoiceStatus: InvoiceStatus?) {
         _uiState.update {
             it.copy(
-                searchQuery = query
+                invoiceStatus = invoiceStatus
             )
         }
-        getBusinesses()
+        getInvoices()
     }
 
-    private fun getBusinesses() {
+    private fun getInvoices() {
+        _uiState.update {
+            it.copy(
+                loadInvoicesStatus = LoadInvoicesStatus.LOADING
+            )
+        }
         viewModelScope.launch {
             try {
-               val response = apiRepository.getBusinesses(
+               val response = apiRepository.getInvoices(
                    token = uiState.value.userDetails.token!!,
-                   query = uiState.value.searchQuery,
-                   ownerId = null,
-                   archived = null,
+                   query = null,
+                   businessId = null,
+                   buyerId = uiState.value.userDetails.userId,
+                   merchantId = null,
+                   status = if(uiState.value.invoiceStatus != null) uiState.value.invoiceStatus!!.name else null,
                    startDate = null,
                    endDate = null
                )
@@ -45,35 +51,42 @@ class BusinessViewModel(
                 if(response.isSuccessful) {
                     _uiState.update {
                         it.copy(
-                            businesses = response.body()?.data!!.filter { business ->
-                                business.owner.id != uiState.value.userDetails.userId
-                            },
-                            loadBusinessStatus = LoadBusinessStatus.SUCCESS
+                            invoices = response.body()?.data!!,
+                            loadInvoicesStatus = LoadInvoicesStatus.SUCCESS
                         )
                     }
                 } else {
                     if(response.code() == 401) {
                         _uiState.update {
                             it.copy(
-                                unauthorized = true
+                                userAuthorized = false
                             )
                         }
                     }
                     _uiState.update {
                         it.copy(
-                            loadBusinessStatus = LoadBusinessStatus.FAIL
+                            loadInvoicesStatus = LoadInvoicesStatus.FAIL
                         )
                     }
-                    Log.e("loadBusinessesResponse_err", response.toString())
                 }
+
             } catch (e: Exception) {
                 _uiState.update {
                     it.copy(
-                        loadBusinessStatus = LoadBusinessStatus.FAIL
+                        loadInvoicesStatus = LoadInvoicesStatus.FAIL
                     )
                 }
-                Log.e("loadBusinessesException_err", e.toString())
+
             }
+        }
+    }
+
+    private fun getInvoicesScreenStartupData() {
+        viewModelScope.launch {
+            while (uiState.value.userDetails.userId == 0) {
+                delay(1000)
+            }
+            getInvoices()
         }
     }
 
@@ -91,25 +104,8 @@ class BusinessViewModel(
         }
     }
 
-    private fun getBusinessesScreenData() {
-        viewModelScope.launch {
-            while (uiState.value.userDetails.userId == 0) {
-                delay(1000)
-            }
-            getBusinesses()
-        }
-    }
-
-    fun resetStatus() {
-        _uiState.update {
-            it.copy(
-                loadBusinessStatus = LoadBusinessStatus.INITIAL
-            )
-        }
-    }
-
     init {
         getUserDetails()
-        getBusinessesScreenData()
+        getInvoicesScreenStartupData()
     }
 }
