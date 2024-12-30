@@ -72,7 +72,8 @@ fun OrdersScreenComposable(
     ) {
         OrdersScreen(
             orders = uiState.orders,
-            orderStage = uiState.orderStage,
+            stages = uiState.stages,
+            selectedStage = uiState.selectedStage,
             onChangeOrderStage = {
                 viewModel.changeOrderStage(it)
             },
@@ -86,8 +87,9 @@ fun OrdersScreenComposable(
 fun OrdersScreen(
     profile: String?,
     orders: List<OrderData>,
-    orderStage: OrderStage,
-    onChangeOrderStage: (orderStage: OrderStage) -> Unit,
+    stages: List<String>,
+    selectedStage: String,
+    onChangeOrderStage: (orderStage: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -115,7 +117,7 @@ fun OrdersScreen(
                     )
             ) {
                 Text(
-                    text = if(profile == "Buyer") "My Orders" else if(profile == "Merchant") "Received Orders" else "My Orders",
+                    text = "${if(profile == "Buyer") "My Orders" else if(profile == "Merchant") "Received Orders" else "My Orders"} / $selectedStage",
                     fontWeight = FontWeight.Bold,
                     fontSize = screenFontSize(x = 16.0).sp
                 )
@@ -127,95 +129,17 @@ fun OrdersScreen(
                         .fillMaxWidth()
                         .horizontalScroll(rememberScrollState())
                 ) {
-                    if(orderStage == OrderStage.All) {
-                        Button(onClick = {
-                            onChangeOrderStage(OrderStage.All)
-                        }) {
-                            Text(text = "All")
+                    stages.forEach { stage ->
+                        if(selectedStage == stage) {
+                            Button(onClick = { onChangeOrderStage(stage) }) {
+                                Text(text = stage)
+                            }
+                        } else {
+                            OutlinedButton(onClick = { onChangeOrderStage(stage) }) {
+                                Text(text = stage)
+                            }
                         }
-                    } else {
-                        OutlinedButton(onClick = {
-                            onChangeOrderStage(OrderStage.All)
-                        }) {
-                            Text(text = "All")
-                        }
-                    }
-                    Spacer(modifier = Modifier.width(screenWidth(x = 8.0)))
-
-                    if(orderStage == OrderStage.COMPLETE) {
-                        Button(onClick = {
-                            onChangeOrderStage(OrderStage.COMPLETE)
-                        }) {
-                            Text(text = "Completed")
-                        }
-                    } else {
-                        OutlinedButton(onClick = {
-                            onChangeOrderStage(OrderStage.COMPLETE)
-                        }) {
-                            Text(text = "Completed")
-                        }
-                    }
-                    Spacer(modifier = Modifier.width(screenWidth(x = 8.0)))
-
-                    if(orderStage == OrderStage.IN_TRANSIT) {
-                        Button(onClick = {
-                            onChangeOrderStage(OrderStage.IN_TRANSIT)
-                        }) {
-                            Text(text = "In Transit")
-                        }
-                    } else {
-                        OutlinedButton(onClick = {
-                            onChangeOrderStage(OrderStage.IN_TRANSIT)
-                        }) {
-                            Text(text = "In Transit")
-                        }
-                    }
-                    Spacer(modifier = Modifier.width(screenWidth(x = 8.0)))
-
-                    if(orderStage == OrderStage.PENDING_PICKUP) {
-                        Button(onClick = {
-                            onChangeOrderStage(OrderStage.PENDING_PICKUP)
-                        }) {
-                            Text(text = "Pending pickup")
-                        }
-                    } else {
-                        OutlinedButton(onClick = {
-                            onChangeOrderStage(OrderStage.PENDING_PICKUP)
-                        }) {
-                            Text(text = "Pending pickup")
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.width(screenWidth(x = 8.0)))
-
-                    if(orderStage == OrderStage.CANCELLED) {
-                        Button(onClick = {
-                            onChangeOrderStage(OrderStage.CANCELLED)
-                        }) {
-                            Text(text = "Cancelled")
-                        }
-                    } else {
-                        OutlinedButton(onClick = {
-                            onChangeOrderStage(OrderStage.CANCELLED)
-                        }) {
-                            Text(text = "Cancelled")
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.width(screenWidth(x = 8.0)))
-
-                    if(orderStage == OrderStage.REFUNDED) {
-                        Button(onClick = {
-                            onChangeOrderStage(OrderStage.REFUNDED)
-                        }) {
-                            Text(text = "Refunded")
-                        }
-                    } else {
-                        OutlinedButton(onClick = {
-                            onChangeOrderStage(OrderStage.REFUNDED)
-                        }) {
-                            Text(text = "Refunded")
-                        }
+                        Spacer(modifier = Modifier.width(screenWidth(x = 8.0)))
                     }
                 }
                 Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
@@ -245,9 +169,11 @@ fun OrdersScreen(
 @Composable
 fun OrdersScreenPreview() {
     WazipayTheme {
+        val stages = listOf("All", "Completed", "In Transit", "Pending pickup", "Cancelled", "Refunded")
         OrdersScreen(
             orders = orders,
-            orderStage = OrderStage.All,
+            selectedStage = "All",
+            stages = stages,
             onChangeOrderStage = {},
             profile = "Buyer"
         )

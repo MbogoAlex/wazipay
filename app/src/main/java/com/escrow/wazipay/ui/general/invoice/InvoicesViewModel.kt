@@ -20,7 +20,21 @@ class InvoicesViewModel(
     private val _uiState = MutableStateFlow(InvoicesUiData())
     val uiState: StateFlow<InvoicesUiData> = _uiState.asStateFlow()
 
-    fun filterInvoices(invoiceStatus: InvoiceStatus?) {
+    fun onChangeStatus(status: String) {
+        _uiState.update {
+            it.copy(
+                selectedStatus = status
+            )
+        }
+        when(status) {
+            "All" -> filterInvoices(null)
+            "Pending" -> filterInvoices(InvoiceStatus.PENDING)
+            "Accepted" -> filterInvoices(InvoiceStatus.ACCEPTED)
+            "Rejected" -> filterInvoices(InvoiceStatus.REJECTED)
+        }
+    }
+
+    private fun filterInvoices(invoiceStatus: InvoiceStatus?) {
         _uiState.update {
             it.copy(
                 invoiceStatus = invoiceStatus

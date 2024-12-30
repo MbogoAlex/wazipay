@@ -84,7 +84,23 @@ class OrdersViewModel(
         }
     }
 
-    fun changeOrderStage(orderStage: OrderStage) {
+    fun changeOrderStage(orderStage: String) {
+        _uiState.update {
+            it.copy(
+                selectedStage = orderStage
+            )
+        }
+        when(orderStage) {
+            "All" -> filterOrders(OrderStage.All)
+            "Completed" -> filterOrders(OrderStage.COMPLETE)
+            "In Transit" -> filterOrders(OrderStage.IN_TRANSIT)
+            "Pending pickup" -> filterOrders(OrderStage.PENDING_PICKUP)
+            "Cancelled" -> filterOrders(OrderStage.CANCELLED)
+            "Refunded" -> filterOrders(OrderStage.REFUNDED)
+        }
+    }
+
+    private fun filterOrders(orderStage: OrderStage) {
         _uiState.update {
             it.copy(
                 orderStage = orderStage

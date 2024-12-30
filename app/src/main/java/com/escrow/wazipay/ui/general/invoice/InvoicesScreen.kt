@@ -48,11 +48,6 @@ fun InvoicesScreenComposable(
     val invoicesViewModel: InvoicesViewModel = viewModel(factory = AppViewModelFactory.Factory)
     val invoicesUiState by invoicesViewModel.uiState.collectAsState()
 
-    val statuses = listOf("All", "Pending", "Accepted", "Rejected", "Cancelled")
-
-    var selectedStatus by rememberSaveable {
-        mutableStateOf("All")
-    }
 
     Box(
         modifier = Modifier
@@ -61,16 +56,11 @@ fun InvoicesScreenComposable(
         InvoicesScreen(
             profile = profile,
             invoices = invoicesUiState.invoices,
-            statuses = statuses,
-            selectedStatus = selectedStatus,
+            statuses = invoicesUiState.statuses,
+            selectedStatus = invoicesUiState.selectedStatus,
             onChangeStatus = {
-                selectedStatus = it
-                when(selectedStatus) {
-                    "All" -> invoicesViewModel.filterInvoices(null)
-                    "Pending" -> invoicesViewModel.filterInvoices(InvoiceStatus.PENDING)
-                    "Accepted" -> invoicesViewModel.filterInvoices(InvoiceStatus.ACCEPTED)
-                    "Rejected" -> invoicesViewModel.filterInvoices(InvoiceStatus.REJECTED)
-                }
+                invoicesViewModel.onChangeStatus(it)
+
             }
         )
     }
@@ -98,7 +88,7 @@ fun InvoicesScreen(
             )
     ) {
         Text(
-            text = if(profile == "Buyer") "Received Invoices" else "Received Invoices",
+            text = "${if(profile == "Buyer") "Received Invoices" else "Received Invoices"} / $selectedStatus",
             fontWeight = FontWeight.Bold,
             fontSize = screenFontSize(x = 14.0).sp
         )
