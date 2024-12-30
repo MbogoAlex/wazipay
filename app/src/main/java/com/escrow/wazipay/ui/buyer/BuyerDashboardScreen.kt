@@ -19,6 +19,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -125,6 +126,7 @@ fun BuyerDashboardScreen(
                     )
                     Text(
                         text = username.split(" ")[0].uppercase(),
+                        color = MaterialTheme.colorScheme.onBackground,
                         fontSize = screenFontSize(x = 14.0).sp
                     )
                     Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
@@ -132,7 +134,7 @@ fun BuyerDashboardScreen(
                         Text(
                             text = if(userVerified) "VERIFIED" else "UNVERIFIED",
                             fontSize = screenFontSize(x = 12.0).sp,
-                            color = Color(0xFF0d421b),
+                            color = MaterialTheme.colorScheme.onBackground,
                             modifier = Modifier
                                 .padding(screenWidth(x = 3.0))
                         )
@@ -140,18 +142,21 @@ fun BuyerDashboardScreen(
                     Spacer(modifier = Modifier.weight(1f))
                     Text(
                         text = "BUYER",
+                        color = MaterialTheme.colorScheme.onBackground,
                         fontSize = screenFontSize(x = 14.0).sp
                     )
                 }
                 Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
                 Text(
                     text = "Wallet Balance",
+                    color = MaterialTheme.colorScheme.onBackground,
                     fontSize = screenFontSize(x = 14.0).sp
                 )
                 Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
                 Text(
                     text = walletBalance,
                     fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onBackground,
                     fontSize = screenFontSize(x = 24.0).sp
                 )
                 Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
@@ -200,6 +205,7 @@ fun BuyerDashboardScreen(
                 ) {
                     Text(
                         text = "Hide Balance",
+                        color = MaterialTheme.colorScheme.onBackground,
                         fontSize = screenFontSize(x = 14.0).sp
                     )
                     Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
@@ -210,6 +216,7 @@ fun BuyerDashboardScreen(
         Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
         Text(
             text = "Recent Orders",
+            color = MaterialTheme.colorScheme.onBackground,
             fontSize = screenFontSize(x = 16.0).sp,
             fontWeight = FontWeight.Bold
         )
@@ -233,6 +240,7 @@ fun BuyerDashboardScreen(
         Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
         Text(
             text = "Received Invoices",
+            color = MaterialTheme.colorScheme.onBackground,
             fontSize = screenFontSize(x = 16.0).sp,
             fontWeight = FontWeight.Bold
         )
@@ -249,6 +257,7 @@ fun BuyerDashboardScreen(
         Spacer(modifier = Modifier.height(screenHeight(x = 24.0)))
         Text(
             text = "Recent Transactions",
+            color = MaterialTheme.colorScheme.onBackground,
             fontSize = screenFontSize(x = 16.0).sp,
             fontWeight = FontWeight.Bold
         )

@@ -56,6 +56,7 @@ fun OrderItemComposable(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
+                        tint = MaterialTheme.colorScheme.onBackground,
                         painter = painterResource(id = R.drawable.shop),
                         contentDescription = null
                     )
@@ -70,6 +71,7 @@ fun OrderItemComposable(
                     text = orderData.description,
                     fontSize = screenFontSize(x = 16.0).sp,
                     fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier
                 )
                 Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
@@ -78,6 +80,7 @@ fun OrderItemComposable(
                 ) {
                     Text(
                         text = "Code: ",
+                        color = MaterialTheme.colorScheme.onBackground,
                         fontSize = screenFontSize(x = 16.0).sp
                     )
                     Spacer(modifier = Modifier.weight(1f))
@@ -94,11 +97,12 @@ fun OrderItemComposable(
                     Text(
                         text = stage,
                         color = if(stage == "Delivered") Color.Green else if(stage == "Cancelled") MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
-                        fontSize = screenFontSize(x = 14.0).sp
+                        fontSize = screenFontSize(x = 14.0).sp,
                     )
                     if(stage == "Delivered") {
                         Spacer(modifier = Modifier.width(screenWidth(x = 8.0)))
                         Icon(
+                            tint = MaterialTheme.colorScheme.onBackground,
                             painter = painterResource(id = R.drawable.check),
                             contentDescription = null
                         )
@@ -108,13 +112,15 @@ fun OrderItemComposable(
                 if(stage == "Delivered") {
                     Text(
                         text = if(orderData.completedAt != null) formatIsoDateTime(LocalDateTime.parse(orderData.completedAt)) else "Time N/A",
-                        fontSize = screenFontSize(x = 14.0).sp
+                        fontSize = screenFontSize(x = 14.0).sp,
+                        color = MaterialTheme.colorScheme.onBackground
                     )
                 }
                 if(stage == "Cancelled") {
                     Text(
                         text = if(orderData.cancelledAt != null) formatIsoDateTime(LocalDateTime.parse(orderData.cancelledAt)) else "Time N/A",
-                        fontSize = screenFontSize(x = 14.0).sp
+                        fontSize = screenFontSize(x = 14.0).sp,
+                        color = MaterialTheme.colorScheme.onBackground
                     )
                 }
                 Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
@@ -123,12 +129,14 @@ fun OrderItemComposable(
                 ) {
                     Text(
                         text = "Ordered at ",
-                        fontSize = screenFontSize(x = 14.0).sp
+                        fontSize = screenFontSize(x = 14.0).sp,
+                        color = MaterialTheme.colorScheme.onBackground
                     )
                     Spacer(modifier = Modifier.height(screenHeight(x = 4.0)))
                     Text(
                         text = formatIsoDateTime(LocalDateTime.parse(orderData.createdAt)),
-                        fontSize = screenFontSize(x = 14.0).sp
+                        fontSize = screenFontSize(x = 14.0).sp,
+                        color = MaterialTheme.colorScheme.onBackground
                     )
                 }
 
@@ -146,13 +154,15 @@ fun OrderItemComposable(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
+                        tint = MaterialTheme.colorScheme.onBackground,
                         painter = painterResource(id = R.drawable.shop),
                         contentDescription = null
                     )
                     Spacer(modifier = Modifier.width(screenWidth(x = 8.0)))
                     Text(
                         text = orderData.business.name,
-                        fontSize = screenFontSize(x = 16.0).sp
+                        fontSize = screenFontSize(x = 16.0).sp,
+                        color = MaterialTheme.colorScheme.onBackground
                     )
                 }
                 Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
@@ -167,16 +177,19 @@ fun OrderItemComposable(
                             text = orderData.description,
                             fontSize = screenFontSize(x = 16.0).sp,
                             fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onBackground,
                             modifier = Modifier
                                 .weight(1f)
                         )
                         Text(
                             text = "Code: ",
+                            color = MaterialTheme.colorScheme.onBackground,
                             fontSize = screenFontSize(x = 16.0).sp
                         )
                         Text(
                             text = orderData.orderCode,
                             fontSize = screenFontSize(x = 16.0).sp,
+                            color = MaterialTheme.colorScheme.onBackground,
                             fontWeight = FontWeight.Bold
                         )
                     }
@@ -193,6 +206,7 @@ fun OrderItemComposable(
                     if(stage == "Delivered") {
                         Spacer(modifier = Modifier.width(screenWidth(x = 8.0)))
                         Icon(
+                            tint = MaterialTheme.colorScheme.onBackground,
                             painter = painterResource(id = R.drawable.check),
                             contentDescription = null
                         )
@@ -202,13 +216,15 @@ fun OrderItemComposable(
                 if(stage == "Delivered") {
                     Text(
                         text = if(orderData.completedAt != null) formatIsoDateTime(LocalDateTime.parse(orderData.completedAt)) else "Time N/A",
-                        fontSize = screenFontSize(x = 14.0).sp
+                        fontSize = screenFontSize(x = 14.0).sp,
+                        color = MaterialTheme.colorScheme.onBackground
                     )
                 }
                 if(stage == "Cancelled") {
                     Text(
                         text = if(orderData.cancelledAt != null) formatIsoDateTime(LocalDateTime.parse(orderData.cancelledAt)) else "Time N/A",
-                        fontSize = screenFontSize(x = 14.0).sp
+                        fontSize = screenFontSize(x = 14.0).sp,
+                        color = MaterialTheme.colorScheme.onBackground
                     )
                 }
                 Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
@@ -217,11 +233,13 @@ fun OrderItemComposable(
                 ) {
                     Text(
                         text = "Ordered at ",
-                        fontSize = screenFontSize(x = 14.0).sp
+                        fontSize = screenFontSize(x = 14.0).sp,
+                        color = MaterialTheme.colorScheme.onBackground
                     )
                     Text(
                         text = formatIsoDateTime(LocalDateTime.parse(orderData.createdAt)),
-                        fontSize = screenFontSize(x = 14.0).sp
+                        fontSize = screenFontSize(x = 14.0).sp,
+                        color = MaterialTheme.colorScheme.onBackground
                     )
                 }
 

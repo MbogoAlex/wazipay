@@ -231,6 +231,7 @@ fun TransactionsScreen(
             ) {
                 Text(
                     text = "${dateFormatter.format(startDate)} to ${dateFormatter.format(endDate)}",
+                    color = MaterialTheme.colorScheme.onBackground,
                     fontSize = screenFontSize(x = 14.0).sp,
                     fontWeight = FontWeight.Bold
                 )

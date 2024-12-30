@@ -2,6 +2,7 @@ package com.escrow.wazipay.ui.general.transaction
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -50,17 +51,20 @@ fun TransactionCellComposable(
             Text(
                 text = if(transactionData.order != null)  if(transactionData.order.name.length > 25) transactionData.order.name.take(25) + "..." else transactionData.order.name else transactionType,
                 fontWeight = FontWeight.Bold,
-                fontSize = screenFontSize(x = 14.0).sp
+                fontSize = screenFontSize(x = 14.0).sp,
+                color = MaterialTheme.colorScheme.onBackground
             )
             Text(
                 text = transactionType,
                 fontWeight = FontWeight.Bold,
-                fontSize = screenFontSize(x = 16.0).sp
+                fontSize = screenFontSize(x = 16.0).sp,
+                color = MaterialTheme.colorScheme.onBackground
             )
             Text(
                 text = if(transactionData.createdAt != null) formatIsoDateTime(LocalDateTime.parse(transactionData.createdAt)) else "TIME: N/A",
                 fontWeight = FontWeight.W300,
-                fontSize = screenFontSize(x = 12.0).sp
+                fontSize = screenFontSize(x = 12.0).sp,
+                color = MaterialTheme.colorScheme.onBackground
             )
         }
         Column(
@@ -77,7 +81,8 @@ fun TransactionCellComposable(
             Text(
                 text = "KES",
                 fontWeight = FontWeight.W300,
-                fontSize = screenFontSize(x = 12.0).sp
+                fontSize = screenFontSize(x = 12.0).sp,
+                color = MaterialTheme.colorScheme.onBackground
             )
         }
     }

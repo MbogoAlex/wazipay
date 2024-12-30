@@ -56,6 +56,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -210,6 +211,7 @@ fun DashboardScreenComposable(
     Box(
         modifier = Modifier
             .safeDrawingPadding()
+            .background(MaterialTheme.colorScheme.background)
     ) {
         DashboardScreen(
             darkMode = darkMode,
@@ -298,6 +300,7 @@ fun DashboardScreen(
                         Text(
                             text = selectedProfile.uppercase(),
                             fontSize = screenFontSize(x = 16.0).sp,
+                            color = MaterialTheme.colorScheme.onBackground,
                             fontWeight = FontWeight.Bold
                         )
                         Spacer(modifier = Modifier.weight(1f))
@@ -324,6 +327,7 @@ fun DashboardScreen(
                                 label = {
                                     Row {
                                         Icon(
+                                            tint = MaterialTheme.colorScheme.onBackground,
                                             painter = painterResource(id = tab.icon),
                                             contentDescription = tab.name,
                                             modifier = Modifier
@@ -332,6 +336,7 @@ fun DashboardScreen(
                                         Spacer(modifier = Modifier.width(screenWidth(x = 5.0)))
                                         Text(
                                             text = tab.name,
+                                            color = MaterialTheme.colorScheme.onBackground,
                                             fontSize = screenFontSize(x = 14.0).sp,
                                         )
                                     }
@@ -385,6 +390,7 @@ fun DashboardScreen(
                     Text(
                         text = "WAZIPAY",
                         fontSize = screenFontSize(x = 16.0).sp,
+                        color = MaterialTheme.colorScheme.onBackground,
                         fontWeight = FontWeight.Bold
                     )
                     Spacer(modifier = Modifier.weight(1f))
@@ -398,10 +404,12 @@ fun DashboardScreen(
                         ) {
                             Text(
                                 text = selectedProfile,
+                                color = MaterialTheme.colorScheme.onBackground,
                                 fontSize = screenFontSize(x = 16.0).sp
                             )
                             IconButton(onClick = onExpandDropdown) {
                                 Icon(
+                                    tint = MaterialTheme.colorScheme.onBackground,
                                     imageVector = Icons.Default.KeyboardArrowDown,
                                     contentDescription = "Switch role"
                                 )
@@ -425,12 +433,14 @@ fun DashboardScreen(
                                                 Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
                                                 Text(
                                                     text = it,
+                                                    color = MaterialTheme.colorScheme.onBackground,
                                                     fontSize = screenFontSize(x = 14.0).sp
                                                 )
                                             }
                                         } else {
                                             Text(
                                                 text = it,
+                                                color = MaterialTheme.colorScheme.onBackground,
                                                 fontSize = screenFontSize(x = 14.0).sp
                                             )
                                         }
@@ -479,7 +489,10 @@ fun DashboardScreen(
                         modifier = Modifier
 //                            .weight(1f)
                     ) {
-                        Text(text = "Shops")
+                        Text(
+                            text = "Shops",
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
                     }
                 }
                 NavBarItem.PROFILE -> {
@@ -489,7 +502,10 @@ fun DashboardScreen(
                             .fillMaxSize()
 //                            .weight(1f)
                     ) {
-                        Text(text = "Profile")
+                        Text(
+                            text = "Profile",
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
                     }
                 }
 
