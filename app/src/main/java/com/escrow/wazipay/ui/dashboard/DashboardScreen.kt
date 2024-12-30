@@ -101,6 +101,7 @@ fun DashboardScreenComposable(
     navigateToBusinessDetailsScreen: (businessId: String) -> Unit,
     navigateToDepositScreen: () -> Unit,
     navigateToWithdrawalScreen: () -> Unit,
+    navigateToDashboardScreen: () -> Unit,
 ) {
     val context = LocalContext.current
 
@@ -195,11 +196,6 @@ fun DashboardScreenComposable(
                     tab = NavBarItem.TRANSACTIONS
                 ),
                 NavItem(
-                    name = "Shops",
-                    icon = R.drawable.shop,
-                    tab = NavBarItem.SHOPS
-                ),
-                NavItem(
                     name = "Profile",
                     icon = R.drawable.profile,
                     tab = NavBarItem.PROFILE
@@ -232,7 +228,7 @@ fun DashboardScreenComposable(
             dropdownExpanded = dropdownExpanded,
             onSelectRole = {
                 viewModel.switchRole(it)
-                viewModel.changeTab(NavBarItem.HOME)
+                navigateToDashboardScreen()
             },
             filtering = filtering,
             navItems = navItems,

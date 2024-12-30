@@ -123,6 +123,9 @@ fun NavigationGraph(
                 navigateToBusinessDetailsScreen = {
                     navController.navigate("${BusinessDetailsScreenDestination.route}/${it}")
                 },
+                navigateToDashboardScreen = {
+                    navController.navigate(DashboardScreenDestination.route)
+                }
             )
         }
 
@@ -148,6 +151,9 @@ fun NavigationGraph(
                 },
                 navigateToBusinessDetailsScreen = {
                     navController.navigate("${BusinessDetailsScreenDestination.route}/${it}")
+                },
+                navigateToDashboardScreen = {
+                    navController.navigate(DashboardScreenDestination.route)
                 }
             )
         }
@@ -242,6 +248,9 @@ fun NavigationGraph(
                 },
                 navigateToBusinessDetailsScreen = {
                     navController.navigate("${BusinessDetailsScreenDestination.route}/${it}")
+                },
+                navigateToDashboardScreen = {
+                    navController.navigate(DashboardScreenDestination.route)
                 }
             )
         }

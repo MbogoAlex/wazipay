@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.escrow.wazipay.data.network.repository.ApiRepository
+import com.escrow.wazipay.data.room.models.Role
 import com.escrow.wazipay.data.room.repository.DBRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -36,7 +37,7 @@ class BusinessViewModel(
                val response = apiRepository.getBusinesses(
                    token = uiState.value.userDetails.token!!,
                    query = uiState.value.searchQuery,
-                   ownerId = null,
+                   ownerId = if(uiState.value.userRole.role == Role.MERCHANT) uiState.value.userDetails.userId else null,
                    archived = null,
                    startDate = null,
                    endDate = null

@@ -88,7 +88,7 @@ fun InvoicesScreen(
             )
     ) {
         Text(
-            text = "${if(role == Role.BUYER) "Received Invoices" else "Received Invoices"} / $selectedStatus",
+            text = "${if(role == Role.BUYER) "Received Invoices" else "Issued Invoices"} / $selectedStatus",
             fontWeight = FontWeight.Bold,
             fontSize = screenFontSize(x = 14.0).sp
         )

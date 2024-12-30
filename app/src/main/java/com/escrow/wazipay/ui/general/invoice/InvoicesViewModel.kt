@@ -3,6 +3,7 @@ package com.escrow.wazipay.ui.general.invoice
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.escrow.wazipay.data.network.repository.ApiRepository
+import com.escrow.wazipay.data.room.models.Role
 import com.escrow.wazipay.data.room.repository.DBRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -55,8 +56,8 @@ class InvoicesViewModel(
                    token = uiState.value.userDetails.token!!,
                    query = null,
                    businessId = null,
-                   buyerId = uiState.value.userDetails.userId,
-                   merchantId = null,
+                   buyerId = if(uiState.value.userRole.role == Role.BUYER) uiState.value.userDetails.userId else null,
+                   merchantId = if(uiState.value.userRole.role == Role.MERCHANT) uiState.value.userDetails.userId else null,
                    status = if(uiState.value.invoiceStatus != null) uiState.value.invoiceStatus!!.name else null,
                    startDate = null,
                    endDate = null

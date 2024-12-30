@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.escrow.wazipay.data.network.repository.ApiRepository
+import com.escrow.wazipay.data.room.models.Role
 import com.escrow.wazipay.data.room.repository.DBRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -38,8 +39,8 @@ class OrdersViewModel(
                     token = uiState.value.userDetails.token!!,
                     query = null,
                     code = null,
-                    merchantId = null,
-                    buyerId = uiState.value.userDetails.userId,
+                    merchantId = if(uiState.value.role == Role.MERCHANT) uiState.value.userDetails.userId else null,
+                    buyerId = if(uiState.value.role == Role.BUYER) uiState.value.userDetails.userId else null,
                     courierId = null,
                     businessId = if(uiState.value.businessId != null) uiState.value.businessId!!.toInt() else null,
                     stage = if(uiState.value.orderStage == OrderStage.All) null else uiState.value.orderStage.name,
