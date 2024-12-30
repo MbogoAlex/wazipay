@@ -1,5 +1,7 @@
 package com.escrow.wazipay
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.CreationExtras
@@ -15,11 +17,13 @@ import com.escrow.wazipay.ui.general.business.BusinessViewModel
 import com.escrow.wazipay.ui.general.invoice.InvoicesViewModel
 import com.escrow.wazipay.ui.general.order.OrderCreationViewModel
 import com.escrow.wazipay.ui.general.order.OrdersViewModel
+import com.escrow.wazipay.ui.general.transaction.TransactionsViewModel
 import com.escrow.wazipay.ui.general.wallet.deposit.DepositViewModel
 import com.escrow.wazipay.ui.general.wallet.withdrawal.WithdrawalViewModel
 import com.escrow.wazipay.ui.start.SplashViewModel
 
 object AppViewModelFactory {
+    @RequiresApi(Build.VERSION_CODES.O)
     val Factory = viewModelFactory {
 
         initializer {
@@ -117,6 +121,13 @@ object AppViewModelFactory {
 
         initializer {
             InvoicesViewModel(
+                apiRepository = wazipayApplication().container.apiRepository,
+                dbRepository = wazipayApplication().container.dbRepository
+            )
+        }
+
+        initializer {
+            TransactionsViewModel(
                 apiRepository = wazipayApplication().container.apiRepository,
                 dbRepository = wazipayApplication().container.dbRepository
             )

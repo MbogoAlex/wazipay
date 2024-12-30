@@ -38,6 +38,8 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -49,7 +51,10 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.escrow.wazipay.AppViewModelFactory
 import com.escrow.wazipay.R
+import com.escrow.wazipay.data.network.models.transaction.TransactionData
 import com.escrow.wazipay.data.network.models.transaction.transactions
 import com.escrow.wazipay.ui.theme.WazipayTheme
 import com.escrow.wazipay.utils.screenFontSize
@@ -68,12 +73,25 @@ fun TransactionsScreenComposable(
     modifier: Modifier = Modifier
 ) {
 
+    val transactionsViewModel: TransactionsViewModel = viewModel(factory = AppViewModelFactory.Factory)
+    val transactionsUiState by transactionsViewModel.uiState.collectAsState()
+
     Box(
         modifier = modifier
             .safeDrawingPadding()
     ) {
         TransactionsScreen(
             filtering = filtering,
+            searchText = transactionsUiState.searchText,
+            startDate = LocalDate.parse(transactionsUiState.startDate),
+            endDate = LocalDate.parse(transactionsUiState.endDate),
+            onChangeSearchText = transactionsViewModel::changeSearchText,
+            onChangeStartDate = transactionsViewModel::changeStartDate,
+            onChangeEndDate = transactionsViewModel::changeEndDate,
+            onClearSearch = {
+                transactionsViewModel.changeSearchText("")
+            },
+            transactions = transactionsUiState.transactions,
             onFilter = onFilter
         )
     }
@@ -83,7 +101,15 @@ fun TransactionsScreenComposable(
 @Composable
 fun TransactionsScreen(
     filtering: Boolean,
+    searchText: String,
+    startDate: LocalDate,
+    endDate: LocalDate,
+    onChangeSearchText: (text: String) -> Unit,
+    onChangeStartDate: (date: LocalDate) -> Unit,
+    onChangeEndDate: (date: LocalDate) -> Unit,
+    transactions: List<TransactionData>,
     onFilter: () -> Unit,
+    onClearSearch: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val dateFormatter = DateTimeFormatter.ofPattern("dd MMM, yyyy")
@@ -115,7 +141,7 @@ fun TransactionsScreen(
                     TextField(
                         shape = RoundedCornerShape(screenWidth(x = 10.0)),
                         leadingIcon = {
-                            IconButton(onClick = { /*TODO*/ }) {
+                            IconButton(onClick = onFilter) {
                                 Icon(
                                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                     contentDescription = "Back"
@@ -135,7 +161,7 @@ fun TransactionsScreen(
                         keyboardOptions = KeyboardOptions.Default.copy(
                             imeAction = ImeAction.Done
                         ),
-                        value = "",
+                        value = searchText,
                         trailingIcon = {
                             Box(
                                 contentAlignment = Alignment.Center,
@@ -144,7 +170,7 @@ fun TransactionsScreen(
                                     .background(MaterialTheme.colorScheme.inverseOnSurface)
                                     .padding(screenWidth(x = 5.0))
                                     .clickable {
-//                                        onClearSearch()
+                                        onClearSearch()
                                     }
 
                             ) {
@@ -157,18 +183,18 @@ fun TransactionsScreen(
                             }
 
                         },
-                        onValueChange = {},
+                        onValueChange = onChangeSearchText,
                         modifier = Modifier
                             .fillMaxWidth()
                     )
                     Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
                     DateRangePickerDialog(
-                        startDate = LocalDate.now().withDayOfYear(1),
-                        endDate = LocalDate.now(),
+                        startDate = startDate,
+                        endDate = endDate,
                         defaultStartDate = null,
                         defaultEndDate = null,
-                        onChangeStartDate = {},
-                        onChangeLastDate = {},
+                        onChangeStartDate = onChangeStartDate,
+                        onChangeLastDate = onChangeEndDate,
                         onDismiss = { /*TODO*/ },
                         onConfirm = { /*TODO*/ }
                     )
@@ -204,7 +230,7 @@ fun TransactionsScreen(
                     )
             ) {
                 Text(
-                    text = "${dateFormatter.format(LocalDate.now().withDayOfYear(1))} to ${dateFormatter.format(LocalDate.now())}",
+                    text = "${dateFormatter.format(startDate)} to ${dateFormatter.format(endDate)}",
                     fontSize = screenFontSize(x = 14.0).sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -396,7 +422,15 @@ fun TransactionsScreenPreview() {
     WazipayTheme {
         TransactionsScreen(
             filtering = false,
-            onFilter = {}
+            searchText = "",
+            startDate = LocalDate.now().withDayOfMonth(1),
+            endDate = LocalDate.now(),
+            onChangeSearchText = {},
+            onChangeStartDate = {},
+            onChangeEndDate = {},
+            onClearSearch = {},
+            transactions = transactions,
+            onFilter = { /*TODO*/ }
         )
     }
 }
