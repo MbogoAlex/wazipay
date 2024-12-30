@@ -210,6 +210,13 @@ fun MerchantDashboardScreen(
         }
         if(orders.isNotEmpty()) {
             Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+            Text(
+                text = "Received Orders",
+                color = MaterialTheme.colorScheme.onBackground,
+                fontSize = screenFontSize(x = 16.0).sp,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
             Row(
                 modifier = Modifier
                     .horizontalScroll(rememberScrollState())
