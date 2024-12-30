@@ -3,6 +3,7 @@ package com.escrow.wazipay.data.room.repository
 import com.escrow.wazipay.data.room.AppDao
 import com.escrow.wazipay.data.room.models.DarkMode
 import com.escrow.wazipay.data.room.models.UserDetails
+import com.escrow.wazipay.data.room.models.UserRole
 import kotlinx.coroutines.flow.Flow
 
 class DBRepositoryImpl(private val appDao: AppDao): DBRepository {
@@ -29,4 +30,13 @@ class DBRepositoryImpl(private val appDao: AppDao): DBRepository {
 
     override fun getTheme(): Flow<DarkMode?> =
         appDao.getTheme()
+
+    override suspend fun insertUserRole(userRole: UserRole) =
+        appDao.insertUserRole(userRole)
+
+    override suspend fun updateUserRole(userRole: UserRole) =
+        appDao.updateUserRole(userRole)
+
+    override fun getUserRole(): Flow<UserRole?> =
+        appDao.getUserRole()
 }

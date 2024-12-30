@@ -1,5 +1,8 @@
 package com.escrow.wazipay.ui.general.order
 
+import android.os.Build
+import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -58,6 +61,7 @@ object OrderCreationScreenDestination: AppNavigation {
     val routeWithArgs: String = "$route/{$businessId}"
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun OrderCreationScreenComposable(
     navigateToDashboardWithChildScreen: (profile: String, child: String) -> Unit,
@@ -111,6 +115,7 @@ fun OrderCreationScreenComposable(
     Box(
         modifier = Modifier
             .safeDrawingPadding()
+            .background(MaterialTheme.colorScheme.background)
     ) {
         OrderCreationScreen(
             userId = uiState.userDetails.userId,

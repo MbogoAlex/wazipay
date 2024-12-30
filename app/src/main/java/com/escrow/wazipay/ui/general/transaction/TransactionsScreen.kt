@@ -238,6 +238,7 @@ fun TransactionsScreen(
                 Spacer(modifier = Modifier.weight(1f))
                 IconButton(onClick = onFilter) {
                     Icon(
+                        tint = MaterialTheme.colorScheme.onBackground,
                         painter = painterResource(id = R.drawable.filter),
                         contentDescription = "Filter"
                     )

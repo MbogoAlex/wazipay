@@ -6,8 +6,9 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.escrow.wazipay.data.room.models.DarkMode
 import com.escrow.wazipay.data.room.models.UserDetails
+import com.escrow.wazipay.data.room.models.UserRole
 
-@Database(entities = [UserDetails::class, DarkMode::class], version = 1, exportSchema = false)
+@Database(entities = [UserDetails::class, DarkMode::class, UserRole::class], version = 2, exportSchema = false)
 abstract class AppDatabase: RoomDatabase() {
     abstract fun appDao(): AppDao
 

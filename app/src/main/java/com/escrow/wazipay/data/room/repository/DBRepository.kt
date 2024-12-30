@@ -2,6 +2,7 @@ package com.escrow.wazipay.data.room.repository
 
 import com.escrow.wazipay.data.room.models.DarkMode
 import com.escrow.wazipay.data.room.models.UserDetails
+import com.escrow.wazipay.data.room.models.UserRole
 import kotlinx.coroutines.flow.Flow
 
 interface DBRepository {
@@ -22,4 +23,10 @@ interface DBRepository {
     suspend fun changeTheme(darkMode: DarkMode)
 
     fun getTheme(): Flow<DarkMode?>
+
+    suspend fun insertUserRole(userRole: UserRole)
+
+    suspend fun updateUserRole(userRole: UserRole)
+
+    fun getUserRole(): Flow<UserRole?>
 }
