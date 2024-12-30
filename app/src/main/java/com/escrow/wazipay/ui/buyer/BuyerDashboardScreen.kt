@@ -56,8 +56,8 @@ import com.escrow.wazipay.utils.screenWidth
 @Composable
 fun BuyerDashboardScreenComposable(
     navigateToLoginScreenWithArgs: (phoneNumber: String, pin: String) -> Unit,
-    navigateToDepositScreenWithArgs: (profile: String) -> Unit,
-    navigateToWithdrawalScreenWithArgs: (profile: String) -> Unit,
+    navigateToDepositScreen: () -> Unit,
+    navigateToWithdrawalScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -81,8 +81,8 @@ fun BuyerDashboardScreenComposable(
             orders = uiState.orders,
             invoices = uiState.invoices,
             transactions = uiState.transactions,
-            navigateToDepositScreenWithArgs = navigateToDepositScreenWithArgs,
-            navigateToWithdrawalScreenWithArgs = navigateToWithdrawalScreenWithArgs
+            navigateToDepositScreen = navigateToDepositScreen,
+            navigateToWithdrawalScreen = navigateToWithdrawalScreen
         )
     }
 }
@@ -96,8 +96,8 @@ fun BuyerDashboardScreen(
     orders: List<OrderData>,
     invoices: List<InvoiceData>,
     transactions: List<TransactionData>,
-    navigateToDepositScreenWithArgs: (profile: String) -> Unit,
-    navigateToWithdrawalScreenWithArgs: (profile: String) -> Unit,
+    navigateToDepositScreen: () -> Unit,
+    navigateToWithdrawalScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -164,7 +164,7 @@ fun BuyerDashboardScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Button(onClick = {
-                        navigateToDepositScreenWithArgs("Buyer")
+                        navigateToDepositScreen()
                     }) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically
@@ -182,7 +182,7 @@ fun BuyerDashboardScreen(
                     }
                     Spacer(modifier = Modifier.width(screenWidth(x = 8.0)))
                     OutlinedButton(onClick = {
-                        navigateToWithdrawalScreenWithArgs("Buyer")
+                        navigateToWithdrawalScreen()
                     }) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically
@@ -286,8 +286,8 @@ fun BuyerDashboardScreenPreview() {
             orders = orders,
             invoices = invoices,
             transactions = transactions,
-            navigateToDepositScreenWithArgs = {},
-            navigateToWithdrawalScreenWithArgs = {}
+            navigateToDepositScreen = {},
+            navigateToWithdrawalScreen = {}
         )
     }
 }

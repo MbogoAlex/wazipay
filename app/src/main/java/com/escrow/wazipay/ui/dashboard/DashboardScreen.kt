@@ -56,7 +56,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -89,10 +88,8 @@ import kotlinx.coroutines.launch
 object DashboardScreenDestination: AppNavigation {
     override val title: String = "Dashboard screen"
     override val route: String = "dashboard-screen"
-    val profile: String = "profile"
-    val routeWithArgs: String = "$route/{$profile}"
     val child: String = "child"
-    val routeWithChild: String = "$route/{$profile}/{$child}"
+    val routeWithChild: String = "$route/{$child}"
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -101,9 +98,9 @@ fun DashboardScreenComposable(
     darkMode: Boolean,
     onSwitchTheme: () -> Unit,
     navigateToLoginScreenWithArgs: (phoneNumber: String, pin: String) -> Unit,
-    navigateToDepositScreenWithArgs: (profile: String) -> Unit,
-    navigateToWithdrawalScreenWithArgs: (profile: String) -> Unit,
     navigateToBusinessDetailsScreen: (businessId: String) -> Unit,
+    navigateToDepositScreen: () -> Unit,
+    navigateToWithdrawalScreen: () -> Unit,
 ) {
     val context = LocalContext.current
 
@@ -250,8 +247,8 @@ fun DashboardScreenComposable(
                 filtering = !filtering
             },
             navigateToLoginScreenWithArgs = navigateToLoginScreenWithArgs,
-            navigateToDepositScreenWithArgs = navigateToDepositScreenWithArgs,
-            navigateToWithdrawalScreenWithArgs = navigateToWithdrawalScreenWithArgs,
+            navigateToDepositScreen = navigateToDepositScreen,
+            navigateToWithdrawalScreen = navigateToWithdrawalScreen,
             navigateToBusinessDetailsScreen = navigateToBusinessDetailsScreen
         )
     }
@@ -275,8 +272,8 @@ fun DashboardScreen(
     onSelectTab: (tab: NavBarItem) -> Unit,
     onFilter: () -> Unit,
     navigateToLoginScreenWithArgs: (phoneNumber: String, pin: String) -> Unit,
-    navigateToDepositScreenWithArgs: (profile: String) -> Unit,
-    navigateToWithdrawalScreenWithArgs: (profile: String) -> Unit,
+    navigateToDepositScreen: () -> Unit,
+    navigateToWithdrawalScreen: () -> Unit,
     navigateToBusinessDetailsScreen: (businessId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -465,12 +462,14 @@ fun DashboardScreen(
                 NavBarItem.HOME -> when(role) {
                     Role.BUYER -> BuyerDashboardScreenComposable(
                         navigateToLoginScreenWithArgs = navigateToLoginScreenWithArgs,
-                        navigateToDepositScreenWithArgs = navigateToDepositScreenWithArgs,
-                        navigateToWithdrawalScreenWithArgs = navigateToWithdrawalScreenWithArgs,
+                        navigateToDepositScreen = navigateToDepositScreen,
+                        navigateToWithdrawalScreen = navigateToWithdrawalScreen,
                         modifier = Modifier
 //                            .weight(1f)
                     )
                     Role.MERCHANT -> MerchantDashboardScreenComposable(
+                        navigateToDepositScreen = navigateToDepositScreen,
+                        navigateToWithdrawalScreen = navigateToWithdrawalScreen,
                         modifier = Modifier
 //                            .weight(1f)
                     )
@@ -694,8 +693,8 @@ fun DashboardScreenPreview() {
                 filtering = !filtering
             },
             navigateToLoginScreenWithArgs = {phoneNumber, pin ->  },
-            navigateToDepositScreenWithArgs = {},
-            navigateToWithdrawalScreenWithArgs = {},
+            navigateToDepositScreen = {},
+            navigateToWithdrawalScreen = {},
             navigateToBusinessDetailsScreen = {}
         )
     }

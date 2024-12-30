@@ -151,6 +151,20 @@ class WithdrawalViewModel(
         }
     }
 
+    private fun getUserRole() {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                dbRepository.getUserRole().collect { userRole ->
+                    _uiState.update {
+                        it.copy(
+                            role = userRole!!.role
+                        )
+                    }
+                }
+            }
+        }
+    }
+
     fun resetStatus() {
         _uiState.update {
             it.copy(
@@ -160,13 +174,9 @@ class WithdrawalViewModel(
     }
 
     init {
+        getUserRole()
         getUser()
         loadStartUpData()
 
-        _uiState.update {
-            it.copy(
-                profile = savedStateHandle[WithdrawalScreenDestination.profile]
-            )
-        }
     }
 }

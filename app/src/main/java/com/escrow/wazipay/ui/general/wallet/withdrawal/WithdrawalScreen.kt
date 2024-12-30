@@ -1,7 +1,9 @@
 package com.escrow.wazipay.ui.general.wallet.withdrawal
 
+import android.os.Build
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -43,6 +45,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.escrow.wazipay.AppViewModelFactory
 import com.escrow.wazipay.R
+import com.escrow.wazipay.data.room.models.Role
 import com.escrow.wazipay.ui.nav.AppNavigation
 import com.escrow.wazipay.ui.theme.WazipayTheme
 import com.escrow.wazipay.utils.composables.TextFieldComposable
@@ -55,13 +58,12 @@ import com.escrow.wazipay.utils.screenWidth
 object WithdrawalScreenDestination: AppNavigation {
     override val title: String = "Withdrawal screen"
     override val route: String = "withdrawal-screen"
-    val profile: String = "profile"
-    val routeWithArgs: String = "$route/{$profile}"
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun WithdrawalScreenComposable(
-    navigateToDashboardScreenWithArgs: (profile: String) -> Unit,
+    navigateToDashboardScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -71,7 +73,7 @@ fun WithdrawalScreenComposable(
 
     BackHandler(onBack = {
         if(uiState.withdrawalStatus != WithdrawalStatus.LOADING) {
-            navigateToDashboardScreenWithArgs(uiState.profile ?: "Buyer")
+            navigateToDashboardScreen()
         }
     })
 
@@ -105,7 +107,7 @@ fun WithdrawalScreenComposable(
         WithdrawalSuccessDialog(
             onConfirm = {
                 viewModel.resetStatus()
-                navigateToDashboardScreenWithArgs(uiState.profile ?: "Buyer")
+                navigateToDashboardScreen()
             },
             onDismiss = {
                 viewModel.resetStatus()
@@ -125,7 +127,7 @@ fun WithdrawalScreenComposable(
             .safeDrawingPadding()
     ) {
         WithdrawalScreen(
-            profile = uiState.profile ?: "Buyer",
+            role = uiState.role,
             withdrawalAmount = uiState.withdrawalAmount,
             newBalance = formatMoneyValue(uiState.userWalletData.balance),
             walletBalance = formatMoneyValue(uiState.userWalletData.balance),
@@ -142,7 +144,7 @@ fun WithdrawalScreenComposable(
             withdrawalStatus = uiState.withdrawalStatus,
             buttonEnabled = uiState.buttonEnabled,
             navigateToPreviousScreen = {
-                navigateToDashboardScreenWithArgs(uiState.profile ?: "Buyer")
+                navigateToDashboardScreen()
             },
             onWithdraw = {
                 if(uiState.withdrawalAmount.toDouble() > uiState.userWalletData.balance) {
@@ -159,7 +161,7 @@ fun WithdrawalScreenComposable(
 
 @Composable
 fun WithdrawalScreen(
-    profile: String,
+    role: Role,
     withdrawalAmount: String,
     newBalance: String,
     walletBalance: String,
@@ -406,7 +408,7 @@ fun WithdrawalSuccessDialog(
 fun WithdrawalScreenPreview() {
     WazipayTheme {
         WithdrawalScreen(
-            profile = "Buyer",
+            role = Role.BUYER,
             withdrawalAmount = "Ksh100",
             newBalance = "Ksh3450",
             walletBalance = "Ksh3500",

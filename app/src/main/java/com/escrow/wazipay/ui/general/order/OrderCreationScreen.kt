@@ -64,7 +64,7 @@ object OrderCreationScreenDestination: AppNavigation {
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun OrderCreationScreenComposable(
-    navigateToDashboardWithChildScreen: (profile: String, child: String) -> Unit,
+    navigateToDashboardWithChildScreen: (child: String) -> Unit,
     navigateToPreviousScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -101,11 +101,11 @@ fun OrderCreationScreenComposable(
         OrderCreationSuccessDialog(
             onConfirm = {
                 viewModel.resetStatus()
-                navigateToDashboardWithChildScreen("Buyer", NavBarItem.ORDERS.name)
+                navigateToDashboardWithChildScreen(NavBarItem.ORDERS.name)
             },
             onDismiss = {
                 viewModel.resetStatus()
-                navigateToDashboardWithChildScreen("Buyer", NavBarItem.ORDERS.name)
+                navigateToDashboardWithChildScreen(NavBarItem.ORDERS.name)
             },
             order = uiState.productName,
             cost = formatMoneyValue(uiState.amount.toDouble())

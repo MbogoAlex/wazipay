@@ -1,6 +1,8 @@
 package com.escrow.wazipay.ui.general.wallet.deposit
 
+import android.os.Build
 import androidx.activity.compose.BackHandler
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -49,13 +51,12 @@ import com.escrow.wazipay.utils.screenWidth
 object DepositScreenDestination: AppNavigation {
     override val title: String = "Deposit screen"
     override val route: String = "deposit-screen"
-    val profile: String = "profile"
-    val routeWithArgs: String = "$route/{$profile}"
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun DepositScreenComposable(
-    navigateToDashboardScreenWithArgs: (profile: String) -> Unit,
+    navigateToDashboardScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -65,7 +66,7 @@ fun DepositScreenComposable(
 
     BackHandler(onBack = {
         if(uiState.depositStatus != DepositStatus.LOADING) {
-            navigateToDashboardScreenWithArgs(uiState.profile ?: "Buyer")
+            navigateToDashboardScreen()
         }
     })
 
@@ -98,7 +99,7 @@ fun DepositScreenComposable(
         DepositSuccessDialog(
             onConfirm = {
                 viewModel.resetStatus()
-                navigateToDashboardScreenWithArgs(uiState.profile ?: "Buyer")
+                navigateToDashboardScreen()
             },
             onDismiss = {
                 viewModel.resetStatus()
@@ -127,7 +128,7 @@ fun DepositScreenComposable(
             depositStatus = uiState.depositStatus,
             buttonEnabled = uiState.buttonEnabled,
             navigateToPreviousScreen = {
-                navigateToDashboardScreenWithArgs(uiState.profile ?: "Buyer")
+                navigateToDashboardScreen()
             },
             onDeposit = {
                 showConfirmDialog = !showConfirmDialog

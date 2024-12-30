@@ -114,22 +114,22 @@ fun NavigationGraph(
                 navigateToLoginScreenWithArgs = {phoneNumber, pin ->
                     navController.navigate("${LoginScreenDestination.route}/${phoneNumber}/${pin}")
                 },
-                navigateToDepositScreenWithArgs = {
-                    navController.navigate("${DepositScreenDestination.route}/${it}")
+                navigateToDepositScreen = {
+                    navController.navigate(DepositScreenDestination.route)
                 },
-                navigateToWithdrawalScreenWithArgs = {
-                    navController.navigate("${WithdrawalScreenDestination.route}/${it}")
+                navigateToWithdrawalScreen = {
+                    navController.navigate(WithdrawalScreenDestination.route)
                 },
                 navigateToBusinessDetailsScreen = {
                     navController.navigate("${BusinessDetailsScreenDestination.route}/${it}")
-                }
+                },
             )
         }
 
         composable(
-            DashboardScreenDestination.routeWithArgs,
+            DashboardScreenDestination.routeWithChild,
             arguments = listOf(
-                navArgument(DashboardScreenDestination.profile) {
+                navArgument(DashboardScreenDestination.child) {
                     type = NavType.StringType
                 }
             )
@@ -140,11 +140,11 @@ fun NavigationGraph(
                 navigateToLoginScreenWithArgs = {phoneNumber, pin ->
                     navController.navigate("${LoginScreenDestination.route}/${phoneNumber}/${pin}")
                 },
-                navigateToDepositScreenWithArgs = {
-                    navController.navigate("${DepositScreenDestination.route}/${it}")
+                navigateToDepositScreen = {
+                    navController.navigate(DepositScreenDestination.route)
                 },
-                navigateToWithdrawalScreenWithArgs = {
-                    navController.navigate("${WithdrawalScreenDestination.route}/${it}")
+                navigateToWithdrawalScreen = {
+                    navController.navigate(WithdrawalScreenDestination.route)
                 },
                 navigateToBusinessDetailsScreen = {
                     navController.navigate("${BusinessDetailsScreenDestination.route}/${it}")
@@ -152,33 +152,18 @@ fun NavigationGraph(
             )
         }
 
-        composable(
-            DepositScreenDestination.routeWithArgs,
-            arguments = listOf(
-                navArgument(DepositScreenDestination.profile) {
-                    type = NavType.StringType
-                }
-            )
-        ) {
+        composable(DepositScreenDestination.route) {
             DepositScreenComposable(
-                navigateToDashboardScreenWithArgs = {
-                    navController.navigate("${DashboardScreenDestination.route}/${it}")
+                navigateToDashboardScreen = {
+                    navController.navigate(DashboardScreenDestination.route)
                 }
             )
         }
 
-        composable(
-            WithdrawalScreenDestination.routeWithArgs,
-            arguments = listOf(
-                navArgument(WithdrawalScreenDestination.profile) {
-                    type = NavType.StringType
-                }
-            )
-        ) {
+        composable(WithdrawalScreenDestination.route) {
             WithdrawalScreenComposable(
-                navigateToDashboardScreenWithArgs = {
-                    navController.navigate("${DashboardScreenDestination.route}/${it}")
-
+                navigateToDashboardScreen = {
+                    navController.navigate(DashboardScreenDestination.route)
                 }
             )
         }
@@ -226,8 +211,8 @@ fun NavigationGraph(
             )
         ) {
             OrderCreationScreenComposable(
-                navigateToDashboardWithChildScreen = {profile, child ->
-                    navController.navigate("${DashboardScreenDestination.route}/${profile}/${child}")
+                navigateToDashboardWithChildScreen = {child ->
+                    navController.navigate("${DashboardScreenDestination.route}/${child}")
                 },
                 navigateToPreviousScreen = {
                     navController.navigateUp()
@@ -237,9 +222,6 @@ fun NavigationGraph(
         composable(
             DashboardScreenDestination.routeWithChild,
             arguments = listOf(
-                navArgument(DashboardScreenDestination.profile) {
-                    type = NavType.StringType
-                },
                 navArgument(DashboardScreenDestination.child) {
                     type = NavType.StringType
                 }
@@ -252,11 +234,11 @@ fun NavigationGraph(
                 navigateToLoginScreenWithArgs = {phoneNumber, pin ->
                     navController.navigate("${LoginScreenDestination.route}/${phoneNumber}/${pin}")
                 },
-                navigateToDepositScreenWithArgs = {
-                    navController.navigate("${DepositScreenDestination.route}/${it}")
+                navigateToDepositScreen = {
+                    navController.navigate(DepositScreenDestination.route)
                 },
-                navigateToWithdrawalScreenWithArgs = {
-                    navController.navigate("${WithdrawalScreenDestination.route}/${it}")
+                navigateToWithdrawalScreen = {
+                    navController.navigate(WithdrawalScreenDestination.route)
                 },
                 navigateToBusinessDetailsScreen = {
                     navController.navigate("${BusinessDetailsScreenDestination.route}/${it}")
