@@ -166,4 +166,13 @@ interface ApiService {
     @Header("Authorization")token: String,
     @Body orderCreationRequestBody: OrderCreationRequestBody
     ): Response<OrderCreationResponseBody>
+
+//    Get users
+    @GET("user/filter")
+    suspend fun getUsers(
+        @Query("query") query: String?,
+        @Query("verificationStatus") verificationStatus: String?,
+        @Query("startDate") startDate: String?,
+        @Query("endDate") endDate: String?
+    ): Response<UserDetailsResponseBody>
 }

@@ -192,4 +192,17 @@ class ApiRepositoryImpl(private val apiService: ApiService): ApiRepository {
             token = "Bearer $token",
             orderCreationRequestBody = orderCreationRequestBody
         )
+
+    override suspend fun getUsers(
+        query: String?,
+        verificationStatus: String?,
+        startDate: String?,
+        endDate: String?
+    ): Response<UserDetailsResponseBody> =
+        apiService.getUsers(
+            query = query,
+            verificationStatus = verificationStatus,
+            startDate = startDate,
+            endDate = endDate
+        )
 }

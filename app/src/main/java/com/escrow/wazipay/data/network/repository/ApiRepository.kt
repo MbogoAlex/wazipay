@@ -142,4 +142,12 @@ interface ApiRepository {
         token: String,
         orderCreationRequestBody: OrderCreationRequestBody
     ): Response<OrderCreationResponseBody>
+
+    //    Get users
+    suspend fun getUsers(
+        query: String?,
+        verificationStatus: String?,
+        startDate: String?,
+        endDate: String?
+    ): Response<UserDetailsResponseBody>
 }
