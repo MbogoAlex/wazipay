@@ -89,16 +89,17 @@ fun BusinessesScreen(
         modifier = Modifier
             .fillMaxSize()
             .padding(
-                vertical = screenHeight(x = 16.0),
-                horizontal = screenWidth(x = 16.0)
+                start = screenWidth(x = 16.0),
+                end = screenWidth(x = 16.0),
+                bottom = screenHeight(x = 16.0)
             )
     ) {
-        Text(
-            text = if(role == Role.BUYER) "Businesses" else if(role == Role.MERCHANT) "My Businesses" else "Businesses",
-            fontWeight = FontWeight.Bold,
-            fontSize = screenFontSize(x = 16.0).sp
-        )
-        Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+//        Text(
+//            text = if(role == Role.BUYER) "Businesses" else if(role == Role.MERCHANT) "My Businesses" else "Businesses",
+//            fontWeight = FontWeight.Bold,
+//            fontSize = screenFontSize(x = 16.0).sp
+//        )
+//        Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
         TextField(
             shape = RoundedCornerShape(screenWidth(x = 10.0)),
 //            leadingIcon = {

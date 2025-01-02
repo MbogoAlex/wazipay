@@ -1,5 +1,7 @@
 package com.escrow.wazipay.ui.general.business
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -27,6 +29,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.escrow.wazipay.AppViewModelFactory
 import com.escrow.wazipay.data.network.models.business.BusinessData
 import com.escrow.wazipay.data.network.models.business.businessData
+import com.escrow.wazipay.data.room.models.Role
 import com.escrow.wazipay.ui.nav.AppNavigation
 import com.escrow.wazipay.ui.theme.WazipayTheme
 import com.escrow.wazipay.utils.screenFontSize
@@ -40,6 +43,7 @@ object BusinessDetailsScreenDestination: AppNavigation {
     val routeWithArgs: String = "$route/{$businessId}"
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun BusinessDetailsScreenComposable(
     navigateToOrdersScreenWithArgs: (businessId: String) -> Unit,
@@ -56,6 +60,7 @@ fun BusinessDetailsScreenComposable(
     ) {
         BusinessDetailsScreen(
             userId = uiState.userDetails.userId,
+            role = uiState.role,
             businessData = uiState.businessData,
             navigateToOrdersScreenWithArgs = navigateToOrdersScreenWithArgs,
             navigateToCreateOrderScreenWithArgs = navigateToCreateOrderScreenWithArgs,
@@ -67,6 +72,7 @@ fun BusinessDetailsScreenComposable(
 @Composable
 fun BusinessDetailsScreen(
     userId: Int,
+    role: Role,
     businessData: BusinessData,
     navigateToOrdersScreenWithArgs: (businessId: String) -> Unit,
     navigateToCreateOrderScreenWithArgs: (businessId: String) -> Unit,
@@ -157,10 +163,18 @@ fun BusinessDetailsScreen(
             Button(onClick = {
                 navigateToCreateOrderScreenWithArgs(businessData.id.toString())
             }) {
-                Text(
-                    text = "Create New Order",
-                    fontSize = screenFontSize(x = 14.0).sp
-                )
+                if(role == Role.BUYER) {
+                    Text(
+                        text = "Pay business",
+                        fontSize = screenFontSize(x = 14.0).sp
+                    )
+                } else {
+                    Text(
+                        text = "Create order",
+                        fontSize = screenFontSize(x = 14.0).sp
+                    )
+                }
+
             }
         }
     }
@@ -172,6 +186,7 @@ fun BusinessDetailsScreenPreview() {
     WazipayTheme {
         BusinessDetailsScreen(
             userId = 1,
+            role = Role.BUYER,
             businessData = businessData,
             navigateToOrdersScreenWithArgs = {businessId ->  },
             navigateToCreateOrderScreenWithArgs = {businessId ->  },

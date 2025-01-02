@@ -274,6 +274,16 @@ fun DashboardScreen(
     modifier: Modifier = Modifier
 ) {
 
+    val title = when(selectedTab) {
+        NavBarItem.HOME -> "Dashboard"
+        NavBarItem.TRANSACTIONS -> "Transactions"
+        NavBarItem.ORDERS -> "Orders"
+        NavBarItem.PROFILE -> "Profile"
+        NavBarItem.BUSINESSES -> "Businesses"
+        NavBarItem.INVOICES -> "Invoices"
+        NavBarItem.SHOPS -> "Shops"
+    }
+
     ModalNavigationDrawer(
         drawerState = drawerState!!,
         drawerContent = {
@@ -357,98 +367,93 @@ fun DashboardScreen(
             modifier = Modifier
                 .fillMaxSize()
         ) {
-            ElevatedCard(
-                shape = RoundedCornerShape(0.dp),
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
-                    .fillMaxWidth()
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .padding(
-                            top = screenHeight(x = 8.0),
-                            start = screenWidth(x = 16.0),
-                            end = screenWidth(x = 16.0),
-                            bottom = screenHeight(x = 8.0)
-                        )
-                ) {
-                    IconButton(onClick = {
-                        scope!!.launch {
-                            if(drawerState.isClosed) drawerState.open() else drawerState.close()
-                        }
-                    }) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.menu),
-                            contentDescription = "Menu",
-                            modifier = Modifier
-                                .size(screenWidth(x = 24.0))
-                        )
-                    }
-                    Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
-                    Text(
-                        text = "WAZIPAY",
-                        fontSize = screenFontSize(x = 16.0).sp,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        fontWeight = FontWeight.Bold
+                    .padding(
+                        start = screenWidth(x = 16.0),
+                        top = screenHeight(x = 8.0),
+                        end = screenWidth(x = 16.0),
+                        bottom = screenHeight(x = 8.0)
                     )
-                    Spacer(modifier = Modifier.weight(1f))
-                    Column {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier
-                                .clickable {
-                                    onExpandDropdown()
-                                }
-                        ) {
-                            Text(
-                                text = role.name.lowercase().replaceFirstChar { it.uppercase() },
-                                color = MaterialTheme.colorScheme.onBackground,
-                                fontSize = screenFontSize(x = 16.0).sp
-                            )
-                            IconButton(onClick = onExpandDropdown) {
-                                Icon(
-                                    tint = MaterialTheme.colorScheme.onBackground,
-                                    imageVector = Icons.Default.KeyboardArrowDown,
-                                    contentDescription = "Switch role"
-                                )
+            ) {
+                IconButton(onClick = {
+                    scope!!.launch {
+                        if(drawerState.isClosed) drawerState.open() else drawerState.close()
+                    }
+                }) {
+                    Icon(
+                        tint = MaterialTheme.colorScheme.onBackground,
+                        painter = painterResource(id = R.drawable.menu),
+                        contentDescription = "Menu",
+                        modifier = Modifier
+                            .size(screenWidth(x = 24.0))
+                    )
+                }
+                Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
+                Text(
+                    text = title,
+                    fontSize = screenFontSize(x = 16.0).sp,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                Column {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .clickable {
+                                onExpandDropdown()
                             }
+                    ) {
+                        Text(
+                            text = role.name.lowercase().replaceFirstChar { it.uppercase() },
+                            color = MaterialTheme.colorScheme.onBackground,
+                            fontSize = screenFontSize(x = 16.0).sp
+                        )
+                        IconButton(onClick = onExpandDropdown) {
+                            Icon(
+                                tint = MaterialTheme.colorScheme.onBackground,
+                                imageVector = Icons.Default.KeyboardArrowDown,
+                                contentDescription = "Switch role"
+                            )
                         }
-                        DropdownMenu(
-                            expanded = dropdownExpanded,
-                            onDismissRequest = onExpandDropdown
-                        ) {
-                            profiles.forEach {
-                                DropdownMenuItem(
-                                    text = {
-                                        if(it.lowercase() == role.name.lowercase()) {
-                                            Row(
-                                                verticalAlignment = Alignment.CenterVertically
-                                            ) {
-                                                Icon(
-                                                    painter = painterResource(id = R.drawable.check),
-                                                    contentDescription = null
-                                                )
-                                                Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
-                                                Text(
-                                                    text = it,
-                                                    color = MaterialTheme.colorScheme.onBackground,
-                                                    fontSize = screenFontSize(x = 14.0).sp
-                                                )
-                                            }
-                                        } else {
+                    }
+                    DropdownMenu(
+                        expanded = dropdownExpanded,
+                        onDismissRequest = onExpandDropdown
+                    ) {
+                        profiles.forEach {
+                            DropdownMenuItem(
+                                text = {
+                                    if(it.lowercase() == role.name.lowercase()) {
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Icon(
+                                                painter = painterResource(id = R.drawable.check),
+                                                contentDescription = null
+                                            )
+                                            Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
                                             Text(
                                                 text = it,
                                                 color = MaterialTheme.colorScheme.onBackground,
                                                 fontSize = screenFontSize(x = 14.0).sp
                                             )
                                         }
-                                    },
-                                    onClick = {
-                                        onSelectRole(Role.valueOf(it.uppercase()))
-                                        onExpandDropdown()
+                                    } else {
+                                        Text(
+                                            text = it,
+                                            color = MaterialTheme.colorScheme.onBackground,
+                                            fontSize = screenFontSize(x = 14.0).sp
+                                        )
                                     }
-                                )
-                            }
+                                },
+                                onClick = {
+                                    onSelectRole(Role.valueOf(it.uppercase()))
+                                    onExpandDropdown()
+                                }
+                            )
                         }
                     }
                 }

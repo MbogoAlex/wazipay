@@ -104,8 +104,9 @@ fun BuyerDashboardScreen(
         modifier = Modifier
             .fillMaxSize()
             .padding(
-                horizontal = screenWidth(x = 16.0),
-                vertical = screenHeight(x = 16.0)
+                start = screenWidth(x = 16.0),
+                end = screenWidth(x = 16.0),
+                bottom = screenHeight(x = 16.0)
             )
             .verticalScroll(rememberScrollState())
     ) {
@@ -211,6 +212,26 @@ fun BuyerDashboardScreen(
                     Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
                     Switch(checked = false, onCheckedChange = {})
                 }
+            }
+        }
+        Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+        Button(
+            onClick = { /*TODO*/ },
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Pay business",
+                    fontSize = screenFontSize(x = 14.0).sp
+                )
+                Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
+                Icon(
+                    painter = painterResource(id = R.drawable.pay),
+                    contentDescription = "Pay business"
+                )
             }
         }
         Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))

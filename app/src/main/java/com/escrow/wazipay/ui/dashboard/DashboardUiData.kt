@@ -6,5 +6,5 @@ import com.escrow.wazipay.ui.general.NavBarItem
 
 data class DashboardUiData(
     val userRole: UserRole = UserRole(0, Role.BUYER),
-    val child: NavBarItem = NavBarItem.HOME
+    val child: NavBarItem = NavBarItem.HOME,
 )

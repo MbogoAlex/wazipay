@@ -87,6 +87,20 @@ class BusinessDetailsViewModel(
         }
     }
 
+    private fun getUserRole() {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                dbRepository.getUserRole().collect { userRole ->
+                    _uiState.update {
+                        it.copy(
+                            role = userRole!!.role
+                        )
+                    }
+                }
+            }
+        }
+    }
+
     fun resetStatus() {
         _uiState.update {
             it.copy(
@@ -101,6 +115,7 @@ class BusinessDetailsViewModel(
                 businessId = savedStateHandle[BusinessDetailsScreenDestination.businessId]
             )
         }
+        getUserRole()
         getUserDetails()
         getBusinessScreenData()
     }
