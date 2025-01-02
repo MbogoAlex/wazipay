@@ -194,12 +194,14 @@ class ApiRepositoryImpl(private val apiService: ApiService): ApiRepository {
         )
 
     override suspend fun getUsers(
+        token: String,
         query: String?,
         verificationStatus: String?,
         startDate: String?,
         endDate: String?
     ): Response<UserDetailsResponseBody> =
         apiService.getUsers(
+            token = token,
             query = query,
             verificationStatus = verificationStatus,
             startDate = startDate,

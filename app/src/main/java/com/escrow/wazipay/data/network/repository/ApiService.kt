@@ -170,6 +170,7 @@ interface ApiService {
 //    Get users
     @GET("user/filter")
     suspend fun getUsers(
+        @Header("Authorization") token: String,
         @Query("query") query: String?,
         @Query("verificationStatus") verificationStatus: String?,
         @Query("startDate") startDate: String?,
