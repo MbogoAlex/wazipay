@@ -87,7 +87,7 @@ fun BusinessSelectionScreen(
         }
         Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
         Text(
-            text = "Select a business",
+            text = "Select the business",
             fontSize = screenFontSize(x = 14.0).sp,
             fontWeight = FontWeight.Bold
         )
