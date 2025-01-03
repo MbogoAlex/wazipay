@@ -8,6 +8,7 @@ import com.escrow.wazipay.data.network.models.common.RegistrationRequestBody
 import com.escrow.wazipay.data.network.models.common.RegistrationResponseBody
 import com.escrow.wazipay.data.network.models.common.SetPinRequestBody
 import com.escrow.wazipay.data.network.models.common.SetPinResponseBody
+import com.escrow.wazipay.data.network.models.invoice.InvoiceCreationRequestBody
 import com.escrow.wazipay.data.network.models.invoice.InvoiceResponseBody
 import com.escrow.wazipay.data.network.models.invoice.InvoicesResponseBody
 import com.escrow.wazipay.data.network.models.order.OrderCreationRequestBody
@@ -201,10 +202,28 @@ class ApiRepositoryImpl(private val apiService: ApiService): ApiRepository {
         endDate: String?
     ): Response<UserDetailsResponseBody> =
         apiService.getUsers(
-            token = token,
+            token = "Bearer $token",
             query = query,
             verificationStatus = verificationStatus,
             startDate = startDate,
             endDate = endDate
+        )
+
+    override suspend fun createInvoice(
+        token: String,
+        invoiceCreationRequestBody: InvoiceCreationRequestBody
+    ): Response<InvoiceResponseBody> =
+        apiService.createInvoice(
+            token = "Bearer $token",
+            invoiceCreationRequestBody = invoiceCreationRequestBody
+        )
+
+    override suspend fun payInvoice(
+        token: String,
+        invoiceId: Int
+    ): Response<InvoiceResponseBody> =
+        apiService.payInvoice(
+            token = "Bearer $token",
+            invoiceId = invoiceId
         )
 }

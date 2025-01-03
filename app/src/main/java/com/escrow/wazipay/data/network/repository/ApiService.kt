@@ -8,6 +8,7 @@ import com.escrow.wazipay.data.network.models.common.RegistrationRequestBody
 import com.escrow.wazipay.data.network.models.common.RegistrationResponseBody
 import com.escrow.wazipay.data.network.models.common.SetPinRequestBody
 import com.escrow.wazipay.data.network.models.common.SetPinResponseBody
+import com.escrow.wazipay.data.network.models.invoice.InvoiceCreationRequestBody
 import com.escrow.wazipay.data.network.models.invoice.InvoiceResponseBody
 import com.escrow.wazipay.data.network.models.invoice.InvoicesResponseBody
 import com.escrow.wazipay.data.network.models.order.OrderCreationRequestBody
@@ -176,4 +177,18 @@ interface ApiService {
         @Query("startDate") startDate: String?,
         @Query("endDate") endDate: String?
     ): Response<UserDetailsResponseBody>
+
+//    Create invoice
+    @POST("merchant/invoice")
+    suspend fun createInvoice(
+        @Header("Authorization") token: String,
+        @Body invoiceCreationRequestBody: InvoiceCreationRequestBody
+    ): Response<InvoiceResponseBody>
+
+//    Pay invoice
+    @PUT("buyer/pay-invoice/{id}")
+    suspend fun payInvoice(
+        @Header("Authorization") token: String,
+        @Path("id") invoiceId: Int
+    ): Response<InvoiceResponseBody>
 }

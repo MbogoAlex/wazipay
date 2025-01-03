@@ -1,6 +1,9 @@
 package com.escrow.wazipay.ui.buyer.invoice
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -8,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -16,6 +20,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ElevatedCard
@@ -24,9 +29,11 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -40,6 +47,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.escrow.wazipay.AppViewModelFactory
 import com.escrow.wazipay.R
 import com.escrow.wazipay.data.network.models.business.BusinessData
 import com.escrow.wazipay.data.network.models.business.businessData
@@ -58,14 +67,98 @@ object InvoiceCreationScreenDestination: AppNavigation {
     val routeWithArgs: String = "$route/{$businessId}"
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun InvoiceCreationScreenComposable(
     navigateToOrderDetailsScreen: (orderId: String) -> Unit,
     navigateToPreviousScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var paymentMethod by rememberSaveable {
-        mutableStateOf("wazipay")
+
+    val viewModel: InvoiceCreationViewModel = viewModel(factory = AppViewModelFactory.Factory)
+    val uiSate by viewModel.uiState.collectAsState()
+
+    var showConfirmDialog by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+    var showSuccessDialog by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+    if(uiSate.invoiceCreationStatus == InvoiceCreationStatus.SUCCESS) {
+        showSuccessDialog = !showSuccessDialog
+    }
+
+    if(showConfirmDialog) {
+        InvoiceConfirmationDialog(
+            onConfirm = {
+                showConfirmDialog = !showConfirmDialog
+                viewModel.createInvoice()
+            },
+            onDismiss = {
+                showConfirmDialog = !showConfirmDialog
+            },
+            title = uiSate.title,
+            cost = formatMoneyValue(uiSate.amount.toDouble())
+        )
+    }
+
+    if(showSuccessDialog) {
+        InvoiceConfirmationDialog(
+            onConfirm = {
+                viewModel.resetStatus()
+                navigateToOrderDetailsScreen(uiSate.orderId)
+            },
+            onDismiss = {
+                viewModel.resetStatus()
+                navigateToOrderDetailsScreen(uiSate.orderId)
+            },
+            title = uiSate.title,
+            cost = formatMoneyValue(uiSate.amount.toDouble())
+        )
+    }
+
+    Box(
+        modifier = Modifier
+            .safeDrawingPadding()
+    ) {
+        InvoiceCreationScreen(
+            userId = uiSate.userDetails.userId,
+            businessData = uiSate.businessData,
+            title = uiSate.title,
+            description = uiSate.description,
+            amount = uiSate.amount,
+            phoneNumber = uiSate.userDetails.phoneNumber!!.takeIf { uiSate.phoneNumber.isEmpty() } ?: uiSate.phoneNumber,
+            onChangePhoneNumber = {
+                viewModel.changePhone(it)
+                viewModel.enableButton()
+            },
+            paymentMethod = uiSate.paymentMethod,
+            currentBalance = formatMoneyValue(uiSate.userWalletData.balance),
+            onChangePaymentMethod = {
+                viewModel.changePaymentMethod(it)
+                viewModel.enableButton()
+            },
+            onChangeTitle = {
+                viewModel.changeTitle(it)
+                viewModel.enableButton()
+            },
+            onChangeDescription = {
+                viewModel.changeDescription(it)
+                viewModel.enableButton()
+            },
+            onChangeAmount = { value ->
+                val validAmount = value.filter { it.isDigit() }
+                viewModel.changeAmount(validAmount)
+                viewModel.enableButton()
+            },
+            invoiceCreationStatus = uiSate.invoiceCreationStatus,
+            navigateToPreviousScreen = navigateToPreviousScreen,
+            onCreateInvoice = {
+                showConfirmDialog = !showConfirmDialog
+            }
+        )
     }
 }
 
@@ -78,9 +171,9 @@ fun InvoiceCreationScreen(
     amount: String,
     phoneNumber: String,
     onChangePhoneNumber: (number: String) -> Unit,
-    paymentMethod: String,
+    paymentMethod: PaymentMethod,
     currentBalance: String,
-    onChangePaymentMethod: (method: String) -> Unit,
+    onChangePaymentMethod: (paymentMethod: PaymentMethod) -> Unit,
     onChangeTitle: (title: String) -> Unit,
     onChangeDescription: (description: String) -> Unit,
     onChangeAmount: (amount: String) -> Unit,
@@ -255,8 +348,8 @@ fun InvoiceCreationScreen(
             modifier = Modifier.padding(horizontal = screenWidth(x = 16.0))
         ) {
             RadioButton(
-                selected = paymentMethod == "wazipay",
-                onClick = { onChangePaymentMethod("wazipay") }
+                selected = paymentMethod == PaymentMethod.WAZIPAY,
+                onClick = { onChangePaymentMethod(PaymentMethod.WAZIPAY) }
             )
             Text(
                 text = "Wazipay",
@@ -267,8 +360,8 @@ fun InvoiceCreationScreen(
             Spacer(modifier = Modifier.width(screenWidth(x = 16.0)))
 
             RadioButton(
-                selected = paymentMethod == "Mpesa",
-                onClick = { onChangePaymentMethod("Mpesa") }
+                selected = paymentMethod == PaymentMethod.MPESA,
+                onClick = { onChangePaymentMethod(PaymentMethod.MPESA) }
             )
             Text(
                 text = "M-PESA",
@@ -277,7 +370,7 @@ fun InvoiceCreationScreen(
             )
         }
         Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
-        if(paymentMethod == "wazipay") {
+        if(paymentMethod == PaymentMethod.WAZIPAY) {
             ElevatedCard(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -318,7 +411,7 @@ fun InvoiceCreationScreen(
 
                 }
             }
-        } else if(paymentMethod == "Mpesa") {
+        } else if(paymentMethod == PaymentMethod.MPESA) {
             ElevatedCard(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -382,6 +475,82 @@ fun InvoiceCreationScreen(
     }
 }
 
+@Composable
+fun InvoiceConfirmationDialog(
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+    title: String,
+    cost: String,
+    modifier: Modifier = Modifier
+) {
+    AlertDialog(
+        title = {
+            Text(
+                text = "Confirm Business Payment",
+                fontSize = screenFontSize(x = 16.0).sp,
+                fontWeight = FontWeight.Bold
+            )
+        },
+        text = {
+            Text(
+                text = "Are you sure you want to pay business for order $title with a cost of $cost?",
+                fontSize = screenFontSize(x = 14.0).sp
+            )
+        },
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            Button(onClick = onConfirm) {
+                Text(
+                    text = "Confirm",
+                    fontSize = screenFontSize(x = 14.0).sp
+                )
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(
+                    text = "Cancel",
+                    fontSize = screenFontSize(x = 14.0).sp
+                )
+            }
+        }
+    )
+}
+
+@Composable
+fun InvoiceCreationSuccessDialog(
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+    title: String,
+    cost: String,
+    modifier: Modifier = Modifier
+) {
+    AlertDialog(
+        title = {
+            Text(
+                text = "Payment successful",
+                fontSize = screenFontSize(x = 16.0).sp,
+                fontWeight = FontWeight.Bold
+            )
+        },
+        text = {
+            Text(
+                text = "Your invoice for $title with a cost of $cost has been made successfully",
+                fontSize = screenFontSize(x = 14.0).sp
+            )
+        },
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            Button(onClick = onConfirm) {
+                Text(
+                    text = "Done",
+                    fontSize = screenFontSize(x = 14.0).sp
+                )
+            }
+        },
+    )
+}
+
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun InvoiceCreationScreenPreview() {
@@ -398,7 +567,7 @@ fun InvoiceCreationScreenPreview() {
             onChangeTitle = {},
             onChangeDescription = {},
             onChangeAmount = {},
-            paymentMethod = "wazipay",
+            paymentMethod = PaymentMethod.WAZIPAY,
             onChangePaymentMethod = {},
             invoiceCreationStatus = InvoiceCreationStatus.INITIAL,
             navigateToPreviousScreen = { /*TODO*/ },
