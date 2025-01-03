@@ -29,6 +29,7 @@ class BusinessSelectionViewModel(
                 searchQuery = text
             )
         }
+        getBusinesses()
     }
 
     private fun getBusinesses() {

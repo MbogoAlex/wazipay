@@ -137,7 +137,7 @@ class InvoiceCreationViewModel(
                if(response.isSuccessful) {
                    _uiState.update {
                        it.copy(
-                           orderId = response.body()?.data?.transaction?.order?.id!!.toString(),
+                           orderId = response.body()?.data?.orderId!!.toString(),
                            invoiceCreationStatus = InvoiceCreationStatus.SUCCESS
                        )
                    }

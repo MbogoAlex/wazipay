@@ -16,12 +16,18 @@ import com.escrow.wazipay.ui.auth.PinScreenComposable
 import com.escrow.wazipay.ui.auth.PinScreenDestination
 import com.escrow.wazipay.ui.auth.RegistrationScreenComposable
 import com.escrow.wazipay.ui.auth.RegistrationScreenDestination
+import com.escrow.wazipay.ui.buyer.invoice.BusinessSelectionScreenComposable
+import com.escrow.wazipay.ui.buyer.invoice.BusinessSelectionScreenDestination
+import com.escrow.wazipay.ui.buyer.invoice.InvoiceCreationScreenComposable
+import com.escrow.wazipay.ui.buyer.invoice.InvoiceCreationScreenDestination
 import com.escrow.wazipay.ui.dashboard.DashboardScreenComposable
 import com.escrow.wazipay.ui.dashboard.DashboardScreenDestination
 import com.escrow.wazipay.ui.general.business.BusinessDetailsScreenComposable
 import com.escrow.wazipay.ui.general.business.BusinessDetailsScreenDestination
 import com.escrow.wazipay.ui.general.order.OrderCreationScreenComposable
 import com.escrow.wazipay.ui.general.order.OrderCreationScreenDestination
+import com.escrow.wazipay.ui.general.order.OrderDetailsScreenComposable
+import com.escrow.wazipay.ui.general.order.OrderDetailsScreenDestination
 import com.escrow.wazipay.ui.general.order.OrdersScreenComposable
 import com.escrow.wazipay.ui.general.order.OrdersScreenDestination
 import com.escrow.wazipay.ui.general.wallet.deposit.DepositScreenComposable
@@ -125,6 +131,9 @@ fun NavigationGraph(
                 },
                 navigateToDashboardScreen = {
                     navController.navigate(DashboardScreenDestination.route)
+                },
+                navigateToBusinessSelectionScreen = {
+                    navController.navigate(BusinessSelectionScreenDestination.route)
                 }
             )
         }
@@ -154,6 +163,9 @@ fun NavigationGraph(
                 },
                 navigateToDashboardScreen = {
                     navController.navigate(DashboardScreenDestination.route)
+                },
+                navigateToBusinessSelectionScreen = {
+                    navController.navigate(BusinessSelectionScreenDestination.route)
                 }
             )
         }
@@ -251,6 +263,55 @@ fun NavigationGraph(
                 },
                 navigateToDashboardScreen = {
                     navController.navigate(DashboardScreenDestination.route)
+                },
+                navigateToBusinessSelectionScreen = {
+                    navController.navigate(BusinessSelectionScreenDestination.route)
+                }
+            )
+        }
+
+        composable(BusinessSelectionScreenDestination.route) {
+            BusinessSelectionScreenComposable(
+                navigateToPreviousScreen = {
+                    navController.navigateUp()
+                },
+                navigateToInvoiceCreationScreen = {
+                    navController.popBackStack()
+                    navController.navigate("${InvoiceCreationScreenDestination.route}/${it}")
+                }
+            )
+        }
+
+        composable(
+            InvoiceCreationScreenDestination.routeWithArgs,
+            arguments = listOf(
+                navArgument(InvoiceCreationScreenDestination.businessId) {
+                    type = NavType.StringType
+                }
+            )
+        ) {
+            InvoiceCreationScreenComposable(
+                navigateToPreviousScreen = {
+                    navController.navigateUp()
+                },
+                navigateToOrderDetailsScreen = {
+                    navController.popBackStack()
+                    navController.navigate("${OrderDetailsScreenDestination.route}/${it}")
+                }
+            )
+        }
+
+        composable(
+            OrderDetailsScreenDestination.routeWithArgs,
+            arguments = listOf(
+                navArgument(OrderDetailsScreenDestination.orderId) {
+                    type = NavType.StringType
+                }
+            )
+        ) {
+            OrderDetailsScreenComposable(
+                navigateToPreviousScreen = {
+                    navController.navigateUp()
                 }
             )
         }

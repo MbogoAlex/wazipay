@@ -1,6 +1,7 @@
 package com.escrow.wazipay.ui.buyer.invoice
 
 import android.os.Build
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -22,7 +23,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -41,6 +41,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -52,6 +53,7 @@ import com.escrow.wazipay.AppViewModelFactory
 import com.escrow.wazipay.R
 import com.escrow.wazipay.data.network.models.business.BusinessData
 import com.escrow.wazipay.data.network.models.business.businessData
+import com.escrow.wazipay.ui.buyer.BuyerDashboardViewModel
 import com.escrow.wazipay.ui.general.invoice.InvoicesViewModel
 import com.escrow.wazipay.ui.general.order.OrdersViewModel
 import com.escrow.wazipay.ui.nav.AppNavigation
@@ -76,12 +78,14 @@ fun InvoiceCreationScreenComposable(
     navigateToPreviousScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
 
     val viewModel: InvoiceCreationViewModel = viewModel(factory = AppViewModelFactory.Factory)
     val uiSate by viewModel.uiState.collectAsState()
 
     val invoicesViewModel: InvoicesViewModel = viewModel(factory = AppViewModelFactory.Factory)
     val ordersViewModel: OrdersViewModel = viewModel(factory = AppViewModelFactory.Factory)
+    val buyerDashboardViewModel: BuyerDashboardViewModel = viewModel(factory = AppViewModelFactory.Factory)
 
     var showConfirmDialog by rememberSaveable {
         mutableStateOf(false)
@@ -92,14 +96,19 @@ fun InvoiceCreationScreenComposable(
     }
 
     if(uiSate.invoiceCreationStatus == InvoiceCreationStatus.SUCCESS) {
-        showSuccessDialog = !showSuccessDialog
+        showSuccessDialog = true
     }
 
     if(showConfirmDialog) {
         InvoiceConfirmationDialog(
             onConfirm = {
                 showConfirmDialog = !showConfirmDialog
-                viewModel.createInvoice()
+
+                if(uiSate.amount.toDouble() > uiSate.userWalletData.balance) {
+                    Toast.makeText(context, "Insufficient funds", Toast.LENGTH_SHORT).show()
+                } else {
+                    viewModel.createInvoice()
+                }
             },
             onDismiss = {
                 showConfirmDialog = !showConfirmDialog
@@ -115,6 +124,9 @@ fun InvoiceCreationScreenComposable(
                 viewModel.resetStatus()
                 invoicesViewModel.getInvoices()
                 ordersViewModel.getOrders()
+                buyerDashboardViewModel.getUserWallet()
+                buyerDashboardViewModel.getInvoices()
+                buyerDashboardViewModel.getTransactions()
                 navigateToOrderDetailsScreen(uiSate.orderId)
             },
             onDismiss = {
@@ -136,7 +148,7 @@ fun InvoiceCreationScreenComposable(
             title = uiSate.title,
             description = uiSate.description,
             amount = uiSate.amount,
-            phoneNumber = uiSate.userDetails.phoneNumber!!.takeIf { uiSate.phoneNumber.isEmpty() } ?: uiSate.phoneNumber,
+            phoneNumber = uiSate.phoneNumber.ifEmpty { uiSate.userDetails.phoneNumber ?: "" },
             onChangePhoneNumber = {
                 viewModel.changePhone(it)
                 viewModel.enableButton()

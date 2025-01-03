@@ -9,7 +9,7 @@ val invoiceData = InvoiceData(
     title = "13kg Gas",
     description = "Gas for 13kg",
     amount = 1000.00,
-    business = businessData,
+    businessId = 1,
     merchant = userContactData,
     buyer = userContactData,
     invoiceStatus = "PENDING",
@@ -18,7 +18,8 @@ val invoiceData = InvoiceData(
     cancelledAt = null,
     rejectionReason = null,
     cancellationReason = null,
-    transaction = transactionData,
+    transactionId = 1,
+    orderId = 1,
     paymentLink = "192.168.100.5:8000/api/user/invoice/1"
 )
 
@@ -28,7 +29,7 @@ val invoices = List(10) { index ->
         title = "13kg Gas",
         description = "Gas for 13kg",
         amount = 1000.00,
-        business = businessData,
+        businessId = 1,
         merchant = userContactData,
         buyer = userContactData,
         invoiceStatus = "PENDING",
@@ -37,7 +38,8 @@ val invoices = List(10) { index ->
         cancelledAt = null,
         rejectionReason = null,
         cancellationReason = null,
-        transaction = transactionData,
+        transactionId = 1,
+        orderId = 1,
         paymentLink = "192.168.100.5:8000/api/user/invoice/1"
     )
 }

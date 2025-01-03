@@ -102,6 +102,7 @@ fun DashboardScreenComposable(
     navigateToDepositScreen: () -> Unit,
     navigateToWithdrawalScreen: () -> Unit,
     navigateToDashboardScreen: () -> Unit,
+    navigateToBusinessSelectionScreen: () -> Unit,
 ) {
     val context = LocalContext.current
 
@@ -245,7 +246,8 @@ fun DashboardScreenComposable(
             navigateToLoginScreenWithArgs = navigateToLoginScreenWithArgs,
             navigateToDepositScreen = navigateToDepositScreen,
             navigateToWithdrawalScreen = navigateToWithdrawalScreen,
-            navigateToBusinessDetailsScreen = navigateToBusinessDetailsScreen
+            navigateToBusinessDetailsScreen = navigateToBusinessDetailsScreen,
+            navigateToBusinessSelectionScreen = navigateToBusinessSelectionScreen
         )
     }
 }
@@ -271,6 +273,7 @@ fun DashboardScreen(
     navigateToDepositScreen: () -> Unit,
     navigateToWithdrawalScreen: () -> Unit,
     navigateToBusinessDetailsScreen: (businessId: String) -> Unit,
+    navigateToBusinessSelectionScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -465,6 +468,7 @@ fun DashboardScreen(
                         navigateToLoginScreenWithArgs = navigateToLoginScreenWithArgs,
                         navigateToDepositScreen = navigateToDepositScreen,
                         navigateToWithdrawalScreen = navigateToWithdrawalScreen,
+                        navigateToBusinessSelectionScreen = navigateToBusinessSelectionScreen,
                         modifier = Modifier
 //                            .weight(1f)
                     )
@@ -696,7 +700,8 @@ fun DashboardScreenPreview() {
             navigateToLoginScreenWithArgs = {phoneNumber, pin ->  },
             navigateToDepositScreen = {},
             navigateToWithdrawalScreen = {},
-            navigateToBusinessDetailsScreen = {}
+            navigateToBusinessDetailsScreen = {},
+            navigateToBusinessSelectionScreen = {}
         )
     }
 }

@@ -58,6 +58,7 @@ fun BuyerDashboardScreenComposable(
     navigateToLoginScreenWithArgs: (phoneNumber: String, pin: String) -> Unit,
     navigateToDepositScreen: () -> Unit,
     navigateToWithdrawalScreen: () -> Unit,
+    navigateToBusinessSelectionScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -82,7 +83,8 @@ fun BuyerDashboardScreenComposable(
             invoices = uiState.invoices,
             transactions = uiState.transactions,
             navigateToDepositScreen = navigateToDepositScreen,
-            navigateToWithdrawalScreen = navigateToWithdrawalScreen
+            navigateToWithdrawalScreen = navigateToWithdrawalScreen,
+            navigateToBusinessSelectionScreen = navigateToBusinessSelectionScreen
         )
     }
 }
@@ -98,6 +100,7 @@ fun BuyerDashboardScreen(
     transactions: List<TransactionData>,
     navigateToDepositScreen: () -> Unit,
     navigateToWithdrawalScreen: () -> Unit,
+    navigateToBusinessSelectionScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -216,7 +219,7 @@ fun BuyerDashboardScreen(
         }
         Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
         Button(
-            onClick = { /*TODO*/ },
+            onClick = navigateToBusinessSelectionScreen,
             modifier = Modifier
                 .fillMaxWidth()
         ) {
@@ -308,7 +311,8 @@ fun BuyerDashboardScreenPreview() {
             invoices = invoices,
             transactions = transactions,
             navigateToDepositScreen = {},
-            navigateToWithdrawalScreen = {}
+            navigateToWithdrawalScreen = {},
+            navigateToBusinessSelectionScreen = {}
         )
     }
 }

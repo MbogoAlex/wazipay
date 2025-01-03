@@ -11,7 +11,7 @@ data class InvoiceData(
     val title: String,
     val description: String,
     val amount: Double,
-    val business: BusinessData,
+    val businessId: Int,
     val merchant: UserContactData,
     val buyer: UserContactData,
     val invoiceStatus: String,
@@ -20,6 +20,7 @@ data class InvoiceData(
     val cancelledAt: String?,
     val rejectionReason: String?,
     val cancellationReason: String?,
-    val transaction: TransactionData?,
+    val transactionId: Int?,
+    val orderId: Int?,
     val paymentLink: String
 )

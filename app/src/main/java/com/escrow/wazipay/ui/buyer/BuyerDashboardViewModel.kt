@@ -78,7 +78,7 @@ class BuyerDashboardViewModel(
         }
     }
 
-    private fun getOrders() {
+    fun getOrders() {
 
         _uiState.update {
             it.copy(
@@ -139,7 +139,7 @@ class BuyerDashboardViewModel(
         }
     }
 
-    private fun getUserWallet() {
+    fun getUserWallet() {
         _uiState.update {
             it.copy(
                 loadWalletStatus = LoadWalletStatus.INITIAL
@@ -192,7 +192,7 @@ class BuyerDashboardViewModel(
         }
     }
 
-    private fun getInvoices() {
+    fun getInvoices() {
 
         _uiState.update {
             it.copy(
@@ -250,7 +250,7 @@ class BuyerDashboardViewModel(
         }
     }
 
-    private fun getTransactions() {
+    fun getTransactions() {
         _uiState.update {
             it.copy(
                 loadTransactionsStatus = LoadTransactionsStatus.INITIAL

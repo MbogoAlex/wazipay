@@ -80,6 +80,7 @@ fun BusinessSelectionScreenComposable(
             onClearSearchQuery = {
                 viewModel.changeSearchText(null)
             },
+            businesses = uiState.businesses,
             navigateToInvoiceCreationScreen = navigateToInvoiceCreationScreen,
             navigateToPreviousScreen = navigateToPreviousScreen
         )
@@ -91,6 +92,7 @@ fun BusinessSelectionScreen(
     searchQuery: String,
     onChangeSearchQuery: (text: String) -> Unit,
     onClearSearchQuery: () -> Unit,
+    businesses: List<BusinessData>,
     navigateToInvoiceCreationScreen: (businessId: String) -> Unit,
     navigateToPreviousScreen: () -> Unit,
     modifier: Modifier = Modifier
@@ -121,7 +123,7 @@ fun BusinessSelectionScreen(
         }
         Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
         Text(
-            text = "Select the business",
+            text = "Select a business",
             fontSize = screenFontSize(x = 14.0).sp,
             fontWeight = FontWeight.Bold
         )
@@ -273,6 +275,7 @@ fun BusinessSelectionScreenPreview(
     WazipayTheme {
         BusinessSelectionScreen(
             searchQuery = "",
+            businesses = businesses,
             onChangeSearchQuery = {},
             onClearSearchQuery = {},
             navigateToInvoiceCreationScreen = {},
