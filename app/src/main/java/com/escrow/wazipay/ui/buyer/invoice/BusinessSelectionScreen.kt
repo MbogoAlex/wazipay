@@ -40,13 +40,20 @@ import androidx.compose.ui.unit.sp
 import com.escrow.wazipay.R
 import com.escrow.wazipay.data.network.models.business.BusinessData
 import com.escrow.wazipay.data.network.models.business.businesses
+import com.escrow.wazipay.ui.nav.AppNavigation
 import com.escrow.wazipay.ui.theme.WazipayTheme
 import com.escrow.wazipay.utils.screenFontSize
 import com.escrow.wazipay.utils.screenHeight
 import com.escrow.wazipay.utils.screenWidth
 
+object BusinessSelectionScreenDestination: AppNavigation {
+    override val title: String = "Business selection screen"
+    override val route: String = "business-selection-screen"
+}
+
 @Composable
 fun BusinessSelectionScreenComposable(
+    navigateToInvoiceCreationScreen: (businessId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
 

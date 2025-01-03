@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.sp
 import com.escrow.wazipay.R
 import com.escrow.wazipay.data.network.models.business.BusinessData
 import com.escrow.wazipay.data.network.models.business.businessData
+import com.escrow.wazipay.ui.nav.AppNavigation
 import com.escrow.wazipay.ui.theme.WazipayTheme
 import com.escrow.wazipay.utils.composables.TextFieldComposable
 import com.escrow.wazipay.utils.formatMoneyValue
@@ -50,8 +51,17 @@ import com.escrow.wazipay.utils.screenFontSize
 import com.escrow.wazipay.utils.screenHeight
 import com.escrow.wazipay.utils.screenWidth
 
+object InvoiceCreationScreenDestination: AppNavigation {
+    override val title: String = "Invoice creation screen"
+    override val route: String = "invoice-creation-screen"
+    val businessId: String = "businessId"
+    val routeWithArgs: String = "$route/{$businessId}"
+}
+
 @Composable
 fun InvoiceCreationScreenComposable(
+    navigateToOrderDetailsScreen: (orderId: String) -> Unit,
+    navigateToPreviousScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var paymentMethod by rememberSaveable {
