@@ -29,4 +29,5 @@ interface DBRepository {
     suspend fun updateUserRole(userRole: UserRole)
 
     fun getUserRole(): Flow<UserRole?>
+
 }

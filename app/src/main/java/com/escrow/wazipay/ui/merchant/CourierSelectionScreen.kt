@@ -1,18 +1,16 @@
-package com.escrow.wazipay.ui.buyer.invoice
+package com.escrow.wazipay.ui.merchant
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -24,6 +22,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -31,8 +30,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -42,67 +39,41 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.escrow.wazipay.AppViewModelFactory
 import com.escrow.wazipay.R
-import com.escrow.wazipay.data.network.models.business.BusinessData
-import com.escrow.wazipay.data.network.models.business.businesses
+import com.escrow.wazipay.data.network.models.user.UserDetailsData
+import com.escrow.wazipay.data.network.models.user.users
 import com.escrow.wazipay.ui.nav.AppNavigation
 import com.escrow.wazipay.ui.theme.WazipayTheme
 import com.escrow.wazipay.utils.screenFontSize
 import com.escrow.wazipay.utils.screenHeight
 import com.escrow.wazipay.utils.screenWidth
 
-object BusinessSelectionScreenDestination: AppNavigation {
-    override val title: String = "Business selection screen"
-    override val route: String = "business-selection-screen"
+object CourierSelectionScreenDestination: AppNavigation {
+    override val title: String = "Courier selection screen"
+    override val route: String = "courier-selection-screen"
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun BusinessSelectionScreenComposable(
-    navigateToInvoiceCreationScreen: (businessId: String) -> Unit,
-    navigateToPreviousScreen: () -> Unit,
+fun CourierSelectionScreenComposable(
     modifier: Modifier = Modifier
 ) {
-    val viewModel: BusinessSelectionViewModel = viewModel(factory = AppViewModelFactory.Factory)
-    val uiState by viewModel.uiState.collectAsState()
 
-    Box(
-        modifier = Modifier
-            .safeDrawingPadding()
-    ) {
-        BusinessSelectionScreen(
-            searchQuery = uiState.searchQuery ?: "",
-            onChangeSearchQuery = {
-                viewModel.changeSearchText(it)
-            },
-            onClearSearchQuery = {
-                viewModel.changeSearchText(null)
-            },
-            businesses = uiState.businesses,
-            navigateToInvoiceCreationScreen = navigateToInvoiceCreationScreen,
-            navigateToPreviousScreen = navigateToPreviousScreen
-        )
-    }
 }
 
 @Composable
-fun BusinessSelectionScreen(
+fun CourierSelectionScreen(
     searchQuery: String,
-    onChangeSearchQuery: (text: String) -> Unit,
+    onChangeSearchQuery: (query: String) -> Unit,
     onClearSearchQuery: () -> Unit,
-    businesses: List<BusinessData>,
-    navigateToInvoiceCreationScreen: (businessId: String) -> Unit,
+    users: List<UserDetailsData>,
     navigateToPreviousScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
         modifier = Modifier
-            .fillMaxSize()
             .padding(
-                vertical = screenHeight(x = 16.0),
-                horizontal = screenWidth(x = 16.0)
+                horizontal = screenWidth(x = 16.0),
+                vertical = screenHeight(x = 16.0)
             )
     ) {
         Row(
@@ -116,14 +87,14 @@ fun BusinessSelectionScreen(
             }
             Spacer(modifier = Modifier.width(screenWidth(x = 8.0)))
             Text(
-                text = "Business payment",
+                text = "Courier assignment",
                 fontSize = screenFontSize(x = 16.0).sp,
                 fontWeight = FontWeight.Bold
             )
         }
         Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
         Text(
-            text = "Select a business",
+            text = "Select a courier",
             fontSize = screenFontSize(x = 14.0).sp,
             fontWeight = FontWeight.Bold
         )
@@ -140,7 +111,7 @@ fun BusinessSelectionScreen(
 //            },
             label = {
                 Text(
-                    text = "Search business / owner",
+                    text = "Name / Phone number",
                     fontSize = screenFontSize(x = 14.0).sp
                 )
             },
@@ -179,106 +150,101 @@ fun BusinessSelectionScreen(
         )
         Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
         LazyColumn {
-            items(businesses) {
-                SelectableBusinessCell(
-                    userId = 1,
-                    businessData = it,
-                    navigateToInvoiceCreationScreen = navigateToInvoiceCreationScreen
-                )
+            items(users) {
+                SelectableCourierCell(userDetailsData = it)
+                Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
             }
         }
     }
 }
 
 @Composable
-fun SelectableBusinessCell(
-    userId: Int,
-    businessData: BusinessData,
-    navigateToInvoiceCreationScreen: (businessId: String) -> Unit
+fun SelectableCourierCell(
+    userDetailsData: UserDetailsData,
+    modifier: Modifier = Modifier
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
+    Box(
         modifier = Modifier
-            .clickable {
-                navigateToInvoiceCreationScreen(businessData.id.toString())
-            }
+            .fillMaxWidth()
+            .border(
+                width = screenWidth(x = 1.0),
+                color = Color.LightGray,
+                shape = RoundedCornerShape(screenWidth(x = 10.0))
+            )
     ) {
-        Column(
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
-                .padding(screenWidth(x = 8.0))
-                .weight(1f)
+                .padding(screenWidth(x = 16.0))
         ) {
-            if(businessData.owner.id == userId) {
-                Text(
-                    text = "My Business",
-                    fontSize = screenFontSize(x = 14.0).sp,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
-                )
-                Spacer(modifier = Modifier.height(screenWidth(x = 4.0)))
-            }
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
+            Box(
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.primary)
+                    .padding(screenWidth(x = 16.0))
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.shop),
+                    painter = painterResource(id = R.drawable.motorbike),
                     contentDescription = null
                 )
-                Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
-                Text(
-                    text = businessData.name,
-                    fontSize = screenFontSize(x = 14.0).sp,
-                    fontWeight = FontWeight.Bold
-                )
             }
-            Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
-            Text(
-                text = businessData.description,
-                fontSize = screenFontSize(x = 14.0).sp,
-                maxLines = 2
-            )
-            Spacer(modifier = Modifier.height(screenHeight(x = 4.0)))
-            Row(
-                verticalAlignment = Alignment.CenterVertically
+            Spacer(modifier = Modifier.width(screenWidth(x = 8.0)))
+            Column {
+                Text(text = userDetailsData.username)
+                Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.phone),
+                        contentDescription = null
+                    )
+                    Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
+                    Text(
+                        text = userDetailsData.phoneNumber,
+                        fontSize = screenFontSize(x = 14.0).sp,
+//                            fontWeight = FontWeight.Bold
+                    )
+                }
+                Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.email),
+                        contentDescription = null
+                    )
+                    Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
+                    Text(
+                        text = "mbogoalex3@gmail.com",
+                        fontSize = screenFontSize(x = 14.0).sp,
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.weight(1f))
+            IconButton(
+                onClick = { /*TODO*/ },
+                modifier = Modifier
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.person),
-                    contentDescription = null
+                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                    contentDescription = "Courier assignment screen"
                 )
-                Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
-                Text(text = businessData.owner.username)
-                Spacer(modifier = Modifier.width(screenWidth(x = 8.0)))
-                Icon(
-                    painter = painterResource(id = R.drawable.phone),
-                    contentDescription = null
-                )
-                Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
-                Text(text = businessData.owner.phoneNumber)
             }
-        }
-        IconButton(
-            onClick = { navigateToInvoiceCreationScreen(businessData.id.toString()) },
-        ) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                contentDescription = "Business details"
-            )
         }
     }
 }
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun BusinessSelectionScreenPreview(
-    modifier: Modifier = Modifier
-) {
+fun CourierSelectionScreenPreview() {
     WazipayTheme {
-        BusinessSelectionScreen(
+        CourierSelectionScreen(
             searchQuery = "",
-            businesses = businesses,
             onChangeSearchQuery = {},
-            onClearSearchQuery = {},
-            navigateToInvoiceCreationScreen = {},
+            onClearSearchQuery = { /*TODO*/ },
+            users = users,
             navigateToPreviousScreen = {}
         )
     }

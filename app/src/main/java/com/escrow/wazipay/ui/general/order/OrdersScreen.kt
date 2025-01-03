@@ -55,6 +55,7 @@ object OrdersScreenDestination: AppNavigation {
 @Composable
 fun OrdersScreenComposable(
     navigateToLoginScreenWithArgs: (phoneNumber: String, pin: String) -> Unit,
+    navigateToOrderDetailsScreen: (orderId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -77,7 +78,8 @@ fun OrdersScreenComposable(
             onChangeOrderStage = {
                 viewModel.changeOrderStage(it)
             },
-            role = uiState.role
+            role = uiState.role,
+            navigateToOrderDetailsScreen = navigateToOrderDetailsScreen
         )
     }
 }
@@ -90,6 +92,7 @@ fun OrdersScreen(
     stages: List<String>,
     selectedStage: String,
     onChangeOrderStage: (orderStage: String) -> Unit,
+    navigateToOrderDetailsScreen: (orderId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -149,6 +152,7 @@ fun OrdersScreen(
                         OrderItemComposable(
                             homeScreen = false,
                             orderData = order,
+                            navigateToOrderDetailsScreen = navigateToOrderDetailsScreen,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(
@@ -176,7 +180,8 @@ fun OrdersScreenPreview() {
             selectedStage = "All",
             stages = stages,
             onChangeOrderStage = {},
-            role = Role.BUYER
+            role = Role.BUYER,
+            navigateToOrderDetailsScreen = {}
         )
     }
 }

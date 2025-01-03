@@ -59,6 +59,7 @@ fun BuyerDashboardScreenComposable(
     navigateToDepositScreen: () -> Unit,
     navigateToWithdrawalScreen: () -> Unit,
     navigateToBusinessSelectionScreen: () -> Unit,
+    navigateToOrderDetailsScreen: (orderId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -84,7 +85,8 @@ fun BuyerDashboardScreenComposable(
             transactions = uiState.transactions,
             navigateToDepositScreen = navigateToDepositScreen,
             navigateToWithdrawalScreen = navigateToWithdrawalScreen,
-            navigateToBusinessSelectionScreen = navigateToBusinessSelectionScreen
+            navigateToBusinessSelectionScreen = navigateToBusinessSelectionScreen,
+            navigateToOrderDetailsScreen = navigateToOrderDetailsScreen
         )
     }
 }
@@ -101,6 +103,7 @@ fun BuyerDashboardScreen(
     navigateToDepositScreen: () -> Unit,
     navigateToWithdrawalScreen: () -> Unit,
     navigateToBusinessSelectionScreen: () -> Unit,
+    navigateToOrderDetailsScreen: (orderId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -253,6 +256,7 @@ fun BuyerDashboardScreen(
                 OrderItemComposable(
                     homeScreen = true,
                     orderData = it,
+                    navigateToOrderDetailsScreen = navigateToOrderDetailsScreen,
                     modifier = Modifier
                         .fillMaxWidth(0.7f)
                         .padding(
@@ -312,7 +316,8 @@ fun BuyerDashboardScreenPreview() {
             transactions = transactions,
             navigateToDepositScreen = {},
             navigateToWithdrawalScreen = {},
-            navigateToBusinessSelectionScreen = {}
+            navigateToBusinessSelectionScreen = {},
+            navigateToOrderDetailsScreen = {}
         )
     }
 }

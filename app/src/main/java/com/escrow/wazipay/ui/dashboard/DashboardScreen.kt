@@ -30,6 +30,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material3.Button
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.DropdownMenu
@@ -103,6 +104,7 @@ fun DashboardScreenComposable(
     navigateToWithdrawalScreen: () -> Unit,
     navigateToDashboardScreen: () -> Unit,
     navigateToBusinessSelectionScreen: () -> Unit,
+    navigateToOrderDetailsScreen: (orderId: String) -> Unit,
 ) {
     val context = LocalContext.current
 
@@ -247,7 +249,17 @@ fun DashboardScreenComposable(
             navigateToDepositScreen = navigateToDepositScreen,
             navigateToWithdrawalScreen = navigateToWithdrawalScreen,
             navigateToBusinessDetailsScreen = navigateToBusinessDetailsScreen,
-            navigateToBusinessSelectionScreen = navigateToBusinessSelectionScreen
+            navigateToBusinessSelectionScreen = navigateToBusinessSelectionScreen,
+            onLogout = {
+                scope.launch {
+                    val phoneNumber = uiState.userDetails.phoneNumber
+                    val pin = uiState.userDetails.pin
+                    viewModel.deleteUsers()
+                    delay(2000)
+                    navigateToLoginScreenWithArgs(phoneNumber ?: "", pin ?: "")
+                }
+            },
+            navigateToOrderDetailsScreen = navigateToOrderDetailsScreen
         )
     }
 }
@@ -274,6 +286,8 @@ fun DashboardScreen(
     navigateToWithdrawalScreen: () -> Unit,
     navigateToBusinessDetailsScreen: (businessId: String) -> Unit,
     navigateToBusinessSelectionScreen: () -> Unit,
+    onLogout: () -> Unit,
+    navigateToOrderDetailsScreen: (orderId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -469,12 +483,15 @@ fun DashboardScreen(
                         navigateToDepositScreen = navigateToDepositScreen,
                         navigateToWithdrawalScreen = navigateToWithdrawalScreen,
                         navigateToBusinessSelectionScreen = navigateToBusinessSelectionScreen,
+                        navigateToOrderDetailsScreen = navigateToOrderDetailsScreen,
                         modifier = Modifier
 //                            .weight(1f)
                     )
                     Role.MERCHANT -> MerchantDashboardScreenComposable(
                         navigateToDepositScreen = navigateToDepositScreen,
                         navigateToWithdrawalScreen = navigateToWithdrawalScreen,
+                        navigateToOrderDetailsScreen = navigateToOrderDetailsScreen,
+                        navigateToLoginScreenWithArgs = navigateToLoginScreenWithArgs,
                         modifier = Modifier
 //                            .weight(1f)
                     )
@@ -489,6 +506,7 @@ fun DashboardScreen(
                 )
                 NavBarItem.ORDERS -> OrdersScreenComposable(
                     navigateToLoginScreenWithArgs = navigateToLoginScreenWithArgs,
+                    navigateToOrderDetailsScreen = navigateToOrderDetailsScreen,
                     modifier = Modifier
 //                        .weight(1f)
                 )
@@ -511,10 +529,9 @@ fun DashboardScreen(
                             .fillMaxSize()
 //                            .weight(1f)
                     ) {
-                        Text(
-                            text = "Profile",
-                            color = MaterialTheme.colorScheme.onBackground
-                        )
+                        Button(onClick = onLogout) {
+                            Text(text = "Logout")
+                        }
                     }
                 }
 
@@ -701,7 +718,9 @@ fun DashboardScreenPreview() {
             navigateToDepositScreen = {},
             navigateToWithdrawalScreen = {},
             navigateToBusinessDetailsScreen = {},
-            navigateToBusinessSelectionScreen = {}
+            navigateToBusinessSelectionScreen = {},
+            onLogout = {},
+            navigateToOrderDetailsScreen = {}
         )
     }
 }

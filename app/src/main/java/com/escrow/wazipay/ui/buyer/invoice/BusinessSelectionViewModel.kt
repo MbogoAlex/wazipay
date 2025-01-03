@@ -119,6 +119,6 @@ class BusinessSelectionViewModel(
     init {
         getUserDetails()
         getUserRole()
-        getBusinessSelectionScreenUiData()
+//        getBusinessSelectionScreenUiData()
     }
 }

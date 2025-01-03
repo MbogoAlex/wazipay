@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
@@ -39,6 +40,7 @@ import com.escrow.wazipay.AppViewModelFactory
 import com.escrow.wazipay.R
 import com.escrow.wazipay.data.network.models.order.OrderData
 import com.escrow.wazipay.data.network.models.order.orderData
+import com.escrow.wazipay.data.room.models.Role
 import com.escrow.wazipay.ui.nav.AppNavigation
 import com.escrow.wazipay.ui.theme.WazipayTheme
 import com.escrow.wazipay.utils.formatIsoDateTime
@@ -71,6 +73,7 @@ fun OrderDetailsScreenComposable(
         OrderDetailsScreen(
             userId = uiState.userDetails.userId,
             orderData = uiState.orderData,
+            role = uiState.role,
             navigateToPreviousScreen = navigateToPreviousScreen
         )
     }
@@ -80,6 +83,7 @@ fun OrderDetailsScreenComposable(
 @Composable
 fun OrderDetailsScreen(
     userId: Int,
+    role: Role,
     orderData: OrderData,
     navigateToPreviousScreen: () -> Unit,
     modifier: Modifier = Modifier
@@ -192,6 +196,29 @@ fun OrderDetailsScreen(
                         )
                     }
                 }
+            } else {
+                if(role == Role.MERCHANT) {
+                    Button(
+                        onClick = { /*TODO*/ },
+                        modifier = Modifier
+                            .align(Alignment.CenterVertically)
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Assign courier",
+                                fontSize = screenFontSize(x = 14.0).sp,
+//                            fontWeight = FontWeight.Bold
+                            )
+                            Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
+                            Icon(
+                                painter = painterResource(id = R.drawable.motorbike),
+                                contentDescription = null
+                            )
+                        }
+                    }
+                }
             }
         }
 //        Spacer(modifier = Modifier.height(screenHeight(x = 32.0)))
@@ -264,7 +291,7 @@ fun OrderDetailsScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Cost: ",
+                        text = if(role == Role.MERCHANT) "Paid amount: " else "Cost: ",
                         fontSize = screenFontSize(x = 14.0).sp,
                         fontWeight = FontWeight.W300
                     )
@@ -291,6 +318,40 @@ fun OrderDetailsScreen(
                         )
                     }
                 }
+
+                if(orderData.buyer.id != userId) {
+                    Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
+                    Text(
+                        text = "Buyer:",
+                        fontSize = screenFontSize(x = 14.0).sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.phone),
+                            contentDescription = null
+                        )
+                        Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
+                        Text(
+                            text = orderData.buyer.phoneNumber,
+                            fontSize = screenFontSize(x = 14.0).sp,
+//                            fontWeight = FontWeight.Bold
+                        )
+                        Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
+                        Icon(
+                            painter = painterResource(id = R.drawable.email),
+                            contentDescription = null
+                        )
+                        Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
+                        Text(
+                            text = orderData.buyer.email,
+                            fontSize = screenFontSize(x = 14.0).sp,
+                        )
+                    }
+                }
             }
         }
     }
@@ -304,6 +365,7 @@ fun OrderDetailsScreenPreview() {
         OrderDetailsScreen(
             userId = 1,
             orderData = orderData,
+            role = Role.BUYER,
             navigateToPreviousScreen = {}
         )
     }

@@ -10,6 +10,15 @@ val userContactData = UserContactData(
     email = "alex@gmail.com"
 )
 
+val userContacts = List(10) {index ->
+    UserContactData(
+        id = 1 + index,
+        username = "Alex Mbogo",
+        phoneNumber = "0794649026",
+        email = "alex@gmail.com"
+    )
+}
+
 val orderData = OrderData(
     id = 1,
     orderCode = "1234",
@@ -21,6 +30,27 @@ val orderData = OrderData(
     merchant = userContactData,
     buyer = userContactData,
     courier = userContactData,
+    business = businessData,
+    createdAt = "2024-12-26T11:24:46.215144",
+    completedAt = "2024-12-26T11:24:46.215144",
+    assignedAt = null,
+    refundedAt = null,
+    cancelledAt = null,
+    refundReason = null,
+    cancellationReason = null
+)
+
+val sampleOrder = OrderData(
+    id = 1,
+    orderCode = "",
+    name = "",
+    description = "",
+    productCost = 0.0,
+    deliveryCost = null,
+    orderStage = "IN_TRANSIT",
+    merchant = userContactData,
+    buyer = userContactData,
+    courier = null,
     business = businessData,
     createdAt = "2024-12-26T11:24:46.215144",
     completedAt = "2024-12-26T11:24:46.215144",

@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.escrow.wazipay.data.room.models.Role
+import com.escrow.wazipay.data.room.models.UserDetails
 import com.escrow.wazipay.data.room.models.UserRole
 import com.escrow.wazipay.data.room.repository.DBRepository
 import com.escrow.wazipay.ui.general.NavBarItem
@@ -57,6 +58,28 @@ class DashboardViewModel(
         }
     }
 
+    private fun getUserDetails() {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                dbRepository.getUsers().collect { users ->
+                    _uiState.update {
+                        it.copy(
+                            userDetails = if(users.isNotEmpty()) users[0] else UserDetails()
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    fun deleteUsers() {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                dbRepository.deleteUsers()
+            }
+        }
+    }
+
     init {
         _uiState.update {
             it.copy(
@@ -64,5 +87,6 @@ class DashboardViewModel(
             )
         }
         getUserRole()
+        getUserDetails()
     }
 }

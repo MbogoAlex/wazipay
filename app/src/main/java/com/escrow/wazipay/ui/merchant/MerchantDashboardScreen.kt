@@ -45,6 +45,7 @@ import com.escrow.wazipay.data.network.models.order.OrderData
 import com.escrow.wazipay.data.network.models.order.orders
 import com.escrow.wazipay.data.network.models.transaction.TransactionData
 import com.escrow.wazipay.data.network.models.transaction.transactions
+import com.escrow.wazipay.ui.buyer.LoadUserStatus
 import com.escrow.wazipay.ui.general.invoice.InvoiceItemComposable
 import com.escrow.wazipay.ui.general.order.OrderItemComposable
 import com.escrow.wazipay.ui.general.transaction.TransactionCellComposable
@@ -59,11 +60,18 @@ import com.escrow.wazipay.utils.screenWidth
 fun MerchantDashboardScreenComposable(
     navigateToDepositScreen: () -> Unit,
     navigateToWithdrawalScreen: () -> Unit,
+    navigateToOrderDetailsScreen: (orderId: String) -> Unit,
+    navigateToLoginScreenWithArgs: (phoneNumber: String, pin: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
     val merchantDashboardViewModel: MerchantDashboardViewModel = viewModel(factory = AppViewModelFactory.Factory)
     val merchantDashboardUiState by merchantDashboardViewModel.uiState.collectAsState()
+
+    if(merchantDashboardUiState.unauthorized && merchantDashboardUiState.loadUserStatus == LoadUserStatus.FAIL) {
+        navigateToLoginScreenWithArgs(merchantDashboardUiState.userDetails.phoneNumber!!, merchantDashboardUiState.userDetails.pin!!)
+        merchantDashboardViewModel.resetStatus()
+    }
 
     Box(
         modifier = modifier
@@ -77,7 +85,8 @@ fun MerchantDashboardScreenComposable(
             invoices = merchantDashboardUiState.invoices,
             transactions = merchantDashboardUiState.transactions,
             navigateToDepositScreen = navigateToDepositScreen,
-            navigateToWithdrawalScreen = navigateToWithdrawalScreen
+            navigateToWithdrawalScreen = navigateToWithdrawalScreen,
+            navigateToOrderDetailsScreen = navigateToOrderDetailsScreen
         )
     }
 }
@@ -93,6 +102,7 @@ fun MerchantDashboardScreen(
     transactions: List<TransactionData>,
     navigateToDepositScreen: () -> Unit,
     navigateToWithdrawalScreen: () -> Unit,
+    navigateToOrderDetailsScreen: (orderId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -225,6 +235,7 @@ fun MerchantDashboardScreen(
                     OrderItemComposable(
                         homeScreen = true,
                         orderData = it,
+                        navigateToOrderDetailsScreen = navigateToOrderDetailsScreen,
                         modifier = Modifier
                             .fillMaxWidth(0.7f)
                             .padding(
@@ -314,7 +325,8 @@ fun MerchantDashboardScreenPreview() {
             transactions = emptyList(),
             userVerified = true,
             navigateToDepositScreen = {},
-            navigateToWithdrawalScreen = {}
+            navigateToWithdrawalScreen = {},
+            navigateToOrderDetailsScreen = {}
         )
     }
 }

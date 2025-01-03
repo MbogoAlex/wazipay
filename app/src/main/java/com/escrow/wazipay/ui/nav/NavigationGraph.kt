@@ -134,6 +134,9 @@ fun NavigationGraph(
                 },
                 navigateToBusinessSelectionScreen = {
                     navController.navigate(BusinessSelectionScreenDestination.route)
+                },
+                navigateToOrderDetailsScreen = {
+                    navController.navigate("${OrderDetailsScreenDestination.route}/${it}")
                 }
             )
         }
@@ -166,6 +169,9 @@ fun NavigationGraph(
                 },
                 navigateToBusinessSelectionScreen = {
                     navController.navigate(BusinessSelectionScreenDestination.route)
+                },
+                navigateToOrderDetailsScreen = {
+                    navController.navigate("${OrderDetailsScreenDestination.route}/${it}")
                 }
             )
         }
@@ -217,6 +223,9 @@ fun NavigationGraph(
             OrdersScreenComposable(
                 navigateToLoginScreenWithArgs = {phoneNumber, pin ->
                     navController.navigate("${LoginScreenDestination.route}/${phoneNumber}/${pin}")
+                },
+                navigateToOrderDetailsScreen = {
+                    navController.navigate("${OrderDetailsScreenDestination.route}/${it}")
                 }
             )
         }
@@ -266,6 +275,9 @@ fun NavigationGraph(
                 },
                 navigateToBusinessSelectionScreen = {
                     navController.navigate(BusinessSelectionScreenDestination.route)
+                },
+                navigateToOrderDetailsScreen = {
+                    navController.navigate("${OrderDetailsScreenDestination.route}/${it}")
                 }
             )
         }

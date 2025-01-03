@@ -119,7 +119,7 @@ fun InvoiceCreationScreenComposable(
     }
 
     if(showSuccessDialog) {
-        InvoiceConfirmationDialog(
+        InvoiceCreationSuccessDialog(
             onConfirm = {
                 viewModel.resetStatus()
                 invoicesViewModel.getInvoices()
@@ -223,7 +223,7 @@ fun InvoiceCreationScreen(
                 )
             }
             Text(
-                text = "Invoice Creation",
+                text = "Business payment",
                 fontWeight = FontWeight.Bold,
                 fontSize = screenFontSize(x = 16.0).sp
             )

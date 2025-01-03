@@ -2,6 +2,7 @@ package com.escrow.wazipay.ui.general.order
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -33,6 +34,7 @@ import java.time.LocalDateTime
 fun OrderItemComposable(
     homeScreen: Boolean,
     orderData: OrderData,
+    navigateToOrderDetailsScreen: (orderId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val stage = when(orderData.orderStage) {
@@ -47,6 +49,9 @@ fun OrderItemComposable(
     if(homeScreen) {
         Card(
             modifier = modifier
+                .clickable {
+                    navigateToOrderDetailsScreen(orderData.id.toString())
+                }
         ) {
             Column(
                 modifier = Modifier
@@ -145,6 +150,9 @@ fun OrderItemComposable(
     } else {
         Card(
             modifier = modifier
+                .clickable {
+                    navigateToOrderDetailsScreen(orderData.id.toString())
+                }
         ) {
             Column(
                 modifier = Modifier
