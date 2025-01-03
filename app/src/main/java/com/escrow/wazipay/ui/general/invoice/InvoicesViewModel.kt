@@ -44,7 +44,7 @@ class InvoicesViewModel(
         getInvoices()
     }
 
-    private fun getInvoices() {
+    fun getInvoices() {
         _uiState.update {
             it.copy(
                 loadInvoicesStatus = LoadInvoicesStatus.LOADING

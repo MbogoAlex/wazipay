@@ -52,6 +52,8 @@ import com.escrow.wazipay.AppViewModelFactory
 import com.escrow.wazipay.R
 import com.escrow.wazipay.data.network.models.business.BusinessData
 import com.escrow.wazipay.data.network.models.business.businessData
+import com.escrow.wazipay.ui.general.invoice.InvoicesViewModel
+import com.escrow.wazipay.ui.general.order.OrdersViewModel
 import com.escrow.wazipay.ui.nav.AppNavigation
 import com.escrow.wazipay.ui.theme.WazipayTheme
 import com.escrow.wazipay.utils.composables.TextFieldComposable
@@ -77,6 +79,9 @@ fun InvoiceCreationScreenComposable(
 
     val viewModel: InvoiceCreationViewModel = viewModel(factory = AppViewModelFactory.Factory)
     val uiSate by viewModel.uiState.collectAsState()
+
+    val invoicesViewModel: InvoicesViewModel = viewModel(factory = AppViewModelFactory.Factory)
+    val ordersViewModel: OrdersViewModel = viewModel(factory = AppViewModelFactory.Factory)
 
     var showConfirmDialog by rememberSaveable {
         mutableStateOf(false)
@@ -108,6 +113,8 @@ fun InvoiceCreationScreenComposable(
         InvoiceConfirmationDialog(
             onConfirm = {
                 viewModel.resetStatus()
+                invoicesViewModel.getInvoices()
+                ordersViewModel.getOrders()
                 navigateToOrderDetailsScreen(uiSate.orderId)
             },
             onDismiss = {

@@ -24,7 +24,7 @@ class OrdersViewModel(
     private val _uiState = MutableStateFlow(OrdersUiData())
     val uiState: StateFlow<OrdersUiData> = _uiState.asStateFlow()
 
-    private fun getOrders() {
+    fun getOrders() {
 
         _uiState.update {
             it.copy(
