@@ -1,5 +1,7 @@
 package com.escrow.wazipay.ui.buyer.invoice
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -10,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -28,6 +31,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,6 +42,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.escrow.wazipay.AppViewModelFactory
 import com.escrow.wazipay.R
 import com.escrow.wazipay.data.network.models.business.BusinessData
 import com.escrow.wazipay.data.network.models.business.businesses
@@ -51,12 +58,32 @@ object BusinessSelectionScreenDestination: AppNavigation {
     override val route: String = "business-selection-screen"
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun BusinessSelectionScreenComposable(
     navigateToInvoiceCreationScreen: (businessId: String) -> Unit,
+    navigateToPreviousScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val viewModel: BusinessSelectionViewModel = viewModel(factory = AppViewModelFactory.Factory)
+    val uiState by viewModel.uiState.collectAsState()
 
+    Box(
+        modifier = Modifier
+            .safeDrawingPadding()
+    ) {
+        BusinessSelectionScreen(
+            searchQuery = uiState.searchQuery ?: "",
+            onChangeSearchQuery = {
+                viewModel.changeSearchText(it)
+            },
+            onClearSearchQuery = {
+                viewModel.changeSearchText(null)
+            },
+            navigateToInvoiceCreationScreen = navigateToInvoiceCreationScreen,
+            navigateToPreviousScreen = navigateToPreviousScreen
+        )
+    }
 }
 
 @Composable

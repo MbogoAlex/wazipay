@@ -11,6 +11,7 @@ import com.escrow.wazipay.ui.auth.LoginViewModel
 import com.escrow.wazipay.ui.auth.PinViewModel
 import com.escrow.wazipay.ui.auth.RegistrationViewModel
 import com.escrow.wazipay.ui.buyer.BuyerDashboardViewModel
+import com.escrow.wazipay.ui.buyer.invoice.BusinessSelectionViewModel
 import com.escrow.wazipay.ui.dashboard.DashboardViewModel
 import com.escrow.wazipay.ui.general.business.BusinessDetailsViewModel
 import com.escrow.wazipay.ui.general.business.BusinessViewModel
@@ -137,6 +138,13 @@ object AppViewModelFactory {
 
         initializer {
             MerchantDashboardViewModel(
+                apiRepository = wazipayApplication().container.apiRepository,
+                dbRepository = wazipayApplication().container.dbRepository
+            )
+        }
+
+        initializer {
+            BusinessSelectionViewModel(
                 apiRepository = wazipayApplication().container.apiRepository,
                 dbRepository = wazipayApplication().container.dbRepository
             )

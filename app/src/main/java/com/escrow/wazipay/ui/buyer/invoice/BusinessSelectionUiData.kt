@@ -8,7 +8,8 @@ import com.escrow.wazipay.ui.general.business.LoadBusinessStatus
 data class BusinessSelectionUiData(
     val userDetails: UserDetails = UserDetails(),
     val role: Role = Role.BUYER,
-    val searchQuery: String = "",
+    val searchQuery: String? = null,
     val businesses: List<BusinessData> = emptyList(),
+    val unauthorized: Boolean = false,
     val loadBusinessStatus: LoadBusinessStatus = LoadBusinessStatus.INITIAL
 )
