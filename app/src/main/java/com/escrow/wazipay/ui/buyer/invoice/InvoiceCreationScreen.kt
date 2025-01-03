@@ -364,7 +364,7 @@ fun InvoiceCreationScreen(
                 )
             } else {
                 Text(
-                    text = "Pay business",
+                    text = "Pay business (Make order)",
                     fontSize = screenFontSize(x = 14.0).sp
                 )
             }
