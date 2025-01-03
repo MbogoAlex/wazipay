@@ -1,4 +1,4 @@
-package com.escrow.wazipay.ui.merchant
+package com.escrow.wazipay.ui.merchant.courier
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -22,7 +22,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -51,6 +50,8 @@ import com.escrow.wazipay.utils.screenWidth
 object CourierSelectionScreenDestination: AppNavigation {
     override val title: String = "Courier selection screen"
     override val route: String = "courier-selection-screen"
+    val orderId: String = "orderId"
+    val routeWithArgs: String = "$route/{$orderId}"
 }
 
 @Composable
@@ -151,86 +152,11 @@ fun CourierSelectionScreen(
         Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
         LazyColumn {
             items(users) {
-                SelectableCourierCell(userDetailsData = it)
-                Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
-            }
-        }
-    }
-}
-
-@Composable
-fun SelectableCourierCell(
-    userDetailsData: UserDetailsData,
-    modifier: Modifier = Modifier
-) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .border(
-                width = screenWidth(x = 1.0),
-                color = Color.LightGray,
-                shape = RoundedCornerShape(screenWidth(x = 10.0))
-            )
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier
-                .padding(screenWidth(x = 16.0))
-        ) {
-            Box(
-                modifier = Modifier
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.primary)
-                    .padding(screenWidth(x = 16.0))
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.motorbike),
-                    contentDescription = null
+                SelectableCourierCell(
+                    userDetailsData = it,
+                    showArrow = true
                 )
-            }
-            Spacer(modifier = Modifier.width(screenWidth(x = 8.0)))
-            Column {
-                Text(text = userDetailsData.username)
                 Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.phone),
-                        contentDescription = null
-                    )
-                    Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
-                    Text(
-                        text = userDetailsData.phoneNumber,
-                        fontSize = screenFontSize(x = 14.0).sp,
-//                            fontWeight = FontWeight.Bold
-                    )
-                }
-                Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.email),
-                        contentDescription = null
-                    )
-                    Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
-                    Text(
-                        text = "mbogoalex3@gmail.com",
-                        fontSize = screenFontSize(x = 14.0).sp,
-                    )
-                }
-            }
-            Spacer(modifier = Modifier.weight(1f))
-            IconButton(
-                onClick = { /*TODO*/ },
-                modifier = Modifier
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                    contentDescription = "Courier assignment screen"
-                )
             }
         }
     }
