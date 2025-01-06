@@ -316,7 +316,7 @@ fun CourierAssignmentScreen(
                             fontWeight = FontWeight.W300
                         )
                         Text(
-                            text = orderData.business.name,
+                            text = orderData.business?.name ?: "",
                             fontSize = screenFontSize(x = 14.0).sp,
                             fontWeight = FontWeight.Bold
                         )
@@ -352,7 +352,7 @@ fun CourierAssignmentScreen(
                         )
                     }
                     Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
-                    if(orderData.business.owner.id == userId) {
+                    if(orderData.business?.owner?.id == userId) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
@@ -369,7 +369,7 @@ fun CourierAssignmentScreen(
                         }
                     }
 
-                    if(orderData.buyer.id != userId) {
+                    if(orderData.buyer?.id != userId) {
                         Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
                         Text(
                             text = "Buyer:",
@@ -386,7 +386,7 @@ fun CourierAssignmentScreen(
                             )
                             Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
                             Text(
-                                text = orderData.buyer.phoneNumber,
+                                text = orderData.buyer?.phoneNumber ?: "",
                                 fontSize = screenFontSize(x = 14.0).sp,
 //                            fontWeight = FontWeight.Bold
                             )
@@ -397,7 +397,7 @@ fun CourierAssignmentScreen(
                             )
                             Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
                             Text(
-                                text = orderData.buyer.email,
+                                text = orderData.buyer?.email ?: "",
                                 fontSize = screenFontSize(x = 14.0).sp,
                             )
                         }

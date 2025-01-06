@@ -88,10 +88,14 @@ class LoginViewModel(
 
                         var user = dbRepository.getUser(userId = response.body()?.data?.user?.userId!!).first()
 
+                        Log.d("passedHere", user.toString())
+
                         while(user.username == null) {
                             delay(1000)
                             user = dbRepository.getUser(userId = response.body()?.data?.user?.userId!!).first()
                         }
+
+                        Log.d("FailedHere", user.toString())
 
                         _uiState.update {
                             it.copy(
@@ -104,7 +108,7 @@ class LoginViewModel(
                     _uiState.update {
                         Log.e("login_response_err", response.toString())
                         it.copy(
-                            loginMessage = response.message(),
+                            loginMessage = if(response.code() == 401) "Invalid credentials" else response.message(),
                             loginStatus = LoginStatus.FAIL
                         )
                     }

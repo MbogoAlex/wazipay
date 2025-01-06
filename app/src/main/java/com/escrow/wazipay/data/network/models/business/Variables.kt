@@ -19,6 +19,17 @@ val businessData = BusinessData(
     )
 )
 
+val emptyBusinessData = BusinessData(
+    id = 0,
+    name = "",
+    description = "",
+    products = listOf(),
+    createdAt = "",
+    archivedAt = null,
+    archived = false,
+    owner = null
+)
+
 val businesses = List(10) {index ->
     BusinessData(
         id = 1 + index,

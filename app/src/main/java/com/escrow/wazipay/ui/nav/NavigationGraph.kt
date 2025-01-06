@@ -135,8 +135,8 @@ fun NavigationGraph(
                 navigateToBusinessSelectionScreen = {
                     navController.navigate(BusinessSelectionScreenDestination.route)
                 },
-                navigateToOrderDetailsScreen = {
-                    navController.navigate("${OrderDetailsScreenDestination.route}/${it}")
+                navigateToOrderDetailsScreen = { orderId, fromPaymentScreen ->
+                    navController.navigate("${OrderDetailsScreenDestination.route}/${orderId}/${fromPaymentScreen}")
                 }
             )
         }
@@ -170,8 +170,8 @@ fun NavigationGraph(
                 navigateToBusinessSelectionScreen = {
                     navController.navigate(BusinessSelectionScreenDestination.route)
                 },
-                navigateToOrderDetailsScreen = {
-                    navController.navigate("${OrderDetailsScreenDestination.route}/${it}")
+                navigateToOrderDetailsScreen = { orderId, fromPaymentScreen ->
+                    navController.navigate("${OrderDetailsScreenDestination.route}/${orderId}/${fromPaymentScreen}")
                 }
             )
         }
@@ -224,8 +224,8 @@ fun NavigationGraph(
                 navigateToLoginScreenWithArgs = {phoneNumber, pin ->
                     navController.navigate("${LoginScreenDestination.route}/${phoneNumber}/${pin}")
                 },
-                navigateToOrderDetailsScreen = {
-                    navController.navigate("${OrderDetailsScreenDestination.route}/${it}")
+                navigateToOrderDetailsScreen = { orderId, fromPaymentScreen ->
+                    navController.navigate("${OrderDetailsScreenDestination.route}/${orderId}/${fromPaymentScreen}")
                 }
             )
         }
@@ -276,8 +276,8 @@ fun NavigationGraph(
                 navigateToBusinessSelectionScreen = {
                     navController.navigate(BusinessSelectionScreenDestination.route)
                 },
-                navigateToOrderDetailsScreen = {
-                    navController.navigate("${OrderDetailsScreenDestination.route}/${it}")
+                navigateToOrderDetailsScreen = { orderId, fromPaymentScreen ->
+                    navController.navigate("${OrderDetailsScreenDestination.route}/${orderId}/${fromPaymentScreen}")
                 }
             )
         }
@@ -306,9 +306,9 @@ fun NavigationGraph(
                 navigateToPreviousScreen = {
                     navController.navigateUp()
                 },
-                navigateToOrderDetailsScreen = {
+                navigateToOrderDetailsScreen = { orderId, fromPaymentScreen ->
                     navController.popBackStack()
-                    navController.navigate("${OrderDetailsScreenDestination.route}/${it}")
+                    navController.navigate("${OrderDetailsScreenDestination.route}/${orderId}/${fromPaymentScreen}")
                 }
             )
         }
@@ -318,12 +318,18 @@ fun NavigationGraph(
             arguments = listOf(
                 navArgument(OrderDetailsScreenDestination.orderId) {
                     type = NavType.StringType
+                },
+                navArgument(OrderDetailsScreenDestination.fromPaymentScreen) {
+                    type = NavType.BoolType
                 }
             )
         ) {
             OrderDetailsScreenComposable(
                 navigateToPreviousScreen = {
                     navController.navigateUp()
+                },
+                navigateToDashboardScreen = {
+                    navController.navigate(DashboardScreenDestination.route)
                 }
             )
         }

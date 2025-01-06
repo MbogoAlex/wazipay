@@ -47,7 +47,7 @@ class BusinessViewModel(
                     _uiState.update {
                         it.copy(
                             businesses = response.body()?.data!!.filter { business ->
-                                business.owner.id != uiState.value.userDetails.userId
+                                business.owner?.id != uiState.value.userDetails.userId
                             },
                             loadBusinessStatus = LoadBusinessStatus.SUCCESS
                         )

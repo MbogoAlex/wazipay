@@ -71,6 +71,7 @@ fun BusinessSelectionScreenComposable(
     Box(
         modifier = Modifier
             .safeDrawingPadding()
+            .background(MaterialTheme.colorScheme.background)
     ) {
         BusinessSelectionScreen(
             searchQuery = uiState.searchQuery ?: "",
@@ -110,6 +111,7 @@ fun BusinessSelectionScreen(
         ) {
             IconButton(onClick = navigateToPreviousScreen) {
                 Icon(
+                    tint = MaterialTheme.colorScheme.onBackground,
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Previous screen"
                 )
@@ -118,14 +120,16 @@ fun BusinessSelectionScreen(
             Text(
                 text = "Business payment",
                 fontSize = screenFontSize(x = 16.0).sp,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onBackground
             )
         }
         Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
         Text(
-            text = "Select a business",
+            text = "Search and select business",
             fontSize = screenFontSize(x = 14.0).sp,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onBackground
         )
         Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
         TextField(
@@ -208,7 +212,7 @@ fun SelectableBusinessCell(
                 .padding(screenWidth(x = 8.0))
                 .weight(1f)
         ) {
-            if(businessData.owner.id == userId) {
+            if(businessData.owner?.id == userId) {
                 Text(
                     text = "My Business",
                     fontSize = screenFontSize(x = 14.0).sp,
@@ -221,6 +225,7 @@ fun SelectableBusinessCell(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Icon(
+                    tint = MaterialTheme.colorScheme.onBackground,
                     painter = painterResource(id = R.drawable.shop),
                     contentDescription = null
                 )
@@ -228,38 +233,51 @@ fun SelectableBusinessCell(
                 Text(
                     text = businessData.name,
                     fontSize = screenFontSize(x = 14.0).sp,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onBackground
                 )
             }
             Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
             Text(
                 text = businessData.description,
                 fontSize = screenFontSize(x = 14.0).sp,
-                maxLines = 2
+                maxLines = 2,
+                color = MaterialTheme.colorScheme.onBackground
             )
             Spacer(modifier = Modifier.height(screenHeight(x = 4.0)))
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
+                    tint = MaterialTheme.colorScheme.onBackground,
                     painter = painterResource(id = R.drawable.person),
                     contentDescription = null
                 )
                 Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
-                Text(text = businessData.owner.username)
+                Text(
+                    text = businessData.owner?.username ?: "",
+                    fontSize = screenFontSize(x = 14.0).sp,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
                 Spacer(modifier = Modifier.width(screenWidth(x = 8.0)))
                 Icon(
+                    tint = MaterialTheme.colorScheme.onBackground,
                     painter = painterResource(id = R.drawable.phone),
                     contentDescription = null
                 )
                 Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
-                Text(text = businessData.owner.phoneNumber)
+                Text(
+                    text = businessData.owner?.phoneNumber ?: "",
+                    fontSize = screenFontSize(x = 14.0).sp,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
             }
         }
         IconButton(
             onClick = { navigateToInvoiceCreationScreen(businessData.id.toString()) },
         ) {
             Icon(
+                tint = MaterialTheme.colorScheme.onBackground,
                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                 contentDescription = "Business details"
             )

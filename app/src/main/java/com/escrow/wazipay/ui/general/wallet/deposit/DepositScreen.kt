@@ -167,6 +167,7 @@ fun DepositScreen(
                 onClick = navigateToPreviousScreen
             ) {
                 Icon(
+                    tint = MaterialTheme.colorScheme.onBackground,
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Previous screen"
                 )
@@ -175,12 +176,14 @@ fun DepositScreen(
             Text(
                 text = "Create deposit",
                 fontSize = screenFontSize(x = 18.0).sp,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onBackground
             )
         }
         Text(
             text = "A deposit is money moved to your Wazipay wallet so that you can transact on Wazipay.",
-            fontSize = screenFontSize(x = 14.0).sp
+            fontSize = screenFontSize(x = 14.0).sp,
+            color = MaterialTheme.colorScheme.onBackground
         )
 //        Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
 //        Image(
@@ -194,7 +197,8 @@ fun DepositScreen(
         Text(
             text = "How much would you like to deposit?",
             fontSize = screenFontSize(x = 16.0).sp,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onBackground
         )
         Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
         TextFieldComposable(
@@ -216,11 +220,13 @@ fun DepositScreen(
         ) {
             Text(
                 text = "Current balance: ",
-                fontSize = screenFontSize(x = 14.0).sp
+                fontSize = screenFontSize(x = 14.0).sp,
+                color = MaterialTheme.colorScheme.onBackground
             )
             Text(
                 text = walletBalance,
-                fontSize = screenFontSize(x = 14.0).sp
+                fontSize = screenFontSize(x = 14.0).sp,
+                color = MaterialTheme.colorScheme.onBackground
             )
         }
         Spacer(modifier = Modifier.weight(1f))
@@ -233,7 +239,7 @@ fun DepositScreen(
             if(depositStatus == DepositStatus.LOADING) {
                 Text(
                     text = "Depositing...",
-                    fontSize = screenFontSize(x = 14.0).sp
+                    fontSize = screenFontSize(x = 14.0).sp,
                 )
             } else {
                 Text(

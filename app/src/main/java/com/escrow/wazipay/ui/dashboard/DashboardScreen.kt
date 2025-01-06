@@ -104,7 +104,7 @@ fun DashboardScreenComposable(
     navigateToWithdrawalScreen: () -> Unit,
     navigateToDashboardScreen: () -> Unit,
     navigateToBusinessSelectionScreen: () -> Unit,
-    navigateToOrderDetailsScreen: (orderId: String) -> Unit,
+    navigateToOrderDetailsScreen: (orderId: String, fromPaymentScreen: Boolean) -> Unit,
 ) {
     val context = LocalContext.current
 
@@ -287,7 +287,7 @@ fun DashboardScreen(
     navigateToBusinessDetailsScreen: (businessId: String) -> Unit,
     navigateToBusinessSelectionScreen: () -> Unit,
     onLogout: () -> Unit,
-    navigateToOrderDetailsScreen: (orderId: String) -> Unit,
+    navigateToOrderDetailsScreen: (orderId: String, fromPaymentScreen: Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -720,7 +720,7 @@ fun DashboardScreenPreview() {
             navigateToBusinessDetailsScreen = {},
             navigateToBusinessSelectionScreen = {},
             onLogout = {},
-            navigateToOrderDetailsScreen = {}
+            navigateToOrderDetailsScreen = {orderId, fromPaymentScreen ->  }
         )
     }
 }

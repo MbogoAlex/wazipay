@@ -60,8 +60,8 @@ import com.escrow.wazipay.utils.screenWidth
 fun MerchantDashboardScreenComposable(
     navigateToDepositScreen: () -> Unit,
     navigateToWithdrawalScreen: () -> Unit,
-    navigateToOrderDetailsScreen: (orderId: String) -> Unit,
     navigateToLoginScreenWithArgs: (phoneNumber: String, pin: String) -> Unit,
+    navigateToOrderDetailsScreen: (orderId: String, fromPaymentScreen: Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -102,7 +102,7 @@ fun MerchantDashboardScreen(
     transactions: List<TransactionData>,
     navigateToDepositScreen: () -> Unit,
     navigateToWithdrawalScreen: () -> Unit,
-    navigateToOrderDetailsScreen: (orderId: String) -> Unit,
+    navigateToOrderDetailsScreen: (orderId: String, fromPaymentScreen: Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -304,6 +304,7 @@ fun MerchantDashboardScreen(
             Text(
                 text = "No transactions found",
                 fontSize = screenFontSize(x = 14.0).sp,
+                color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
             )
@@ -326,7 +327,7 @@ fun MerchantDashboardScreenPreview() {
             userVerified = true,
             navigateToDepositScreen = {},
             navigateToWithdrawalScreen = {},
-            navigateToOrderDetailsScreen = {}
+            navigateToOrderDetailsScreen = {orderId, fromPaymentScreen ->  }
         )
     }
 }

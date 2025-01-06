@@ -55,7 +55,7 @@ object OrdersScreenDestination: AppNavigation {
 @Composable
 fun OrdersScreenComposable(
     navigateToLoginScreenWithArgs: (phoneNumber: String, pin: String) -> Unit,
-    navigateToOrderDetailsScreen: (orderId: String) -> Unit,
+    navigateToOrderDetailsScreen: (orderId: String, fromPaymentScreen: Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -92,7 +92,7 @@ fun OrdersScreen(
     stages: List<String>,
     selectedStage: String,
     onChangeOrderStage: (orderStage: String) -> Unit,
-    navigateToOrderDetailsScreen: (orderId: String) -> Unit,
+    navigateToOrderDetailsScreen: (orderId: String, fromPaymentScreen: Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -181,7 +181,9 @@ fun OrdersScreenPreview() {
             stages = stages,
             onChangeOrderStage = {},
             role = Role.BUYER,
-            navigateToOrderDetailsScreen = {}
+            navigateToOrderDetailsScreen = {orderId, fromPaymentScreen ->
+
+            }
         )
     }
 }

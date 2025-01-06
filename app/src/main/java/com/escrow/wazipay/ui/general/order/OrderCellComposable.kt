@@ -34,7 +34,7 @@ import java.time.LocalDateTime
 fun OrderItemComposable(
     homeScreen: Boolean,
     orderData: OrderData,
-    navigateToOrderDetailsScreen: (orderId: String) -> Unit,
+    navigateToOrderDetailsScreen: (orderId: String, fromPaymentScreen: Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val stage = when(orderData.orderStage) {
@@ -50,7 +50,7 @@ fun OrderItemComposable(
         Card(
             modifier = modifier
                 .clickable {
-                    navigateToOrderDetailsScreen(orderData.id.toString())
+                    navigateToOrderDetailsScreen(orderData.id.toString(), false)
                 }
         ) {
             Column(
@@ -67,7 +67,7 @@ fun OrderItemComposable(
                     )
                     Spacer(modifier = Modifier.width(screenWidth(x = 8.0)))
                     Text(
-                        text = orderData.business.name,
+                        text = orderData.business?.name ?: "",
                         fontSize = screenFontSize(x = 16.0).sp
                     )
                 }
@@ -151,7 +151,7 @@ fun OrderItemComposable(
         Card(
             modifier = modifier
                 .clickable {
-                    navigateToOrderDetailsScreen(orderData.id.toString())
+                    navigateToOrderDetailsScreen(orderData.id.toString(), false)
                 }
         ) {
             Column(
@@ -168,7 +168,7 @@ fun OrderItemComposable(
                     )
                     Spacer(modifier = Modifier.width(screenWidth(x = 8.0)))
                     Text(
-                        text = orderData.business.name,
+                        text = orderData.business?.name ?: "",
                         fontSize = screenFontSize(x = 16.0).sp,
                         color = MaterialTheme.colorScheme.onBackground
                     )

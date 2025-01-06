@@ -193,6 +193,7 @@ fun WithdrawalScreen(
                 onClick = navigateToPreviousScreen
             ) {
                 Icon(
+                    tint = MaterialTheme.colorScheme.onBackground,
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Previous screen"
                 )
@@ -201,13 +202,15 @@ fun WithdrawalScreen(
             Text(
                 text = "Withdraw money",
                 fontSize = screenFontSize(x = 18.0).sp,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onBackground
             )
         }
         Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
         Text(
             text = "Amount",
             fontSize = screenFontSize(x = 14.0).sp,
+            color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier
         )
         Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
@@ -228,26 +231,30 @@ fun WithdrawalScreen(
         Text(
             text = walletBalance,
             fontSize = screenFontSize(x = 24.0).sp,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onBackground
         )
         Spacer(modifier = Modifier.height(screenHeight(x = 4.0)))
         Text(
             text = "Available balance".uppercase(),
             fontWeight = FontWeight.W300,
-            fontSize = screenFontSize(x = 14.0).sp
+            fontSize = screenFontSize(x = 14.0).sp,
+            color = MaterialTheme.colorScheme.onBackground
         )
         Spacer(modifier = Modifier.height(screenHeight(x = 32.0)))
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
+                tint = MaterialTheme.colorScheme.onBackground,
                 painter = painterResource(id = R.drawable.withdrawal),
                 contentDescription = null
             )
             Spacer(modifier = Modifier.width(screenWidth(x = 8.0)))
             Text(
                 text = "Withdraw Money To",
-                fontSize = screenFontSize(x = 14.0).sp
+                fontSize = screenFontSize(x = 14.0).sp,
+                color = MaterialTheme.colorScheme.onBackground
             )
         }
         Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))

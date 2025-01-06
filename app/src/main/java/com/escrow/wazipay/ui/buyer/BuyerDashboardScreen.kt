@@ -59,7 +59,7 @@ fun BuyerDashboardScreenComposable(
     navigateToDepositScreen: () -> Unit,
     navigateToWithdrawalScreen: () -> Unit,
     navigateToBusinessSelectionScreen: () -> Unit,
-    navigateToOrderDetailsScreen: (orderId: String) -> Unit,
+    navigateToOrderDetailsScreen: (orderId: String, fromPaymentScreen: Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -103,7 +103,7 @@ fun BuyerDashboardScreen(
     navigateToDepositScreen: () -> Unit,
     navigateToWithdrawalScreen: () -> Unit,
     navigateToBusinessSelectionScreen: () -> Unit,
-    navigateToOrderDetailsScreen: (orderId: String) -> Unit,
+    navigateToOrderDetailsScreen: (orderId: String, fromPaymentScreen: Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -317,7 +317,7 @@ fun BuyerDashboardScreenPreview() {
             navigateToDepositScreen = {},
             navigateToWithdrawalScreen = {},
             navigateToBusinessSelectionScreen = {},
-            navigateToOrderDetailsScreen = {}
+            navigateToOrderDetailsScreen = {orderId, fromPaymentScreen ->  }
         )
     }
 }

@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -90,7 +91,8 @@ fun InvoicesScreen(
         Text(
             text = "${if(role == Role.BUYER) "Received Invoices" else "Issued Invoices"} / $selectedStatus",
             fontWeight = FontWeight.Bold,
-            fontSize = screenFontSize(x = 14.0).sp
+            fontSize = screenFontSize(x = 14.0).sp,
+            color = MaterialTheme.colorScheme.onBackground,
         )
         Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
         Row(

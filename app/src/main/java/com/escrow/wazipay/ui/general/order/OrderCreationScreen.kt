@@ -267,7 +267,7 @@ fun OrderCreationScreen(
                 modifier = Modifier
                     .padding(screenWidth(x = 16.0))
             ) {
-                if(businessData.owner.id == userId) {
+                if(businessData.owner?.id == userId) {
                     Text(
                         text = "My Business",
                         fontSize = screenFontSize(x = 14.0).sp,
@@ -305,14 +305,14 @@ fun OrderCreationScreen(
                         contentDescription = null
                     )
                     Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
-                    Text(text = businessData.owner.username)
+                    Text(text = businessData.owner?.username ?: "")
                     Spacer(modifier = Modifier.width(screenWidth(x = 8.0)))
                     Icon(
                         painter = painterResource(id = R.drawable.phone),
                         contentDescription = null
                     )
                     Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
-                    Text(text = businessData.owner.phoneNumber)
+                    Text(text = businessData.owner?.phoneNumber ?: "")
                 }
             }
         }

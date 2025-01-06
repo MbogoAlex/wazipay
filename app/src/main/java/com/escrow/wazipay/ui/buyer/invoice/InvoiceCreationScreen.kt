@@ -4,6 +4,7 @@ import android.os.Build
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -74,7 +75,7 @@ object InvoiceCreationScreenDestination: AppNavigation {
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun InvoiceCreationScreenComposable(
-    navigateToOrderDetailsScreen: (orderId: String) -> Unit,
+    navigateToOrderDetailsScreen: (orderId: String, fromPaymentScreen: Boolean) -> Unit,
     navigateToPreviousScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -83,9 +84,9 @@ fun InvoiceCreationScreenComposable(
     val viewModel: InvoiceCreationViewModel = viewModel(factory = AppViewModelFactory.Factory)
     val uiSate by viewModel.uiState.collectAsState()
 
-    val invoicesViewModel: InvoicesViewModel = viewModel(factory = AppViewModelFactory.Factory)
-    val ordersViewModel: OrdersViewModel = viewModel(factory = AppViewModelFactory.Factory)
-    val buyerDashboardViewModel: BuyerDashboardViewModel = viewModel(factory = AppViewModelFactory.Factory)
+//    val invoicesViewModel: InvoicesViewModel = viewModel(factory = AppViewModelFactory.Factory)
+//    val ordersViewModel: OrdersViewModel = viewModel(factory = AppViewModelFactory.Factory)
+//    val buyerDashboardViewModel: BuyerDashboardViewModel = viewModel(factory = AppViewModelFactory.Factory)
 
     var showConfirmDialog by rememberSaveable {
         mutableStateOf(false)
@@ -122,16 +123,12 @@ fun InvoiceCreationScreenComposable(
         InvoiceCreationSuccessDialog(
             onConfirm = {
                 viewModel.resetStatus()
-                invoicesViewModel.getInvoices()
-                ordersViewModel.getOrders()
-                buyerDashboardViewModel.getUserWallet()
-                buyerDashboardViewModel.getInvoices()
-                buyerDashboardViewModel.getTransactions()
-                navigateToOrderDetailsScreen(uiSate.orderId)
+
+                navigateToOrderDetailsScreen(uiSate.orderId, true)
             },
             onDismiss = {
                 viewModel.resetStatus()
-                navigateToOrderDetailsScreen(uiSate.orderId)
+                navigateToOrderDetailsScreen(uiSate.orderId, true)
             },
             title = uiSate.title,
             cost = formatMoneyValue(uiSate.amount.toDouble())
@@ -141,6 +138,7 @@ fun InvoiceCreationScreenComposable(
     Box(
         modifier = Modifier
             .safeDrawingPadding()
+            .background(MaterialTheme.colorScheme.background)
     ) {
         InvoiceCreationScreen(
             userId = uiSate.userDetails.userId,
@@ -176,7 +174,8 @@ fun InvoiceCreationScreenComposable(
             navigateToPreviousScreen = navigateToPreviousScreen,
             onCreateInvoice = {
                 showConfirmDialog = !showConfirmDialog
-            }
+            },
+            buttonEnabled = uiSate.buttonEnabled
         )
     }
 }
@@ -199,6 +198,7 @@ fun InvoiceCreationScreen(
     invoiceCreationStatus: InvoiceCreationStatus,
     navigateToPreviousScreen: () -> Unit,
     onCreateInvoice: () -> Unit,
+    buttonEnabled: Boolean,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -218,6 +218,7 @@ fun InvoiceCreationScreen(
                 onClick = navigateToPreviousScreen
             ) {
                 Icon(
+                    tint = MaterialTheme.colorScheme.onBackground,
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Previous screen"
                 )
@@ -225,7 +226,8 @@ fun InvoiceCreationScreen(
             Text(
                 text = "Business payment",
                 fontWeight = FontWeight.Bold,
-                fontSize = screenFontSize(x = 16.0).sp
+                fontSize = screenFontSize(x = 16.0).sp,
+                color = MaterialTheme.colorScheme.onBackground
             )
         }
         Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
@@ -233,7 +235,7 @@ fun InvoiceCreationScreen(
             label = {
                 Text(
                     text = "Title / Product Name",
-                    fontSize = screenFontSize(x = 14.0).sp
+                    fontSize = screenFontSize(x = 14.0).sp,
                 )
             },
             value = title,
@@ -306,7 +308,7 @@ fun InvoiceCreationScreen(
                 modifier = Modifier
                     .padding(screenWidth(x = 16.0))
             ) {
-                if(businessData.owner.id == userId) {
+                if(businessData.owner?.id == userId) {
                     Text(
                         text = "My Business",
                         fontSize = screenFontSize(x = 14.0).sp,
@@ -344,14 +346,14 @@ fun InvoiceCreationScreen(
                         contentDescription = null
                     )
                     Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
-                    Text(text = businessData.owner.username)
+                    Text(text = businessData.owner?.username ?: "")
                     Spacer(modifier = Modifier.width(screenWidth(x = 8.0)))
                     Icon(
                         painter = painterResource(id = R.drawable.phone),
                         contentDescription = null
                     )
                     Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
-                    Text(text = businessData.owner.phoneNumber)
+                    Text(text = businessData.owner?.phoneNumber ?: "")
                 }
             }
         }
@@ -360,6 +362,7 @@ fun InvoiceCreationScreen(
             text = "Payment method",
             fontSize = screenFontSize(x = 14.0).sp,
             fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onBackground
         )
         Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
         Row(
@@ -373,7 +376,8 @@ fun InvoiceCreationScreen(
             Text(
                 text = "Wazipay",
                 modifier = Modifier.padding(start = screenWidth(x = 8.0)),
-                fontSize = screenFontSize(x = 14.0).sp
+                fontSize = screenFontSize(x = 14.0).sp,
+                color = MaterialTheme.colorScheme.onBackground
             )
 
             Spacer(modifier = Modifier.width(screenWidth(x = 16.0)))
@@ -385,7 +389,8 @@ fun InvoiceCreationScreen(
             Text(
                 text = "M-PESA",
                 modifier = Modifier.padding(start = screenWidth(x = 8.0)),
-                fontSize = screenFontSize(x = 14.0).sp
+                fontSize = screenFontSize(x = 14.0).sp,
+                color = MaterialTheme.colorScheme.onBackground
             )
         }
         Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
@@ -474,7 +479,7 @@ fun InvoiceCreationScreen(
         }
         Spacer(modifier = Modifier.weight(1f))
         Button(
-//            enabled = buttonEnabled && orderCreationStatus != OrderCreationStatus.LOADING,
+            enabled = buttonEnabled && invoiceCreationStatus != InvoiceCreationStatus.LOADING,
             onClick = onCreateInvoice,
             modifier = Modifier
                 .fillMaxWidth()
@@ -590,7 +595,8 @@ fun InvoiceCreationScreenPreview() {
             onChangePaymentMethod = {},
             invoiceCreationStatus = InvoiceCreationStatus.INITIAL,
             navigateToPreviousScreen = { /*TODO*/ },
-            onCreateInvoice = { /*TODO*/ }
+            onCreateInvoice = { /*TODO*/ },
+            buttonEnabled = false
         )
     }
 }

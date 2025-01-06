@@ -118,5 +118,10 @@ class OrderDetailsViewModel(
         getUserDetails()
         getUserRole()
         loadOrderDetailScreenStartupUiData()
+        _uiState.update {
+            it.copy(
+                fromPaymentScreen = savedStateHandle.get<Boolean>(OrderDetailsScreenDestination.fromPaymentScreen) ?: false
+            )
+        }
     }
 }

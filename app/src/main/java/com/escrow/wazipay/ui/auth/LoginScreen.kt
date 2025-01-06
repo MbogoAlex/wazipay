@@ -3,6 +3,7 @@ package com.escrow.wazipay.ui.auth
 import android.app.Activity
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -77,6 +79,7 @@ fun LoginScreenComposable(
     Box(
         modifier = Modifier
             .safeDrawingPadding()
+            .background(MaterialTheme.colorScheme.background)
     ) {
         LoginScreen(
             phoneNumber = uiState.phoneNumber,
@@ -123,12 +126,14 @@ fun LoginScreen(
         Text(
             text = "Welcome Back",
             fontWeight = FontWeight.Bold,
-            fontSize = screenFontSize(x = 24.0).sp
+            fontSize = screenFontSize(x = 24.0).sp,
+            color = MaterialTheme.colorScheme.onBackground
         )
         Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
         Text(
             text = "Enter your credential to login",
-            fontSize = screenFontSize(x = 14.0).sp
+            fontSize = screenFontSize(x = 14.0).sp,
+            color = MaterialTheme.colorScheme.onBackground
         )
         Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
         TextFieldComposable(
@@ -173,7 +178,8 @@ fun LoginScreen(
         ) {
             Text(
                 text = "Don't have an account?",
-                fontSize = screenFontSize(x = 14.0).sp
+                fontSize = screenFontSize(x = 14.0).sp,
+                color = MaterialTheme.colorScheme.onBackground
             )
             TextButton(onClick = navigateToRegistrationScreen) {
                 Text(

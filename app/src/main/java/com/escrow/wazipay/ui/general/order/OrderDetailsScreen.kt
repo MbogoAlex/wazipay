@@ -1,6 +1,7 @@
 package com.escrow.wazipay.ui.general.order
 
 import android.os.Build
+import androidx.activity.compose.BackHandler
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -30,6 +31,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -54,27 +56,40 @@ object OrderDetailsScreenDestination: AppNavigation {
     override val title: String = "Order details screen"
     override val route: String = "order-details-screen"
     val orderId: String = "orderId"
-    val routeWithArgs: String = "$route/{$orderId}"
+    val fromPaymentScreen: String = "fromPaymentScreen"
+    val routeWithArgs: String = "$route/{$orderId}/{$fromPaymentScreen}"
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun OrderDetailsScreenComposable(
     navigateToPreviousScreen: () -> Unit,
+    navigateToDashboardScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
     val viewModel: OrderDetailsViewModel = viewModel(factory = AppViewModelFactory.Factory)
     val uiState by viewModel.uiState.collectAsState()
+
+    BackHandler(onBack = {
+        if(uiState.fromPaymentScreen) {
+            navigateToDashboardScreen()
+        } else {
+            navigateToPreviousScreen()
+        }
+    })
 
     Box(
         modifier = Modifier
             .safeDrawingPadding()
     ) {
         OrderDetailsScreen(
+            fromPaymentScreen = uiState.fromPaymentScreen,
             userId = uiState.userDetails.userId,
             orderData = uiState.orderData,
             role = uiState.role,
-            navigateToPreviousScreen = navigateToPreviousScreen
+            navigateToPreviousScreen = navigateToPreviousScreen,
+            navigateToDashboardScreen = navigateToDashboardScreen
         )
     }
 }
@@ -82,10 +97,12 @@ fun OrderDetailsScreenComposable(
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun OrderDetailsScreen(
+    fromPaymentScreen: Boolean,
     userId: Int,
     role: Role,
     orderData: OrderData,
     navigateToPreviousScreen: () -> Unit,
+    navigateToDashboardScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -102,15 +119,23 @@ fun OrderDetailsScreen(
         ) {
             IconButton(
 //                enabled = invoiceCreationStatus != InvoiceCreationStatus.LOADING,
-                onClick = navigateToPreviousScreen
+                onClick = {
+                    if(fromPaymentScreen) {
+                        navigateToDashboardScreen()
+                    } else {
+                        navigateToPreviousScreen()
+                    }
+                }
             ) {
                 Icon(
+                    tint = MaterialTheme.colorScheme.onBackground,
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Previous screen"
                 )
             }
             Text(
                 text = "Order details",
+                color = MaterialTheme.colorScheme.onBackground,
                 fontWeight = FontWeight.Bold,
                 fontSize = screenFontSize(x = 16.0).sp
             )
@@ -122,6 +147,7 @@ fun OrderDetailsScreen(
             RadioButton(selected = orderData.orderStage == "PENDING_PICKUP", onClick = { /*TODO*/ })
             Text(
                 text = "Pending pickup",
+                color = MaterialTheme.colorScheme.onBackground,
                 fontSize = screenFontSize(x = 14.0).sp,
             )
         }
@@ -139,6 +165,7 @@ fun OrderDetailsScreen(
             RadioButton(selected = orderData.orderStage == "IN_TRANSIT", onClick = { /*TODO*/ })
             Text(
                 text = "In transit",
+                color = MaterialTheme.colorScheme.onBackground,
                 fontSize = screenFontSize(x = 14.0).sp,
             )
         }
@@ -158,40 +185,50 @@ fun OrderDetailsScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
+                            tint = MaterialTheme.colorScheme.onBackground,
                             painter = painterResource(id = R.drawable.motorbike),
                             contentDescription = null
                         )
                         Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
                         Text(
                             text = "Courier:",
+                            color = MaterialTheme.colorScheme.onBackground,
                             fontSize = screenFontSize(x = 14.0).sp,
                             fontWeight = FontWeight.Bold
                         )
                         Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
-                        Text(text = orderData.courier.username)
+                        Text(
+                            text = orderData.courier.username,
+                            color = MaterialTheme.colorScheme.onBackground,
+                            fontSize = screenFontSize(x = 14.0).sp
+                        )
                     }
                     Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
                     Row(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
+                            tint = MaterialTheme.colorScheme.onBackground,
                             painter = painterResource(id = R.drawable.phone),
                             contentDescription = null
                         )
                         Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
                         Text(
                             text = orderData.courier.phoneNumber,
+                            color = MaterialTheme.colorScheme.onBackground,
                             fontSize = screenFontSize(x = 14.0).sp,
 //                            fontWeight = FontWeight.Bold
                         )
                         Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
                         Icon(
+                            tint = MaterialTheme.colorScheme.onBackground,
                             painter = painterResource(id = R.drawable.email),
                             contentDescription = null
                         )
                         Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
                         Text(
                             text = orderData.courier.email,
+                            color = MaterialTheme.colorScheme.onBackground,
                             fontSize = screenFontSize(x = 14.0).sp,
                         )
                     }
@@ -228,6 +265,7 @@ fun OrderDetailsScreen(
             RadioButton(selected = orderData.orderStage == "COMPLETE", onClick = { /*TODO*/ })
             Text(
                 text = "Complete",
+                color = MaterialTheme.colorScheme.onBackground,
                 fontSize = screenFontSize(x = 14.0).sp,
             )
         }
@@ -248,11 +286,13 @@ fun OrderDetailsScreen(
                 ) {
                     Text(
                         text = "Order code: ",
+                        color = MaterialTheme.colorScheme.onBackground,
                         fontSize = screenFontSize(x = 14.0).sp,
                         fontWeight = FontWeight.W300
                     )
                     Text(
                         text = orderData.orderCode,
+                        color = MaterialTheme.colorScheme.onBackground,
                         fontSize = screenFontSize(x = 14.0).sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -262,11 +302,13 @@ fun OrderDetailsScreen(
                 ) {
                     Text(
                         text = "Business: ",
+                        color = MaterialTheme.colorScheme.onBackground,
                         fontSize = screenFontSize(x = 14.0).sp,
                         fontWeight = FontWeight.W300
                     )
                     Text(
-                        text = orderData.business.name,
+                        text = orderData.business?.name ?: "",
+                        color = MaterialTheme.colorScheme.onBackground,
                         fontSize = screenFontSize(x = 14.0).sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -274,16 +316,19 @@ fun OrderDetailsScreen(
                 Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
                 Text(
                     text = orderData.name,
+                    color = MaterialTheme.colorScheme.onBackground,
                     fontSize = screenFontSize(x = 14.0).sp,
                     fontWeight = FontWeight.Bold
                 )
                 Text(
                     text = orderData.description,
+                    color = MaterialTheme.colorScheme.onBackground,
                     fontSize = screenFontSize(x = 14.0).sp,
                 )
                 Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
                 Text(
                     text = formatIsoDateTime(LocalDateTime.parse(orderData.createdAt)),
+                    color = MaterialTheme.colorScheme.onBackground,
                     fontStyle = FontStyle.Italic
                 )
                 Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
@@ -293,37 +338,42 @@ fun OrderDetailsScreen(
                     Text(
                         text = if(role == Role.MERCHANT) "Paid amount: " else "Cost: ",
                         fontSize = screenFontSize(x = 14.0).sp,
+                        color = MaterialTheme.colorScheme.onBackground,
                         fontWeight = FontWeight.W300
                     )
                     Text(
                         text = formatMoneyValue(orderData.productCost),
                         fontSize = screenFontSize(x = 14.0).sp,
+                        color = MaterialTheme.colorScheme.onBackground,
                         fontWeight = FontWeight.Bold
                     )
                 }
                 Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
-                if(orderData.business.owner.id == userId) {
+                if(orderData.business?.owner?.id == userId) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
                             text = "Delivery cost: ",
                             fontSize = screenFontSize(x = 14.0).sp,
+                            color = MaterialTheme.colorScheme.onBackground,
                             fontWeight = FontWeight.W300
                         )
                         Text(
                             text = if(orderData.deliveryCost != null) formatMoneyValue(orderData.deliveryCost) else "N/A",
                             fontSize = screenFontSize(x = 14.0).sp,
+                            color = MaterialTheme.colorScheme.onBackground,
                             fontWeight = FontWeight.Bold
                         )
                     }
                 }
 
-                if(orderData.buyer.id != userId) {
+                if(orderData.buyer?.id != userId) {
                     Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
                     Text(
                         text = "Buyer:",
                         fontSize = screenFontSize(x = 14.0).sp,
+                        color = MaterialTheme.colorScheme.onBackground,
                         fontWeight = FontWeight.Bold
                     )
                     Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
@@ -331,23 +381,27 @@ fun OrderDetailsScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
+                            tint = MaterialTheme.colorScheme.onBackground,
                             painter = painterResource(id = R.drawable.phone),
                             contentDescription = null
                         )
                         Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
                         Text(
-                            text = orderData.buyer.phoneNumber,
+                            text = orderData.buyer?.phoneNumber ?: "",
+                            color = MaterialTheme.colorScheme.onBackground,
                             fontSize = screenFontSize(x = 14.0).sp,
 //                            fontWeight = FontWeight.Bold
                         )
                         Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
                         Icon(
+                            tint = MaterialTheme.colorScheme.onBackground,
                             painter = painterResource(id = R.drawable.email),
                             contentDescription = null
                         )
                         Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
                         Text(
-                            text = orderData.buyer.email,
+                            text = orderData.buyer?.email ?: "",
+                            color = MaterialTheme.colorScheme.onBackground,
                             fontSize = screenFontSize(x = 14.0).sp,
                         )
                     }
@@ -363,10 +417,12 @@ fun OrderDetailsScreen(
 fun OrderDetailsScreenPreview() {
     WazipayTheme {
         OrderDetailsScreen(
+            fromPaymentScreen = false,
             userId = 1,
             orderData = orderData,
             role = Role.BUYER,
-            navigateToPreviousScreen = {}
+            navigateToPreviousScreen = {},
+            navigateToDashboardScreen = {}
         )
     }
 }

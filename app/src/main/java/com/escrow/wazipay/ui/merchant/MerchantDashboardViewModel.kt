@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.escrow.wazipay.data.network.repository.ApiRepository
+import com.escrow.wazipay.data.room.models.UserDetails
 import com.escrow.wazipay.data.room.repository.DBRepository
 import com.escrow.wazipay.ui.buyer.LoadInvoicesStatus
 import com.escrow.wazipay.ui.buyer.LoadTransactionsStatus
@@ -275,7 +276,9 @@ class MerchantDashboardViewModel(
                 if(response.isSuccessful) {
                     _uiState.update {
                         it.copy(
-                            transactions = response.body()?.data!!,
+                            transactions = response.body()?.data!!.filter { transaction ->
+                                transaction.transactionType != "ESCROW_PAYMENT"
+                            },
                             loadInvoicesStatus = LoadInvoicesStatus.SUCCESS
                         )
                     }
@@ -315,7 +318,7 @@ class MerchantDashboardViewModel(
                 dbRepository.getUsers().collect { users ->
                     _uiState.update {
                         it.copy(
-                            userDetails = users[0]
+                            userDetails = if(users.isEmpty()) UserDetails() else users[0]
                         )
                     }
                 }

@@ -5,6 +5,8 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.escrow.wazipay.data.network.repository.ApiRepository
+import com.escrow.wazipay.data.room.models.Role
+import com.escrow.wazipay.data.room.models.UserDetails
 import com.escrow.wazipay.data.room.repository.DBRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -77,7 +79,9 @@ class TransactionsViewModel(
                 if(response.isSuccessful) {
                     _uiState.update {
                         it.copy(
-                            transactions = response.body()?.data!!,
+                            transactions = if(uiState.value.role == Role.BUYER) response.body()?.data!! else response.body()?.data!!.filter { transaction ->
+                                transaction.transactionType != "ESCROW_PAYMENT"
+                            },
                             loadTransactionsStatus = LoadTransactionsStatus.SUCCESS
                         )
                     }
@@ -122,7 +126,21 @@ class TransactionsViewModel(
                 dbRepository.getUsers().collect { users ->
                     _uiState.update {
                         it.copy(
-                            userDetails = users[0]
+                            userDetails = if(users.isEmpty()) UserDetails() else users[0]
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    private fun getUserRole() {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                dbRepository.getUserRole().collect { userRole ->
+                    _uiState.update {
+                        it.copy(
+                            role = userRole!!.role
                         )
                     }
                 }
@@ -142,6 +160,7 @@ class TransactionsViewModel(
 
     init {
         initializeDates()
+        getUserRole()
         getUserDetails()
         loadTransactionsScreenUiData()
     }

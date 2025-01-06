@@ -40,6 +40,27 @@ val orderData = OrderData(
     cancellationReason = null
 )
 
+val emptyOrderData = OrderData(
+    id = 1,
+    orderCode = "",
+    name = "",
+    description = "",
+    productCost = 0.0,
+    deliveryCost = null,
+    orderStage = "PENDING_PICKUP",
+    merchant = null,
+    buyer = null,
+    courier = null,
+    business = null,
+    createdAt = "2024-12-26T11:24:46.215144",
+    completedAt = null,
+    assignedAt = null,
+    refundedAt = null,
+    cancelledAt = null,
+    refundReason = null,
+    cancellationReason = null
+)
+
 val sampleOrder = OrderData(
     id = 1,
     orderCode = "",

@@ -134,7 +134,7 @@ fun BusinessDetailsScreen(
         )
         Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
         Text(
-            text = businessData.owner.phoneNumber,
+            text = businessData.owner?.phoneNumber ?: "",
             fontSize = screenFontSize(x = 14.0).sp
         )
         Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
@@ -144,7 +144,7 @@ fun BusinessDetailsScreen(
         )
         Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
         Text(
-            text = businessData.owner.email,
+            text = businessData.owner?.email ?: "",
             fontSize = screenFontSize(x = 14.0).sp
         )
         Spacer(modifier = Modifier.weight(1f))

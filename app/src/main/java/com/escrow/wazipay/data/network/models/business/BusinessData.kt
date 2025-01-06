@@ -12,5 +12,5 @@ data class BusinessData(
     val createdAt: String,
     val archived: Boolean,
     val archivedAt: String?,
-    val owner: UserContactData
+    val owner: UserContactData?
 )
