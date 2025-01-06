@@ -18,6 +18,7 @@ import com.escrow.wazipay.data.network.models.order.OrdersResponseBody
 import com.escrow.wazipay.data.network.models.transaction.TransactionResponseBody
 import com.escrow.wazipay.data.network.models.transaction.TransactionsResponseBody
 import com.escrow.wazipay.data.network.models.user.UserDetailsResponseBody
+import com.escrow.wazipay.data.network.models.user.UsersDetailsResponseBody
 import com.escrow.wazipay.data.network.models.wallet.DepositRequestBody
 import com.escrow.wazipay.data.network.models.wallet.UserWalletResponseBody
 import com.escrow.wazipay.data.network.models.wallet.WithdrawalRequestBody
@@ -200,7 +201,7 @@ class ApiRepositoryImpl(private val apiService: ApiService): ApiRepository {
         verificationStatus: String?,
         startDate: String?,
         endDate: String?
-    ): Response<UserDetailsResponseBody> =
+    ): Response<UsersDetailsResponseBody> =
         apiService.getUsers(
             token = "Bearer $token",
             query = query,
