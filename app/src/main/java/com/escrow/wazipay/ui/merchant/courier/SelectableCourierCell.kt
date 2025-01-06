@@ -2,6 +2,7 @@ package com.escrow.wazipay.ui.merchant.courier
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,6 +37,7 @@ import com.escrow.wazipay.utils.screenWidth
 fun SelectableCourierCell(
     userDetailsData: UserDetailsData,
     showArrow: Boolean,
+    navigateToCourierAssignmentScreen: (courierId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -46,6 +48,9 @@ fun SelectableCourierCell(
                 color = Color.LightGray,
                 shape = RoundedCornerShape(screenWidth(x = 10.0))
             )
+            .clickable {
+                navigateToCourierAssignmentScreen(userDetailsData.userId.toString())
+            }
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -100,7 +105,9 @@ fun SelectableCourierCell(
             if(showArrow) {
                 Spacer(modifier = Modifier.weight(1f))
                 IconButton(
-                    onClick = { /*TODO*/ },
+                    onClick = {
+                        navigateToCourierAssignmentScreen(userDetailsData.userId.toString())
+                    },
                     modifier = Modifier
                 ) {
                     Icon(

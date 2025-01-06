@@ -1,5 +1,6 @@
 package com.escrow.wazipay.ui.merchant.courier
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.escrow.wazipay.data.network.repository.ApiRepository
@@ -16,7 +17,8 @@ import kotlinx.coroutines.withContext
 
 class CourierSelectionViewModel(
     private val apiRepository: ApiRepository,
-    private val dbRepository: DBRepository
+    private val dbRepository: DBRepository,
+    private val savedStateHandle: SavedStateHandle,
 ): ViewModel() {
     private val _uiState = MutableStateFlow(CourierSelectionUiData())
     val uiState: StateFlow<CourierSelectionUiData> = _uiState.asStateFlow()
@@ -42,7 +44,7 @@ class CourierSelectionViewModel(
                val response = apiRepository.getUsers(
                    token = uiState.value.userDetails.token!!,
                    query = uiState.value.searchQuery.ifEmpty { null },
-                   verificationStatus = "VERIFIED",
+                   verificationStatus = null,
                    startDate = null,
                    endDate = null
                )
@@ -50,7 +52,7 @@ class CourierSelectionViewModel(
                     _uiState.update {
                         it.copy(
                             users = response.body()?.data!!.filter { user ->
-                                user.roles.contains("COURIER")
+                                user.roles.contains("COURIER") && user.userId != uiState.value.orderData.buyer?.id && user.userId != uiState.value.userDetails.userId
                             },
                             loadingStatus = LoadingStatus.SUCCESS
                         )
@@ -86,11 +88,33 @@ class CourierSelectionViewModel(
         }
     }
 
+    private fun getOrder() {
+        viewModelScope.launch {
+            try {
+                val response = apiRepository.getOrder(
+                    token = uiState.value.userDetails.token!!,
+                    orderId = uiState.value.orderId!!.toInt()
+                )
+
+                if(response.isSuccessful) {
+                    _uiState.update {
+                        it.copy(
+                            orderData = response.body()?.data!!
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+
+            }
+        }
+    }
+
     private fun loadStartUpData() {
         viewModelScope.launch {
             while(uiState.value.userDetails.userId == 0) {
                 delay(1000)
             }
+            getOrder()
         }
     }
 
@@ -110,7 +134,13 @@ class CourierSelectionViewModel(
     }
 
     init {
+        _uiState.update {
+            it.copy(
+                orderId = savedStateHandle[CourierSelectionScreenDestination.orderId]
+            )
+        }
         getUser()
         getUserRole()
+        loadStartUpData()
     }
 }

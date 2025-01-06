@@ -65,6 +65,7 @@ object OrderDetailsScreenDestination: AppNavigation {
 fun OrderDetailsScreenComposable(
     navigateToPreviousScreen: () -> Unit,
     navigateToDashboardScreen: () -> Unit,
+    navigateToCourierSelectionScreen: (orderId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -89,7 +90,8 @@ fun OrderDetailsScreenComposable(
             orderData = uiState.orderData,
             role = uiState.role,
             navigateToPreviousScreen = navigateToPreviousScreen,
-            navigateToDashboardScreen = navigateToDashboardScreen
+            navigateToDashboardScreen = navigateToDashboardScreen,
+            navigateToCourierSelectionScreen = navigateToCourierSelectionScreen
         )
     }
 }
@@ -103,6 +105,7 @@ fun OrderDetailsScreen(
     orderData: OrderData,
     navigateToPreviousScreen: () -> Unit,
     navigateToDashboardScreen: () -> Unit,
+    navigateToCourierSelectionScreen: (orderId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -236,7 +239,7 @@ fun OrderDetailsScreen(
             } else {
                 if(role == Role.MERCHANT) {
                     Button(
-                        onClick = { /*TODO*/ },
+                        onClick = { navigateToCourierSelectionScreen(orderData.id.toString()) },
                         modifier = Modifier
                             .align(Alignment.CenterVertically)
                     ) {
@@ -422,7 +425,8 @@ fun OrderDetailsScreenPreview() {
             orderData = orderData,
             role = Role.BUYER,
             navigateToPreviousScreen = {},
-            navigateToDashboardScreen = {}
+            navigateToDashboardScreen = {},
+            navigateToCourierSelectionScreen = {}
         )
     }
 }

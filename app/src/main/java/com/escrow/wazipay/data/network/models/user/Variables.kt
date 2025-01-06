@@ -23,6 +23,22 @@ val userDetailsData = UserDetailsData(
     idBack = "http://192.168.100.5:8000/images/1735188979595_Screenshotfrom2023-02-0217-22-42.png"
 )
 
+val emptyUser = UserDetailsData(
+    userId = 1,
+    username = "",
+    email = "",
+    phoneNumber = "",
+    createdAt = "",
+    archived = false,
+    archivedAt = null,
+    verified = true,
+    verifiedAt = null,
+    verificationStatus = "VERIFIED",
+    roles = listOf(""),
+    idFront = "",
+    idBack = ""
+)
+
 val users = List(10) {index ->
     UserDetailsData(
         userId = 1 + index,

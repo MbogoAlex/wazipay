@@ -34,6 +34,10 @@ import com.escrow.wazipay.ui.general.wallet.deposit.DepositScreenComposable
 import com.escrow.wazipay.ui.general.wallet.deposit.DepositScreenDestination
 import com.escrow.wazipay.ui.general.wallet.withdrawal.WithdrawalScreenComposable
 import com.escrow.wazipay.ui.general.wallet.withdrawal.WithdrawalScreenDestination
+import com.escrow.wazipay.ui.merchant.courier.CourierAssignmentScreenComposable
+import com.escrow.wazipay.ui.merchant.courier.CourierAssignmentScreenDestination
+import com.escrow.wazipay.ui.merchant.courier.CourierSelectionScreenComposable
+import com.escrow.wazipay.ui.merchant.courier.CourierSelectionScreenDestination
 import com.escrow.wazipay.ui.start.SplashScreenComposable
 import com.escrow.wazipay.ui.start.SplashScreenDestination
 
@@ -330,6 +334,48 @@ fun NavigationGraph(
                 },
                 navigateToDashboardScreen = {
                     navController.navigate(DashboardScreenDestination.route)
+                },
+                navigateToCourierSelectionScreen = {orderId ->
+                    navController.navigate("${CourierSelectionScreenDestination.route}/${orderId}")
+                }
+            )
+        }
+
+        composable(
+            CourierSelectionScreenDestination.routeWithArgs,
+            arguments = listOf(
+                navArgument(CourierSelectionScreenDestination.orderId) {
+                    type = NavType.StringType
+                }
+            )
+        ) {
+            CourierSelectionScreenComposable(
+                navigateToCourierAssignmentScreen = {orderId, courierId ->
+                    navController.navigate("${CourierAssignmentScreenDestination.route}/${orderId}/${courierId}")
+                },
+                navigateToPreviousScreen = {
+                    navController.navigateUp()
+                }
+            )
+        }
+
+        composable(
+            CourierAssignmentScreenDestination.routeWithArgs,
+            arguments = listOf(
+                navArgument(CourierAssignmentScreenDestination.orderId) {
+                    type = NavType.StringType
+                },
+                navArgument(CourierAssignmentScreenDestination.courierId) {
+                    type = NavType.StringType
+                }
+            )
+        ) {
+            CourierAssignmentScreenComposable(
+                navigateToPreviousScreen = {
+                    navController.navigateUp()
+                },
+                navigateToOrderDetailsScreen = { orderId, fromPaymentScreen ->
+                    navController.navigate("${OrderDetailsScreenDestination.route}/${orderId}/${fromPaymentScreen}")
                 }
             )
         }

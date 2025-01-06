@@ -8,6 +8,8 @@ import com.escrow.wazipay.data.network.models.common.RegistrationRequestBody
 import com.escrow.wazipay.data.network.models.common.RegistrationResponseBody
 import com.escrow.wazipay.data.network.models.common.SetPinRequestBody
 import com.escrow.wazipay.data.network.models.common.SetPinResponseBody
+import com.escrow.wazipay.data.network.models.courier.CourierAssignmentRequestBody
+import com.escrow.wazipay.data.network.models.courier.CourierAssignmentResponseBody
 import com.escrow.wazipay.data.network.models.invoice.InvoiceCreationRequestBody
 import com.escrow.wazipay.data.network.models.invoice.InvoiceResponseBody
 import com.escrow.wazipay.data.network.models.invoice.InvoicesResponseBody
@@ -25,7 +27,6 @@ import com.escrow.wazipay.data.network.models.wallet.WithdrawalRequestBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
-import retrofit2.http.HEAD
 import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.PUT
@@ -192,4 +193,11 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Path("id") invoiceId: Int
     ): Response<InvoiceResponseBody>
+
+//    Assign courier
+    @PUT("merchant/order-assignment")
+    suspend fun assignCourier(
+        @Header("Authorization") token: String,
+        @Body courierAssignmentRequestBody: CourierAssignmentRequestBody
+    ): Response<CourierAssignmentResponseBody>
 }

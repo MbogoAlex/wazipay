@@ -64,6 +64,7 @@ object CourierSelectionScreenDestination: AppNavigation {
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun CourierSelectionScreenComposable(
+    navigateToCourierAssignmentScreen: (orderId: String, courierId: String) -> Unit,
     navigateToPreviousScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -84,7 +85,10 @@ fun CourierSelectionScreenComposable(
                 viewModel.changeQuery("")
             },
             users = uiState.users,
-            navigateToPreviousScreen = navigateToPreviousScreen
+            navigateToPreviousScreen = navigateToPreviousScreen,
+            navigateToCourierAssignmentScreen = { courierId ->
+                navigateToCourierAssignmentScreen(uiState.orderId ?: "", courierId)
+            }
         )
     }
 }
@@ -96,6 +100,7 @@ fun CourierSelectionScreen(
     onClearSearchQuery: () -> Unit,
     users: List<UserDetailsData>,
     navigateToPreviousScreen: () -> Unit,
+    navigateToCourierAssignmentScreen: (courierId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -178,13 +183,16 @@ fun CourierSelectionScreen(
                 .fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
-        LazyColumn {
-            items(users) {
-                SelectableCourierCell(
-                    userDetailsData = it,
-                    showArrow = true
-                )
-                Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
+        if(searchQuery.isNotEmpty()) {
+            LazyColumn {
+                items(users) {
+                    SelectableCourierCell(
+                        userDetailsData = it,
+                        showArrow = true,
+                        navigateToCourierAssignmentScreen = navigateToCourierAssignmentScreen
+                    )
+                    Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
+                }
             }
         }
     }
@@ -199,7 +207,8 @@ fun CourierSelectionScreenPreview() {
             onChangeSearchQuery = {},
             onClearSearchQuery = { /*TODO*/ },
             users = users,
-            navigateToPreviousScreen = {}
+            navigateToPreviousScreen = {},
+            navigateToCourierAssignmentScreen = {courierId ->  }
         )
     }
 }

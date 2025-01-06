@@ -8,6 +8,8 @@ import com.escrow.wazipay.data.network.models.common.RegistrationRequestBody
 import com.escrow.wazipay.data.network.models.common.RegistrationResponseBody
 import com.escrow.wazipay.data.network.models.common.SetPinRequestBody
 import com.escrow.wazipay.data.network.models.common.SetPinResponseBody
+import com.escrow.wazipay.data.network.models.courier.CourierAssignmentRequestBody
+import com.escrow.wazipay.data.network.models.courier.CourierAssignmentResponseBody
 import com.escrow.wazipay.data.network.models.invoice.InvoiceCreationRequestBody
 import com.escrow.wazipay.data.network.models.invoice.InvoiceResponseBody
 import com.escrow.wazipay.data.network.models.invoice.InvoicesResponseBody
@@ -164,4 +166,10 @@ interface ApiRepository {
         token: String,
         invoiceId: Int
     ): Response<InvoiceResponseBody>
+
+    //    Assign courier
+    suspend fun assignCourier(
+        token: String,
+        courierAssignmentRequestBody: CourierAssignmentRequestBody
+    ): Response<CourierAssignmentResponseBody>
 }

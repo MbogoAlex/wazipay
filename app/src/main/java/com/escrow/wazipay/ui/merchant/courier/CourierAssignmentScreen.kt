@@ -1,6 +1,7 @@
 package com.escrow.wazipay.ui.merchant.courier
 
 import android.os.Build
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -20,6 +22,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
@@ -27,12 +30,19 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -40,6 +50,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.escrow.wazipay.AppViewModelFactory
 import com.escrow.wazipay.R
 import com.escrow.wazipay.data.network.models.business.BusinessData
 import com.escrow.wazipay.data.network.models.business.businessData
@@ -71,12 +83,95 @@ object CourierAssignmentScreenDestination: AppNavigation {
     val routeWithArgs: String = "$route/{$orderId}/{$courierId}"
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun CourierAssignmentScreenComposable(
     navigateToPreviousScreen: () -> Unit,
+    navigateToOrderDetailsScreen: (orderId: String, fromPaymentScreen: Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
+    val viewModel: CourierAssignmentViewModel = viewModel(factory = AppViewModelFactory.Factory)
+    val uiState by viewModel.uiState.collectAsState()
 
+    var showConfirmDialog by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+    var showSuccessDialog by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+    if(uiState.loadingStatus == LoadingStatus.SUCCESS) {
+        showSuccessDialog = true
+    }
+
+    if(showConfirmDialog) {
+        AssignmentConfirmationDialog(
+            onConfirm = {
+                showConfirmDialog = !showConfirmDialog
+                if(uiState.amount.toDouble() > uiState.userWalletData.balance) {
+                    Toast.makeText(context, "Insufficient balance", Toast.LENGTH_SHORT).show()
+                } else {
+                    viewModel.assignCourier()
+                }
+            },
+            onDismiss = { showConfirmDialog = !showConfirmDialog },
+            courierName = uiState.courier.username,
+            deliveryCost = formatMoneyValue(uiState.amount.toDouble())
+        )
+    }
+
+    if(showSuccessDialog) {
+        AssignmentSuccessDialog(
+            onConfirm = {
+                viewModel.resetStatus()
+                showSuccessDialog = !showSuccessDialog
+                navigateToOrderDetailsScreen(uiState.orderData.id.toString(), true)
+            },
+            onDismiss = {
+                viewModel.resetStatus()
+                showSuccessDialog = !showSuccessDialog
+                navigateToOrderDetailsScreen(uiState.orderData.id.toString(), true)
+            },
+            courierName = uiState.courier.username,
+            deliveryCost = formatMoneyValue(uiState.amount.toDouble())
+        )
+    }
+
+    Box(
+        modifier = Modifier
+            .safeDrawingPadding()
+    ) {
+        CourierAssignmentScreen(
+            userId = uiState.userDetails.userId,
+            role = uiState.role,
+            amount = uiState.amount,
+            onChangeAmount = { value ->
+                val validAmount = value.filter { it.isDigit() }
+                viewModel.changeAmount(validAmount)
+                viewModel.enableButton()
+            },
+            userDetailData = uiState.courier,
+            orderData = uiState.orderData,
+            paymentMethod = uiState.paymentMethod,
+            currentBalance = formatMoneyValue(uiState.userWalletData.balance),
+            phoneNumber = uiState.phoneNumber,
+            onChangePhoneNumber = {
+                viewModel.changePhone(it)
+                viewModel.enableButton()
+            },
+            onChangePaymentMethod = {
+                viewModel.changePaymentMethod(it)
+            },
+            navigateToPreviousScreen = navigateToPreviousScreen,
+            buttonEnabled = uiState.buttonEnabled,
+            loadingStatus = uiState.loadingStatus,
+            onAssign = {
+                showConfirmDialog = !showConfirmDialog
+            }
+        )
+    }
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -94,6 +189,9 @@ fun CourierAssignmentScreen(
     onChangePhoneNumber: (number: String) -> Unit,
     onChangePaymentMethod: (paymentMethod: PaymentMethod) -> Unit,
     navigateToPreviousScreen: () -> Unit,
+    buttonEnabled: Boolean,
+    loadingStatus: LoadingStatus,
+    onAssign: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -108,7 +206,7 @@ fun CourierAssignmentScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(
-//                enabled = invoiceCreationStatus != InvoiceCreationStatus.LOADING,
+                enabled = loadingStatus != LoadingStatus.LOADING,
                 onClick = navigateToPreviousScreen
             ) {
                 Icon(
@@ -279,7 +377,8 @@ fun CourierAssignmentScreen(
             Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
             SelectableCourierCell(
                 userDetailsData = userDetailData,
-                showArrow = false
+                showArrow = false,
+                navigateToCourierAssignmentScreen = {}
             )
             Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
             Box(
@@ -406,18 +505,103 @@ fun CourierAssignmentScreen(
             }
             Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
             Button(
-                onClick = { /*TODO*/ },
+                enabled = buttonEnabled && loadingStatus != LoadingStatus.LOADING,
+                onClick = onAssign,
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
-                Text(
-                    text = "Confirm assignment",
-                    fontSize = screenFontSize(x = 14.0).sp
-                )
+                if(loadingStatus == LoadingStatus.LOADING) {
+                    Text(
+                        text = "Loading...",
+                        fontSize = screenFontSize(x = 14.0).sp
+                    )
+                } else {
+                    Text(
+                        text = "Confirm assignment",
+                        fontSize = screenFontSize(x = 14.0).sp
+                    )
+                }
+
             }
         }
 
     }
+}
+
+@Composable
+fun AssignmentConfirmationDialog(
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+    courierName: String,
+    deliveryCost: String,
+    modifier: Modifier = Modifier
+) {
+    AlertDialog(
+        title = {
+            Text(
+                text = "Confirm assignment",
+                fontSize = screenFontSize(x = 16.0).sp,
+                fontWeight = FontWeight.Bold
+            )
+        },
+        text = {
+            Text(
+                text = "Are you sure you want to assign $courierName to this order with a delivery cost of $deliveryCost?",
+                fontSize = screenFontSize(x = 14.0).sp
+            )
+        },
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            Button(onClick = onConfirm) {
+                Text(
+                    text = "Confirm",
+                    fontSize = screenFontSize(x = 14.0).sp
+                )
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(
+                    text = "Cancel",
+                    fontSize = screenFontSize(x = 14.0).sp
+                )
+            }
+        }
+    )
+}
+
+@Composable
+fun AssignmentSuccessDialog(
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+    courierName: String,
+    deliveryCost: String,
+    modifier: Modifier = Modifier
+) {
+    AlertDialog(
+        title = {
+            Text(
+                text = "Assignment successful",
+                fontSize = screenFontSize(x = 16.0).sp,
+                fontWeight = FontWeight.Bold
+            )
+        },
+        text = {
+            Text(
+                text = "$courierName has been assigned to this order with a delivery cost of $deliveryCost",
+                fontSize = screenFontSize(x = 14.0).sp
+            )
+        },
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            Button(onClick = onConfirm) {
+                Text(
+                    text = "Done",
+                    fontSize = screenFontSize(x = 14.0).sp
+                )
+            }
+        },
+    )
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -437,7 +621,10 @@ fun CourierAssignmentScreenPreview() {
             phoneNumber = "",
             onChangePhoneNumber = {},
             onChangePaymentMethod = {},
-            navigateToPreviousScreen = {}
+            navigateToPreviousScreen = {},
+            buttonEnabled = false,
+            loadingStatus = LoadingStatus.INITIAL,
+            onAssign = {},
         )
     }
 }
