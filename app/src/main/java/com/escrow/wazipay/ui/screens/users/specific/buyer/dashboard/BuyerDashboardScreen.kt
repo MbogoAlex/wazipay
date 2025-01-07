@@ -2,7 +2,12 @@ package com.escrow.wazipay.ui.screens.users.specific.buyer.dashboard
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,6 +33,9 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -119,6 +127,11 @@ fun BuyerDashboardScreen(
     navigateToTransactionsScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+
+    var walletExpanded by rememberSaveable {
+        mutableStateOf(false)
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -128,6 +141,7 @@ fun BuyerDashboardScreen(
                 bottom = screenHeight(x = 16.0)
             )
             .verticalScroll(rememberScrollState())
+
     ) {
         Card(
             modifier = Modifier
@@ -136,6 +150,12 @@ fun BuyerDashboardScreen(
             Column(
                 modifier = Modifier
                     .padding(screenWidth(x = 16.0))
+                    .animateContentSize(
+                        animationSpec = spring(
+                            dampingRatio = Spring.DampingRatioNoBouncy,
+                            stiffness = Spring.StiffnessMedium
+                        )
+                    )
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically
@@ -173,67 +193,108 @@ fun BuyerDashboardScreen(
                     fontSize = screenFontSize(x = 14.0).sp
                 )
                 Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
-                Text(
-                    text = walletBalance,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    fontSize = screenFontSize(x = 24.0).sp
-                )
-                Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Button(onClick = {
-                        navigateToDepositScreen()
-                    }) {
+                if(!walletExpanded) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center,
+                        modifier = Modifier
+                            .clickable {
+                                walletExpanded = !walletExpanded
+                            }
+                            .fillMaxWidth()
+                    ) {
+                        Text(text = "Click to expand")
+                        Icon(
+                            painter = painterResource(id = R.drawable.double_arrow_right),
+                            contentDescription = "Expand wallet"
+                        )
+                    }
+                }
+                if(walletExpanded) {
+                    Column {
+                        Text(
+                            text = walletBalance,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onBackground,
+                            fontSize = screenFontSize(x = 24.0).sp
+                        )
+                        Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Button(onClick = {
+                                navigateToDepositScreen()
+                            }) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = "+",
+                                        fontSize = screenFontSize(x = 14.0).sp
+                                    )
+                                    Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
+                                    Text(
+                                        text = "Deposit",
+                                        fontSize = screenFontSize(x = 14.0).sp
+                                    )
+                                }
+                            }
+                            Spacer(modifier = Modifier.width(screenWidth(x = 8.0)))
+                            OutlinedButton(onClick = {
+                                navigateToWithdrawalScreen()
+                            }) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = "-",
+                                        fontSize = screenFontSize(x = 14.0).sp
+                                    )
+                                    Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
+                                    Text(
+                                        text = "Withdraw",
+                                        fontSize = screenFontSize(x = 14.0).sp
+                                    )
+                                }
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
                         Row(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = "+",
+                                text = "Hide Balance",
+                                color = MaterialTheme.colorScheme.onBackground,
                                 fontSize = screenFontSize(x = 14.0).sp
                             )
                             Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
-                            Text(
-                                text = "Deposit",
-                                fontSize = screenFontSize(x = 14.0).sp
-                            )
+                            Switch(checked = false, onCheckedChange = {})
                         }
-                    }
-                    Spacer(modifier = Modifier.width(screenWidth(x = 8.0)))
-                    OutlinedButton(onClick = {
-                        navigateToWithdrawalScreen()
-                    }) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = "-",
-                                fontSize = screenFontSize(x = 14.0).sp
-                            )
-                            Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
-                            Text(
-                                text = "Withdraw",
-                                fontSize = screenFontSize(x = 14.0).sp
-                            )
+                        Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
+                        if(walletExpanded) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center,
+                                modifier = Modifier
+                                    .clickable {
+                                        walletExpanded = !walletExpanded
+                                    }
+                                    .fillMaxWidth()
+                            ) {
+                                Text(text = "Click to collapse")
+                                Icon(
+                                    painter = painterResource(id = R.drawable.double_arrow_left),
+                                    contentDescription = "Collapse wallet"
+                                )
+                            }
                         }
                     }
                 }
-                Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Hide Balance",
-                        color = MaterialTheme.colorScheme.onBackground,
-                        fontSize = screenFontSize(x = 14.0).sp
-                    )
-                    Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
-                    Switch(checked = false, onCheckedChange = {})
-                }
+
             }
         }
-        Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+        Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
+        Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
         Button(
             onClick = navigateToBusinessSelectionScreen,
             modifier = Modifier
