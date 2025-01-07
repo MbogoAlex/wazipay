@@ -478,6 +478,7 @@ fun DashboardScreen(
                 }
             }
             NavBarItem.PROFILE -> ProfileScreenComposable(
+                onLogout = onLogout,
                 modifier = Modifier
                     .weight(1f)
             )

@@ -26,6 +26,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -49,6 +50,7 @@ import com.escrow.wazipay.utils.screenWidth
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ProfileScreenComposable(
+    onLogout: () -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -61,7 +63,8 @@ fun ProfileScreenComposable(
     ) {
         ProfileScreen(
             verificationStatus = VerificationStatus.valueOf(uiState.userDetailsData.verificationStatus),
-            role = uiState.role
+            role = uiState.role,
+            onLogout = onLogout
         )
     }
 }
@@ -70,6 +73,7 @@ fun ProfileScreenComposable(
 fun ProfileScreen(
     verificationStatus: VerificationStatus,
     role: Role,
+    onLogout: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -79,6 +83,7 @@ fun ProfileScreen(
                 vertical = screenHeight(x = 16.0),
                 horizontal = screenWidth(x = 16.0)
             )
+
     ) {
         when(role) {
             Role.BUYER -> BuyerProfileScreen()
@@ -86,6 +91,25 @@ fun ProfileScreen(
             Role.COURIER -> CourierProfileScreen()
         }
         Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+        TextButton(
+            onClick = onLogout,
+            modifier = Modifier
+                .align(Alignment.End)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.logout),
+                    contentDescription = "Log out"
+                )
+                Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
+                Text(
+                    text = "Log out",
+                    fontSize = screenFontSize(x = 14.0).sp
+                )
+            }
+        }
 
     }
 }
@@ -274,6 +298,7 @@ fun ProfileScreenPreview() {
         ProfileScreen(
             role = Role.BUYER,
             verificationStatus = VerificationStatus.PENDING_VERIFICATION,
+            onLogout = {}
         )
     }
 }
