@@ -63,13 +63,14 @@ object BusinessSelectionScreenDestination: AppNavigation {
 fun BusinessSelectionScreenComposable(
     navigateToInvoiceCreationScreen: (businessId: String) -> Unit,
     navigateToPreviousScreen: () -> Unit,
+    showBackArrow: Boolean = true,
     modifier: Modifier = Modifier
 ) {
     val viewModel: BusinessSelectionViewModel = viewModel(factory = AppViewModelFactory.Factory)
     val uiState by viewModel.uiState.collectAsState()
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .safeDrawingPadding()
             .background(MaterialTheme.colorScheme.background)
     ) {
@@ -83,7 +84,8 @@ fun BusinessSelectionScreenComposable(
             },
             businesses = uiState.businesses,
             navigateToInvoiceCreationScreen = navigateToInvoiceCreationScreen,
-            navigateToPreviousScreen = navigateToPreviousScreen
+            navigateToPreviousScreen = navigateToPreviousScreen,
+            showBackArrow = showBackArrow
         )
     }
 }
@@ -96,35 +98,42 @@ fun BusinessSelectionScreen(
     businesses: List<BusinessData>,
     navigateToInvoiceCreationScreen: (businessId: String) -> Unit,
     navigateToPreviousScreen: () -> Unit,
+    showBackArrow: Boolean,
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = Modifier
+        modifier = if(showBackArrow) Modifier
             .fillMaxSize()
             .padding(
                 vertical = screenHeight(x = 16.0),
                 horizontal = screenWidth(x = 16.0)
-            )
+            ) else Modifier.padding(
+            start = screenWidth(x = 16.0),
+            end = screenWidth(x = 16.0),
+            bottom = screenHeight(x = 16.0)
+        )
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            IconButton(onClick = navigateToPreviousScreen) {
-                Icon(
-                    tint = MaterialTheme.colorScheme.onBackground,
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Previous screen"
+        if(showBackArrow) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(onClick = navigateToPreviousScreen) {
+                    Icon(
+                        tint = MaterialTheme.colorScheme.onBackground,
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Previous screen"
+                    )
+                }
+                Spacer(modifier = Modifier.width(screenWidth(x = 8.0)))
+                Text(
+                    text = "Business payment",
+                    fontSize = screenFontSize(x = 16.0).sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onBackground
                 )
             }
-            Spacer(modifier = Modifier.width(screenWidth(x = 8.0)))
-            Text(
-                text = "Business payment",
-                fontSize = screenFontSize(x = 16.0).sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onBackground
-            )
+            Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
         }
-        Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
         Text(
             text = "Search and select business",
             fontSize = screenFontSize(x = 14.0).sp,
@@ -297,7 +306,8 @@ fun BusinessSelectionScreenPreview(
             onChangeSearchQuery = {},
             onClearSearchQuery = {},
             navigateToInvoiceCreationScreen = {},
-            navigateToPreviousScreen = {}
+            navigateToPreviousScreen = {},
+            showBackArrow = true
         )
     }
 }

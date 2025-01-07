@@ -57,7 +57,7 @@ fun BusinessesScreenComposable(
     val uiState by viewModel.uiState.collectAsState()
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .safeDrawingPadding()
     ) {
         BusinessesScreen(

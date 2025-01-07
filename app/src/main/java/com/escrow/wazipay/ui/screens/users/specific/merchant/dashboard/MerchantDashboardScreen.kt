@@ -105,8 +105,9 @@ fun MerchantDashboardScreen(
         modifier = Modifier
             .fillMaxSize()
             .padding(
-                horizontal = screenWidth(x = 16.0),
-                vertical = screenHeight(x = 16.0)
+                start = screenWidth(x = 16.0),
+                end = screenWidth(x = 16.0),
+                bottom = screenHeight(x = 16.0)
             )
             .verticalScroll(rememberScrollState())
     ) {

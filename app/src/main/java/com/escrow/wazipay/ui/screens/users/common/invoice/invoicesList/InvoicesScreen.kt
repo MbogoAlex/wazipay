@@ -52,7 +52,7 @@ fun InvoicesScreenComposable(
 
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .safeDrawingPadding()
     ) {
         InvoicesScreen(

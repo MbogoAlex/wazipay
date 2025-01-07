@@ -67,10 +67,13 @@ import com.escrow.wazipay.AppViewModelFactory
 import com.escrow.wazipay.R
 import com.escrow.wazipay.data.room.models.Role
 import com.escrow.wazipay.ui.nav.AppNavigation
+import com.escrow.wazipay.ui.screens.users.common.NavBarItem
+import com.escrow.wazipay.ui.screens.users.common.NavItem
 import com.escrow.wazipay.ui.screens.users.common.business.businessList.BusinessesScreenComposable
 import com.escrow.wazipay.ui.screens.users.common.invoice.invoicesList.InvoicesScreenComposable
 import com.escrow.wazipay.ui.screens.users.common.order.ordersList.OrdersScreenComposable
 import com.escrow.wazipay.ui.screens.users.common.transaction.transactionsList.TransactionsScreenComposable
+import com.escrow.wazipay.ui.screens.users.specific.buyer.businessPayment.BusinessSelectionScreenComposable
 import com.escrow.wazipay.ui.screens.users.specific.buyer.dashboard.BuyerDashboardScreenComposable
 import com.escrow.wazipay.ui.screens.users.specific.merchant.dashboard.MerchantDashboardScreenComposable
 import com.escrow.wazipay.ui.theme.WazipayTheme
@@ -100,6 +103,8 @@ fun DashboardScreenComposable(
     navigateToDashboardScreen: () -> Unit,
     navigateToBusinessSelectionScreen: () -> Unit,
     navigateToOrderDetailsScreen: (orderId: String, fromPaymentScreen: Boolean) -> Unit,
+    navigateToInvoiceCreationScreen: (businessId: String) -> Unit,
+    navigateToPreviousScreen: () -> Unit,
 ) {
     val context = LocalContext.current
 
@@ -133,70 +138,75 @@ fun DashboardScreenComposable(
     val navItems = when(uiState.userRole.role) {
         Role.BUYER -> {
             listOf(
-                com.escrow.wazipay.ui.screens.users.common.NavItem(
+                NavItem(
                     name = "Home",
                     icon = R.drawable.home,
-                    tab = com.escrow.wazipay.ui.screens.users.common.NavBarItem.HOME
+                    tab = NavBarItem.HOME
                 ),
-                com.escrow.wazipay.ui.screens.users.common.NavItem(
-                    name = "Orders",
-                    icon = R.drawable.orders,
-                    tab = com.escrow.wazipay.ui.screens.users.common.NavBarItem.ORDERS
+                NavItem(
+                    name = "Pay business",
+                    icon = R.drawable.pay,
+                    tab = NavBarItem.PAY_BUSINESS
                 ),
-                com.escrow.wazipay.ui.screens.users.common.NavItem(
-                    name = "Invoices",
-                    icon = R.drawable.invoice,
-                    tab = com.escrow.wazipay.ui.screens.users.common.NavBarItem.INVOICES
-                ),
-                com.escrow.wazipay.ui.screens.users.common.NavItem(
-                    name = "Businesses",
-                    icon = R.drawable.shop,
-                    tab = com.escrow.wazipay.ui.screens.users.common.NavBarItem.BUSINESSES
-                ),
-                com.escrow.wazipay.ui.screens.users.common.NavItem(
-                    name = "Transactions",
-                    icon = R.drawable.transactions,
-                    tab = com.escrow.wazipay.ui.screens.users.common.NavBarItem.TRANSACTIONS
-                ),
-                com.escrow.wazipay.ui.screens.users.common.NavItem(
+//                NavItem(
+//                    name = "Orders",
+//                    icon = R.drawable.orders,
+//                    tab = NavBarItem.ORDERS
+//                ),
+//                NavItem(
+//                    name = "Invoices",
+//                    icon = R.drawable.invoice,
+//                    tab = NavBarItem.INVOICES
+//                ),
+//                NavItem(
+//                    name = "Businesses",
+//                    icon = R.drawable.shop,
+//                    tab = NavBarItem.BUSINESSES
+//                ),
+//                NavItem(
+//                    name = "Transactions",
+//                    icon = R.drawable.transactions,
+//                    tab = NavBarItem.TRANSACTIONS
+//                ),
+                NavItem(
                     name = "Profile",
                     icon = R.drawable.profile,
-                    tab = com.escrow.wazipay.ui.screens.users.common.NavBarItem.PROFILE
+                    tab = NavBarItem.PROFILE
                 ),
             )
         }
 
         Role.MERCHANT -> {
             listOf(
-                com.escrow.wazipay.ui.screens.users.common.NavItem(
+                NavItem(
                     name = "Home",
                     icon = R.drawable.home,
-                    tab = com.escrow.wazipay.ui.screens.users.common.NavBarItem.HOME
+                    tab = NavBarItem.HOME
                 ),
-                com.escrow.wazipay.ui.screens.users.common.NavItem(
+                NavItem(
                     name = "Orders",
                     icon = R.drawable.orders,
-                    tab = com.escrow.wazipay.ui.screens.users.common.NavBarItem.ORDERS
+                    tab = NavBarItem.ORDERS
                 ),
-                com.escrow.wazipay.ui.screens.users.common.NavItem(
+                NavItem(
                     name = "Invoices",
                     icon = R.drawable.invoice,
-                    tab = com.escrow.wazipay.ui.screens.users.common.NavBarItem.INVOICES
+                    tab = NavBarItem.INVOICES
                 ),
-                com.escrow.wazipay.ui.screens.users.common.NavItem(
+                NavItem(
                     name = "Businesses",
                     icon = R.drawable.shop,
-                    tab = com.escrow.wazipay.ui.screens.users.common.NavBarItem.BUSINESSES
+                    tab = NavBarItem.BUSINESSES
                 ),
-                com.escrow.wazipay.ui.screens.users.common.NavItem(
+                NavItem(
                     name = "Transactions",
                     icon = R.drawable.transactions,
-                    tab = com.escrow.wazipay.ui.screens.users.common.NavBarItem.TRANSACTIONS
+                    tab = NavBarItem.TRANSACTIONS
                 ),
-                com.escrow.wazipay.ui.screens.users.common.NavItem(
+                NavItem(
                     name = "Profile",
                     icon = R.drawable.profile,
-                    tab = com.escrow.wazipay.ui.screens.users.common.NavBarItem.PROFILE
+                    tab = NavBarItem.PROFILE
                 ),
             )
         }
@@ -254,7 +264,9 @@ fun DashboardScreenComposable(
                     navigateToLoginScreenWithArgs(phoneNumber ?: "", pin ?: "")
                 }
             },
-            navigateToOrderDetailsScreen = navigateToOrderDetailsScreen
+            navigateToOrderDetailsScreen = navigateToOrderDetailsScreen,
+            navigateToInvoiceCreationScreen = navigateToInvoiceCreationScreen,
+            navigateToPreviousScreen = navigateToPreviousScreen
         )
     }
 }
@@ -272,9 +284,9 @@ fun DashboardScreen(
     role: Role,
     onSelectRole: (role: Role) -> Unit,
     filtering: Boolean,
-    navItems: List<com.escrow.wazipay.ui.screens.users.common.NavItem>,
-    selectedTab: com.escrow.wazipay.ui.screens.users.common.NavBarItem,
-    onSelectTab: (tab: com.escrow.wazipay.ui.screens.users.common.NavBarItem) -> Unit,
+    navItems: List<NavItem>,
+    selectedTab: NavBarItem,
+    onSelectTab: (tab: NavBarItem) -> Unit,
     onFilter: () -> Unit,
     navigateToLoginScreenWithArgs: (phoneNumber: String, pin: String) -> Unit,
     navigateToDepositScreen: () -> Unit,
@@ -283,267 +295,193 @@ fun DashboardScreen(
     navigateToBusinessSelectionScreen: () -> Unit,
     onLogout: () -> Unit,
     navigateToOrderDetailsScreen: (orderId: String, fromPaymentScreen: Boolean) -> Unit,
+    navigateToInvoiceCreationScreen: (businessId: String) -> Unit,
+    navigateToPreviousScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
 
     val title = when(selectedTab) {
-        com.escrow.wazipay.ui.screens.users.common.NavBarItem.HOME -> "Dashboard"
-        com.escrow.wazipay.ui.screens.users.common.NavBarItem.TRANSACTIONS -> "Transactions"
-        com.escrow.wazipay.ui.screens.users.common.NavBarItem.ORDERS -> "Orders"
-        com.escrow.wazipay.ui.screens.users.common.NavBarItem.PROFILE -> "Profile"
-        com.escrow.wazipay.ui.screens.users.common.NavBarItem.BUSINESSES -> "Businesses"
-        com.escrow.wazipay.ui.screens.users.common.NavBarItem.INVOICES -> "Invoices"
-        com.escrow.wazipay.ui.screens.users.common.NavBarItem.SHOPS -> "Shops"
+        NavBarItem.HOME -> "Dashboard"
+        NavBarItem.TRANSACTIONS -> "Transactions"
+        NavBarItem.ORDERS -> "Orders"
+        NavBarItem.PROFILE -> "Profile"
+        NavBarItem.BUSINESSES -> "Businesses"
+        NavBarItem.INVOICES -> "Invoices"
+        NavBarItem.SHOPS -> "Shops"
+        NavBarItem.PAY_BUSINESS -> "Pay business"
     }
 
-    ModalNavigationDrawer(
-        drawerState = drawerState!!,
-        drawerContent = {
-            ModalDrawerSheet {
-                Column(
-                    modifier = Modifier
-                        .padding(screenWidth(x = 10.0))
-                ) {
-                    Spacer(modifier = Modifier.height(screenHeight(x = 10.0)))
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .padding(
-                                horizontal = screenWidth(x = 16.0)
-                            )
-                    ) {
-//                        Icon(
-//                            painter = painterResource(id = R.drawable.ligiopen_icon),
-//                            contentDescription = null,
-//                        )
-//                        Spacer(modifier = Modifier.width(screenWidth(x = 3.0)))
-                        Text(
-                            text = role.name.lowercase().replaceFirstChar { it.uppercase() },
-                            fontSize = screenFontSize(x = 16.0).sp,
-                            color = MaterialTheme.colorScheme.onBackground,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Spacer(modifier = Modifier.weight(1f))
-                        ThemeSwitcher(
-                            darkTheme = darkMode,
-                            size = screenWidth(x = 30.0),
-                            padding = screenWidth(x = 5.0),
-                            onClick = onSwitchTheme,
-                            modifier = Modifier
-                                .padding(
-                                    end = screenWidth(x = 8.0)
-                                )
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(screenHeight(x = 15.0)))
-                    HorizontalDivider()
-                    Spacer(modifier = Modifier.height(screenHeight(x = 15.0)))
-                    Column(
-                        modifier = Modifier
-                            .verticalScroll(rememberScrollState())
-                    ) {
-                        for(tab in navItems) {
-                            NavigationDrawerItem(
-                                label = {
-                                    Row {
-                                        Icon(
-                                            tint = MaterialTheme.colorScheme.onBackground,
-                                            painter = painterResource(id = tab.icon),
-                                            contentDescription = tab.name,
-                                            modifier = Modifier
-                                                .size(screenWidth(x = 24.0))
-                                        )
-                                        Spacer(modifier = Modifier.width(screenWidth(x = 5.0)))
-                                        Text(
-                                            text = tab.name,
-                                            color = MaterialTheme.colorScheme.onBackground,
-                                            fontSize = screenFontSize(x = 14.0).sp,
-                                        )
-                                    }
-                                },
-                                selected = selectedTab == tab.tab,
-                                onClick = {
-                                    onSelectTab(tab.tab)
-                                    scope!!.launch {
-                                        drawerState.close()
-                                    }
-                                }
-                            )
-                        }
-                    }
-                }
-            }
-        }
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
     ) {
-        Column(
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .fillMaxSize()
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .padding(
-                        start = screenWidth(x = 16.0),
-                        top = screenHeight(x = 8.0),
-                        end = screenWidth(x = 16.0),
-                        bottom = screenHeight(x = 8.0)
-                    )
-            ) {
-                IconButton(onClick = {
-                    scope!!.launch {
-                        if(drawerState.isClosed) drawerState.open() else drawerState.close()
-                    }
-                }) {
-                    Icon(
-                        tint = MaterialTheme.colorScheme.onBackground,
-                        painter = painterResource(id = R.drawable.menu),
-                        contentDescription = "Menu",
-                        modifier = Modifier
-                            .size(screenWidth(x = 24.0))
-                    )
-                }
-                Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
-                Text(
-                    text = title,
-                    fontSize = screenFontSize(x = 16.0).sp,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    fontWeight = FontWeight.Bold
+                .padding(
+                    start = screenWidth(x = 16.0),
+                    top = screenHeight(x = 8.0),
+                    end = screenWidth(x = 16.0),
+                    bottom = screenHeight(x = 8.0)
                 )
-                Spacer(modifier = Modifier.weight(1f))
-                Column {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .clickable {
-                                onExpandDropdown()
-                            }
-                    ) {
-                        Text(
-                            text = role.name.lowercase().replaceFirstChar { it.uppercase() },
-                            color = MaterialTheme.colorScheme.onBackground,
-                            fontSize = screenFontSize(x = 16.0).sp
-                        )
-                        IconButton(onClick = onExpandDropdown) {
-                            Icon(
-                                tint = MaterialTheme.colorScheme.onBackground,
-                                imageVector = Icons.Default.KeyboardArrowDown,
-                                contentDescription = "Switch role"
-                            )
+        ) {
+            Text(
+                text = title,
+                fontSize = screenFontSize(x = 16.0).sp,
+                color = MaterialTheme.colorScheme.onBackground,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            Column {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .clickable {
+                            onExpandDropdown()
                         }
+                ) {
+                    Text(
+                        text = role.name.lowercase().replaceFirstChar { it.uppercase() },
+                        color = MaterialTheme.colorScheme.onBackground,
+                        fontSize = screenFontSize(x = 16.0).sp
+                    )
+                    IconButton(onClick = onExpandDropdown) {
+                        Icon(
+                            tint = MaterialTheme.colorScheme.onBackground,
+                            imageVector = Icons.Default.KeyboardArrowDown,
+                            contentDescription = "Switch role"
+                        )
                     }
-                    DropdownMenu(
-                        expanded = dropdownExpanded,
-                        onDismissRequest = onExpandDropdown
-                    ) {
-                        profiles.forEach {
-                            DropdownMenuItem(
-                                text = {
-                                    if(it.lowercase() == role.name.lowercase()) {
-                                        Row(
-                                            verticalAlignment = Alignment.CenterVertically
-                                        ) {
-                                            Icon(
-                                                painter = painterResource(id = R.drawable.check),
-                                                contentDescription = null
-                                            )
-                                            Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
-                                            Text(
-                                                text = it,
-                                                color = MaterialTheme.colorScheme.onBackground,
-                                                fontSize = screenFontSize(x = 14.0).sp
-                                            )
-                                        }
-                                    } else {
+                }
+                DropdownMenu(
+                    expanded = dropdownExpanded,
+                    onDismissRequest = onExpandDropdown
+                ) {
+                    profiles.forEach {
+                        DropdownMenuItem(
+                            text = {
+                                if(it.lowercase() == role.name.lowercase()) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.check),
+                                            contentDescription = null
+                                        )
+                                        Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
                                         Text(
                                             text = it,
                                             color = MaterialTheme.colorScheme.onBackground,
                                             fontSize = screenFontSize(x = 14.0).sp
                                         )
                                     }
-                                },
-                                onClick = {
-                                    onSelectRole(Role.valueOf(it.uppercase()))
-                                    onExpandDropdown()
+                                } else {
+                                    Text(
+                                        text = it,
+                                        color = MaterialTheme.colorScheme.onBackground,
+                                        fontSize = screenFontSize(x = 14.0).sp
+                                    )
                                 }
-                            )
-                        }
-                    }
-                }
-            }
-//        Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
-            when(selectedTab) {
-                com.escrow.wazipay.ui.screens.users.common.NavBarItem.HOME -> when(role) {
-                    Role.BUYER -> BuyerDashboardScreenComposable(
-                        navigateToLoginScreenWithArgs = navigateToLoginScreenWithArgs,
-                        navigateToDepositScreen = navigateToDepositScreen,
-                        navigateToWithdrawalScreen = navigateToWithdrawalScreen,
-                        navigateToBusinessSelectionScreen = navigateToBusinessSelectionScreen,
-                        navigateToOrderDetailsScreen = navigateToOrderDetailsScreen,
-                        modifier = Modifier
-//                            .weight(1f)
-                    )
-                    Role.MERCHANT -> MerchantDashboardScreenComposable(
-                        navigateToDepositScreen = navigateToDepositScreen,
-                        navigateToWithdrawalScreen = navigateToWithdrawalScreen,
-                        navigateToOrderDetailsScreen = navigateToOrderDetailsScreen,
-                        navigateToLoginScreenWithArgs = navigateToLoginScreenWithArgs,
-                        modifier = Modifier
-//                            .weight(1f)
-                    )
-
-                    Role.COURIER -> {}
-                }
-                com.escrow.wazipay.ui.screens.users.common.NavBarItem.TRANSACTIONS -> TransactionsScreenComposable(
-                    onFilter = onFilter,
-                    filtering = filtering,
-                    modifier = Modifier
-//                        .weight(1f)
-                )
-                com.escrow.wazipay.ui.screens.users.common.NavBarItem.ORDERS -> OrdersScreenComposable(
-                    navigateToLoginScreenWithArgs = navigateToLoginScreenWithArgs,
-                    navigateToOrderDetailsScreen = navigateToOrderDetailsScreen,
-                    modifier = Modifier
-//                        .weight(1f)
-                )
-                com.escrow.wazipay.ui.screens.users.common.NavBarItem.SHOPS -> {
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier
-//                            .weight(1f)
-                    ) {
-                        Text(
-                            text = "Shops",
-                            color = MaterialTheme.colorScheme.onBackground
+                            },
+                            onClick = {
+                                onSelectRole(Role.valueOf(it.uppercase()))
+                                onExpandDropdown()
+                            }
                         )
                     }
                 }
-                com.escrow.wazipay.ui.screens.users.common.NavBarItem.PROFILE -> {
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier
-                            .fillMaxSize()
-//                            .weight(1f)
-                    ) {
-                        Button(onClick = onLogout) {
-                            Text(text = "Logout")
-                        }
-                    }
-                }
-
-                com.escrow.wazipay.ui.screens.users.common.NavBarItem.BUSINESSES -> BusinessesScreenComposable(
-                    navigateToBusinessDetailsScreen = navigateToBusinessDetailsScreen
-                )
-                com.escrow.wazipay.ui.screens.users.common.NavBarItem.INVOICES -> InvoicesScreenComposable()
             }
         }
+        when(selectedTab) {
+            NavBarItem.HOME -> when(role) {
+                Role.BUYER -> BuyerDashboardScreenComposable(
+                    navigateToLoginScreenWithArgs = navigateToLoginScreenWithArgs,
+                    navigateToDepositScreen = navigateToDepositScreen,
+                    navigateToWithdrawalScreen = navigateToWithdrawalScreen,
+                    navigateToBusinessSelectionScreen = navigateToBusinessSelectionScreen,
+                    navigateToOrderDetailsScreen = navigateToOrderDetailsScreen,
+                    modifier = Modifier
+                            .weight(1f)
+                )
+                Role.MERCHANT -> MerchantDashboardScreenComposable(
+                    navigateToDepositScreen = navigateToDepositScreen,
+                    navigateToWithdrawalScreen = navigateToWithdrawalScreen,
+                    navigateToOrderDetailsScreen = navigateToOrderDetailsScreen,
+                    navigateToLoginScreenWithArgs = navigateToLoginScreenWithArgs,
+                    modifier = Modifier
+                            .weight(1f)
+                )
+
+                Role.COURIER -> {}
+            }
+            NavBarItem.TRANSACTIONS -> TransactionsScreenComposable(
+                onFilter = onFilter,
+                filtering = filtering,
+                modifier = Modifier
+                        .weight(1f)
+            )
+            NavBarItem.ORDERS -> OrdersScreenComposable(
+                navigateToLoginScreenWithArgs = navigateToLoginScreenWithArgs,
+                navigateToOrderDetailsScreen = navigateToOrderDetailsScreen,
+                modifier = Modifier
+                        .weight(1f)
+            )
+            NavBarItem.SHOPS -> {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+//                            .weight(1f)
+                ) {
+                    Text(
+                        text = "Shops",
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                }
+            }
+            NavBarItem.PROFILE -> {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .weight(1f)
+                ) {
+                    Button(onClick = onLogout) {
+                        Text(text = "Logout")
+                    }
+                }
+            }
+
+            NavBarItem.BUSINESSES -> BusinessesScreenComposable(
+                navigateToBusinessDetailsScreen = navigateToBusinessDetailsScreen,
+                modifier = Modifier
+                    .weight(1f)
+            )
+            NavBarItem.INVOICES -> InvoicesScreenComposable(
+                modifier = Modifier
+                    .weight(1f)
+            )
+
+            NavBarItem.PAY_BUSINESS -> BusinessSelectionScreenComposable(
+                navigateToInvoiceCreationScreen = navigateToInvoiceCreationScreen,
+                navigateToPreviousScreen = navigateToPreviousScreen,
+                showBackArrow = false,
+                modifier = Modifier
+                    .weight(1f)
+            )
+        }
+        BottomNavBar(
+            navItems = navItems,
+            selectedTab = selectedTab,
+            onSelectTab = onSelectTab
+        )
     }
 }
 
 @Composable
 fun BottomNavBar(
-    navItems: List<com.escrow.wazipay.ui.screens.users.common.NavItem>,
-    selectedTab: com.escrow.wazipay.ui.screens.users.common.NavBarItem,
-    onSelectTab: (tab: com.escrow.wazipay.ui.screens.users.common.NavBarItem) -> Unit,
+    navItems: List<NavItem>,
+    selectedTab: NavBarItem,
+    onSelectTab: (tab: NavBarItem) -> Unit,
     modifier: Modifier = Modifier
 ) {
     NavigationBar {
@@ -655,29 +593,29 @@ fun DashboardScreenPreview() {
     }
     WazipayTheme {
         val navItems = listOf(
-            com.escrow.wazipay.ui.screens.users.common.NavItem(
+            NavItem(
                 name = "Home",
                 icon = R.drawable.home,
-                tab = com.escrow.wazipay.ui.screens.users.common.NavBarItem.HOME
+                tab = NavBarItem.HOME
             ),
-            com.escrow.wazipay.ui.screens.users.common.NavItem(
+            NavItem(
                 name = "Transactions",
                 icon = R.drawable.transactions,
-                tab = com.escrow.wazipay.ui.screens.users.common.NavBarItem.TRANSACTIONS
+                tab = NavBarItem.TRANSACTIONS
             ),
-            com.escrow.wazipay.ui.screens.users.common.NavItem(
+            NavItem(
                 name = "Orders",
                 icon = R.drawable.orders,
-                tab = com.escrow.wazipay.ui.screens.users.common.NavBarItem.ORDERS
+                tab = NavBarItem.ORDERS
             ),
-            com.escrow.wazipay.ui.screens.users.common.NavItem(
+            NavItem(
                 name = "Profile",
                 icon = R.drawable.profile,
-                tab = com.escrow.wazipay.ui.screens.users.common.NavBarItem.PROFILE
+                tab = NavBarItem.PROFILE
             ),
         )
         var selectedTab by rememberSaveable {
-            mutableStateOf(com.escrow.wazipay.ui.screens.users.common.NavBarItem.HOME)
+            mutableStateOf(NavBarItem.HOME)
         }
 
         var darkMode by rememberSaveable {
@@ -715,7 +653,9 @@ fun DashboardScreenPreview() {
             navigateToBusinessDetailsScreen = {},
             navigateToBusinessSelectionScreen = {},
             onLogout = {},
-            navigateToOrderDetailsScreen = {orderId, fromPaymentScreen ->  }
+            navigateToOrderDetailsScreen = {orderId, fromPaymentScreen ->  },
+            navigateToInvoiceCreationScreen = {},
+            navigateToPreviousScreen = {}
         )
     }
 }
