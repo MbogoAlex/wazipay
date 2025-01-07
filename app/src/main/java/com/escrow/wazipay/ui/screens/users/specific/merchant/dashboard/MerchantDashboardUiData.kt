@@ -1,5 +1,6 @@
 package com.escrow.wazipay.ui.screens.users.specific.merchant.dashboard
 
+import com.escrow.wazipay.data.network.models.business.BusinessData
 import com.escrow.wazipay.data.network.models.invoice.InvoiceData
 import com.escrow.wazipay.data.network.models.order.OrderData
 import com.escrow.wazipay.data.network.models.transaction.TransactionData
@@ -39,6 +40,7 @@ data class MerchantDashboardUiData(
     ),
     val orders: List<OrderData> = emptyList(),
     val invoices: List<InvoiceData> = emptyList(),
+    val businesses: List<BusinessData> = emptyList(),
     val transactions: List<TransactionData> = emptyList(),
     val unauthorized: Boolean = false,
     val loadUserStatus: LoadUserStatus = LoadUserStatus.INITIAL,

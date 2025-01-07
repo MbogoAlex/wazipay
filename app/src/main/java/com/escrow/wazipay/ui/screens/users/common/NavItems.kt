@@ -9,6 +9,9 @@ enum class NavBarItem {
     PROFILE,
     BUSINESSES,
     INVOICES,
+    COURIER_ASSIGNMENT,
+    ISSUE_INVOICE,
+    ADD_BUSINESS,
 
 //    Seller
     SHOPS,

@@ -27,6 +27,7 @@ import com.escrow.wazipay.utils.screenWidth
 
 @Composable
 fun BusinessCellComposable(
+    homeScreen: Boolean,
     userId: Int,
     businessData: BusinessData,
     navigateToBusinessDetailsScreen: (businessId: String) -> Unit,
@@ -34,7 +35,7 @@ fun BusinessCellComposable(
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
+        modifier = modifier
             .padding(
                 vertical = screenHeight(x = 8.0)
             )
@@ -77,31 +78,63 @@ fun BusinessCellComposable(
                 maxLines = 2
             )
             Spacer(modifier = Modifier.height(screenHeight(x = 4.0)))
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.person),
-                    contentDescription = null
-                )
-                Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
-                Text(text = businessData.owner?.username ?: "")
-                Spacer(modifier = Modifier.width(screenWidth(x = 8.0)))
-                Icon(
-                    painter = painterResource(id = R.drawable.phone),
-                    contentDescription = null
-                )
-                Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
-                Text(text = businessData.owner?.phoneNumber ?: "")
+            if(!homeScreen) {
+                Row(
+//                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.person),
+                        contentDescription = null
+                    )
+                    Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
+                    Text(text = businessData.owner?.username ?: "")
+                    Spacer(modifier = Modifier.width(screenWidth(x = 8.0)))
+                    Icon(
+                        painter = painterResource(id = R.drawable.phone),
+                        contentDescription = null
+                    )
+                    Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
+                    Text(text = businessData.owner?.phoneNumber ?: "")
+                }
+            } else {
+//                Column(
+////                    verticalAlignment = Alignment.CenterVertically
+//                ) {
+//                    Row(
+//                        verticalAlignment = Alignment.CenterVertically
+//                    ) {
+//                        Icon(
+//                            painter = painterResource(id = R.drawable.person),
+//                            contentDescription = null
+//                        )
+//                        Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
+//                        Text(text = businessData.owner?.username ?: "")
+//                    }
+//
+//                    Spacer(modifier = Modifier.height(screenWidth(x = 8.0)))
+//
+//                    Row(
+//                        verticalAlignment = Alignment.CenterVertically
+//                    ) {
+//                        Icon(
+//                            painter = painterResource(id = R.drawable.phone),
+//                            contentDescription = null
+//                        )
+//                        Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
+//                        Text(text = businessData.owner?.phoneNumber ?: "")
+//                    }
+//                }
             }
         }
-        IconButton(
-            onClick = { navigateToBusinessDetailsScreen(businessData.id.toString()) },
-        ) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                contentDescription = "Business details"
-            )
+        if(!homeScreen) {
+            IconButton(
+                onClick = { navigateToBusinessDetailsScreen(businessData.id.toString()) },
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                    contentDescription = "Business details"
+                )
+            }
         }
     }
 }

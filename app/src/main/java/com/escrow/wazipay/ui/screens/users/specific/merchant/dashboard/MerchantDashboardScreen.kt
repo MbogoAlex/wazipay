@@ -46,9 +46,12 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.escrow.wazipay.AppViewModelFactory
 import com.escrow.wazipay.R
+import com.escrow.wazipay.data.network.models.business.BusinessData
+import com.escrow.wazipay.data.network.models.business.businesses
 import com.escrow.wazipay.data.network.models.invoice.InvoiceData
 import com.escrow.wazipay.data.network.models.order.OrderData
 import com.escrow.wazipay.data.network.models.transaction.TransactionData
+import com.escrow.wazipay.ui.screens.users.common.business.BusinessCellComposable
 import com.escrow.wazipay.ui.screens.users.common.enums.LoadUserStatus
 import com.escrow.wazipay.ui.screens.users.common.invoice.InvoiceItemComposable
 import com.escrow.wazipay.ui.screens.users.common.order.OrderItemComposable
@@ -66,6 +69,7 @@ fun MerchantDashboardScreenComposable(
     navigateToWithdrawalScreen: () -> Unit,
     navigateToLoginScreenWithArgs: (phoneNumber: String, pin: String) -> Unit,
     navigateToOrderDetailsScreen: (orderId: String, fromPaymentScreen: Boolean) -> Unit,
+    navigateToBusinessDetailsScreen: (userId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -82,15 +86,18 @@ fun MerchantDashboardScreenComposable(
             .safeDrawingPadding()
     ) {
         MerchantDashboardScreen(
+            userId = merchantDashboardUiState.userDetails.userId,
             username = merchantDashboardUiState.userDetails.username ?: "",
             walletBalance = formatMoneyValue(merchantDashboardUiState.userWalletData.balance),
             userVerified = merchantDashboardUiState.userDetailsData.verified,
             orders = merchantDashboardUiState.orders,
             invoices = merchantDashboardUiState.invoices,
+            businesses = merchantDashboardUiState.businesses,
             transactions = merchantDashboardUiState.transactions,
             navigateToDepositScreen = navigateToDepositScreen,
             navigateToWithdrawalScreen = navigateToWithdrawalScreen,
-            navigateToOrderDetailsScreen = navigateToOrderDetailsScreen
+            navigateToOrderDetailsScreen = navigateToOrderDetailsScreen,
+            navigateToBusinessDetailsScreen = navigateToBusinessDetailsScreen
         )
     }
 }
@@ -98,15 +105,18 @@ fun MerchantDashboardScreenComposable(
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MerchantDashboardScreen(
+    userId: Int,
     username: String,
     walletBalance: String,
     userVerified: Boolean,
     orders: List<OrderData>,
     invoices: List<InvoiceData>,
+    businesses: List<BusinessData>,
     transactions: List<TransactionData>,
     navigateToDepositScreen: () -> Unit,
     navigateToWithdrawalScreen: () -> Unit,
     navigateToOrderDetailsScreen: (orderId: String, fromPaymentScreen: Boolean) -> Unit,
+    navigateToBusinessDetailsScreen: (userId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -302,8 +312,49 @@ fun MerchantDashboardScreen(
             }
         }
         Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+        Button(
+            onClick = { /*TODO*/ },
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            Text(
+                text = "Courier assignment",
+                fontSize = screenFontSize(x = 14.0).sp
+            )
+        }
+        Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
         Text(
-            text = "Issued Invoices",
+            text = "Recent orders",
+            color = MaterialTheme.colorScheme.onBackground,
+            fontSize = screenFontSize(x = 16.0).sp,
+            fontWeight = FontWeight.Bold
+        )
+        Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+        if(orders.isNotEmpty()) {
+            orders.take(5).forEach {
+                OrderItemComposable(
+                    homeScreen = true,
+                    orderData = it,
+                    navigateToOrderDetailsScreen = navigateToOrderDetailsScreen,
+                    modifier = Modifier
+                        .padding(
+                            top = screenHeight(x = 8.0)
+                        )
+                )
+            }
+        } else {
+            Text(
+                text = "No orders found",
+                fontSize = screenFontSize(x = 14.0).sp,
+                color = MaterialTheme.colorScheme.onBackground,
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+            )
+        }
+
+        Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+        Text(
+            text = "Issued invoices",
             color = MaterialTheme.colorScheme.onBackground,
             fontSize = screenFontSize(x = 16.0).sp,
             fontWeight = FontWeight.Bold
@@ -319,24 +370,103 @@ fun MerchantDashboardScreen(
                         )
                 )
             }
+            Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
+            OutlinedButton(
+                onClick = { /*TODO*/ },
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                Text(
+                    text = "Issue an invoice",
+                    fontSize = screenFontSize(x = 14.0).sp
+                )
+            }
         } else {
-            TextButton(onClick = { /*TODO*/ }) {
+            Text(
+                text = "No invoices found",
+                fontSize = screenFontSize(x = 14.0).sp,
+                color = MaterialTheme.colorScheme.onBackground,
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+            )
+            Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
+            OutlinedButton(
+                onClick = { /*TODO*/ },
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
                 Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier
-                        .fillMaxWidth()
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = "Create invoice"
+                        painter = painterResource(id = R.drawable.issue_invoice), 
+                        contentDescription = "Issue an invoice"
                     )
+                    Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
                     Text(
-                        text = "Create invoice",
+                        text = "Issue your first invoice",
                         fontSize = screenFontSize(x = 14.0).sp
                     )
                 }
             }
         }
+        Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+        Text(
+            text = "My businesses",
+            color = MaterialTheme.colorScheme.onBackground,
+            fontSize = screenFontSize(x = 16.0).sp,
+            fontWeight = FontWeight.Bold
+        )
+        Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+        if(businesses.isNotEmpty()) {
+            Row(
+                modifier = Modifier
+                    .horizontalScroll(rememberScrollState())
+            ) {
+                businesses.take(5).forEach {
+                    BusinessCellComposable(
+                        homeScreen = true,
+                        userId = userId,
+                        businessData = it,
+                        navigateToBusinessDetailsScreen = navigateToBusinessDetailsScreen,
+                        modifier = Modifier
+                            .fillMaxWidth(0.7f)
+                            .padding(
+                                screenWidth(x = 8.0)
+                            )
+                    )
+                }
+            }
+        } else {
+            Text(
+                text = "No business found",
+                fontSize = screenFontSize(x = 14.0).sp,
+                color = MaterialTheme.colorScheme.onBackground,
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+            )
+            Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
+            OutlinedButton(
+                onClick = { /*TODO*/ },
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Add first business"
+                    )
+                    Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
+                    Text(
+                        text = "Add your first business",
+                        fontSize = screenFontSize(x = 14.0).sp
+                    )
+                }
+            }
+        }
+        Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
 
         Spacer(modifier = Modifier.height(screenHeight(x = 24.0)))
         Text(
@@ -375,15 +505,18 @@ fun MerchantDashboardScreen(
 fun MerchantDashboardScreenPreview() {
     WazipayTheme {
         MerchantDashboardScreen(
+            userId = 1,
             username = "Alex Mboo",
             walletBalance = formatMoneyValue(1500.0),
             orders = emptyList(),
+            businesses = businesses,
             invoices = emptyList(),
             transactions = emptyList(),
             userVerified = true,
             navigateToDepositScreen = {},
             navigateToWithdrawalScreen = {},
-            navigateToOrderDetailsScreen = {orderId, fromPaymentScreen ->  }
+            navigateToOrderDetailsScreen = {orderId, fromPaymentScreen ->  },
+            navigateToBusinessDetailsScreen = {}
         )
     }
 }

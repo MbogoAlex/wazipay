@@ -4,8 +4,10 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.escrow.wazipay.data.network.repository.ApiRepository
+import com.escrow.wazipay.data.room.models.Role
 import com.escrow.wazipay.data.room.models.UserDetails
 import com.escrow.wazipay.data.room.repository.DBRepository
+import com.escrow.wazipay.ui.screens.users.common.business.LoadBusinessStatus
 import com.escrow.wazipay.ui.screens.users.common.enums.LoadUserStatus
 import com.escrow.wazipay.ui.screens.users.common.invoice.LoadInvoicesStatus
 import com.escrow.wazipay.ui.screens.users.common.order.LoadOrdersStatus
@@ -254,6 +256,40 @@ class MerchantDashboardViewModel(
         }
     }
 
+    private fun getBusinesses() {
+        viewModelScope.launch {
+            try {
+                val response = apiRepository.getBusinesses(
+                    token = uiState.value.userDetails.token!!,
+                    query = null,
+                    ownerId = uiState.value.userDetails.userId,
+                    archived = null,
+                    startDate = null,
+                    endDate = null
+                )
+
+                if(response.isSuccessful) {
+                    _uiState.update {
+                        it.copy(
+                            businesses = response.body()?.data!!,
+                        )
+                    }
+                } else {
+                    if(response.code() == 401) {
+                        _uiState.update {
+                            it.copy(
+                                unauthorized = true
+                            )
+                        }
+                    }
+                    Log.e("loadBusinessesResponse_err", response.toString())
+                }
+            } catch (e: Exception) {
+                Log.e("loadBusinessesException_err", e.toString())
+            }
+        }
+    }
+
     private fun getTransactions() {
         _uiState.update {
             it.copy(
@@ -335,6 +371,7 @@ class MerchantDashboardViewModel(
             getUserDetails()
             getOrders()
             getInvoices()
+            getBusinesses()
             getTransactions()
             getUserWallet()
         }

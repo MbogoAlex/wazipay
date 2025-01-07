@@ -50,6 +50,7 @@ import com.escrow.wazipay.utils.screenWidth
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun BusinessesScreenComposable(
+    homeScreen: Boolean = false,
     navigateToBusinessDetailsScreen: (businessId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -61,6 +62,7 @@ fun BusinessesScreenComposable(
             .safeDrawingPadding()
     ) {
         BusinessesScreen(
+            homeScreen = homeScreen,
             role = uiState.userRole.role,
             searchQuery = uiState.searchQuery ?: "",
             onChangeSearchQuery = viewModel::updateSearchQuery,
@@ -76,6 +78,7 @@ fun BusinessesScreenComposable(
 
 @Composable
 fun BusinessesScreen(
+    homeScreen: Boolean,
     role: Role,
     searchQuery: String,
     onChangeSearchQuery: (query: String) -> Unit,
@@ -153,6 +156,7 @@ fun BusinessesScreen(
         LazyColumn {
             items(businesses) {
                 BusinessCellComposable(
+                    homeScreen = homeScreen,
                     userId = userId,
                     businessData = it,
                     navigateToBusinessDetailsScreen = navigateToBusinessDetailsScreen
@@ -168,6 +172,7 @@ fun BusinessesScreen(
 fun BusinessScreenPreview() {
     WazipayTheme {
         BusinessesScreen(
+            homeScreen = false,
             role = Role.BUYER,
             searchQuery = "",
             onClearSearchQuery = {},

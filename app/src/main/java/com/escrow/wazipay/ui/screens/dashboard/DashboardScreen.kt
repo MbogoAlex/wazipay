@@ -17,16 +17,17 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material3.Button
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.DropdownMenu
@@ -182,24 +183,19 @@ fun DashboardScreenComposable(
                     tab = NavBarItem.HOME
                 ),
                 NavItem(
-                    name = "Orders",
-                    icon = R.drawable.orders,
-                    tab = NavBarItem.ORDERS
+                    name = "Courier",
+                    icon = R.drawable.motorbike,
+                    tab = NavBarItem.COURIER_ASSIGNMENT
                 ),
                 NavItem(
-                    name = "Invoices",
-                    icon = R.drawable.invoice,
-                    tab = NavBarItem.INVOICES
+                    name = "Invoice",
+                    icon = R.drawable.issue_invoice,
+                    tab = NavBarItem.ISSUE_INVOICE
                 ),
                 NavItem(
-                    name = "Businesses",
-                    icon = R.drawable.shop,
-                    tab = NavBarItem.BUSINESSES
-                ),
-                NavItem(
-                    name = "Transactions",
-                    icon = R.drawable.transactions,
-                    tab = NavBarItem.TRANSACTIONS
+                    name = "Business",
+                    icon = R.drawable.add,
+                    tab = NavBarItem.ADD_BUSINESS
                 ),
                 NavItem(
                     name = "Profile",
@@ -313,6 +309,9 @@ fun DashboardScreen(
         NavBarItem.INVOICES -> "Invoices"
         NavBarItem.SHOPS -> "Shops"
         NavBarItem.PAY_BUSINESS -> "Pay business"
+        NavBarItem.COURIER_ASSIGNMENT -> "Courier assignment"
+        NavBarItem.ISSUE_INVOICE -> "Issue invoice"
+        NavBarItem.ADD_BUSINESS -> "Add business"
     }
 
     Column(
@@ -328,89 +327,104 @@ fun DashboardScreen(
                     end = screenWidth(x = 16.0),
                     bottom = screenHeight(x = 8.0)
                 )
+                .fillMaxWidth() // Ensures the Row takes up the full width of the screen
         ) {
             Text(
                 text = title,
                 fontSize = screenFontSize(x = 16.0).sp,
                 color = MaterialTheme.colorScheme.onBackground,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.weight(1f)
             )
-            Spacer(modifier = Modifier.weight(1f))
-            Row(
-                verticalAlignment = Alignment.CenterVertically
+            Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
+            Box(
+                modifier = Modifier.weight(1f)
             ) {
-                Text(
-                    text = "Switch role",
-                    fontSize = screenFontSize(x = 14.0).sp,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    fontWeight = FontWeight.Bold
-                )
-                Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
-                Icon(
-                    painter = painterResource(id = R.drawable.double_arrow_right),
-                    contentDescription = null
-                )
-            }
-            Column {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .clickable {
-                            onExpandDropdown()
-                        }
                 ) {
-                    Text(
-                        text = role.name.lowercase().replaceFirstChar { it.uppercase() },
-                        color = MaterialTheme.colorScheme.onBackground,
-                        fontSize = screenFontSize(x = 16.0).sp
-                    )
-                    IconButton(onClick = onExpandDropdown) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Switch role",
+                            fontSize = screenFontSize(x = 14.0).sp,
+                            color = MaterialTheme.colorScheme.onBackground,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
                         Icon(
-                            tint = MaterialTheme.colorScheme.onBackground,
-                            imageVector = Icons.Default.KeyboardArrowDown,
-                            contentDescription = "Switch role"
+                            painter = painterResource(id = R.drawable.double_arrow_right),
+                            contentDescription = null
                         )
                     }
-                }
-                DropdownMenu(
-                    expanded = dropdownExpanded,
-                    onDismissRequest = onExpandDropdown
-                ) {
-                    profiles.forEach {
-                        DropdownMenuItem(
-                            text = {
-                                if(it.lowercase() == role.name.lowercase()) {
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        Icon(
-                                            painter = painterResource(id = R.drawable.check),
-                                            contentDescription = null
-                                        )
-                                        Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
-                                        Text(
-                                            text = it,
-                                            color = MaterialTheme.colorScheme.onBackground,
-                                            fontSize = screenFontSize(x = 14.0).sp
-                                        )
-                                    }
-                                } else {
-                                    Text(
-                                        text = it,
-                                        color = MaterialTheme.colorScheme.onBackground,
-                                        fontSize = screenFontSize(x = 14.0).sp
+                    Column {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .clickable {
+                                    onExpandDropdown()
+                                }
+                        ) {
+                            Text(
+                                text = role.name.lowercase().replaceFirstChar { it.uppercase() },
+                                color = MaterialTheme.colorScheme.onBackground,
+                                fontSize = screenFontSize(x = 16.0).sp
+                            )
+                            Box(
+                                modifier = Modifier.wrapContentWidth()
+                            ) {
+                                IconButton(onClick = onExpandDropdown) {
+                                    Icon(
+                                        tint = MaterialTheme.colorScheme.onBackground,
+                                        imageVector = Icons.Default.KeyboardArrowDown,
+                                        contentDescription = "Switch role"
                                     )
                                 }
-                            },
-                            onClick = {
-                                onSelectRole(Role.valueOf(it.uppercase()))
-                                onExpandDropdown()
                             }
-                        )
+                        }
+                        DropdownMenu(
+                            expanded = dropdownExpanded,
+                            onDismissRequest = onExpandDropdown
+                        ) {
+                            profiles.forEach {
+                                DropdownMenuItem(
+                                    text = {
+                                        if (it.lowercase() == role.name.lowercase()) {
+                                            Row(
+                                                verticalAlignment = Alignment.CenterVertically
+                                            ) {
+                                                Icon(
+                                                    painter = painterResource(id = R.drawable.check),
+                                                    contentDescription = null
+                                                )
+                                                Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
+                                                Text(
+                                                    text = it,
+                                                    color = MaterialTheme.colorScheme.onBackground,
+                                                    fontSize = screenFontSize(x = 14.0).sp
+                                                )
+                                            }
+                                        } else {
+                                            Text(
+                                                text = it,
+                                                color = MaterialTheme.colorScheme.onBackground,
+                                                fontSize = screenFontSize(x = 14.0).sp
+                                            )
+                                        }
+                                    },
+                                    onClick = {
+                                        onSelectRole(Role.valueOf(it.uppercase()))
+                                        onExpandDropdown()
+                                    }
+                                )
+                            }
+                        }
                     }
                 }
             }
         }
+
         when(selectedTab) {
             NavBarItem.HOME -> when(role) {
                 Role.BUYER -> BuyerDashboardScreenComposable(
@@ -430,6 +444,7 @@ fun DashboardScreen(
                     navigateToWithdrawalScreen = navigateToWithdrawalScreen,
                     navigateToOrderDetailsScreen = navigateToOrderDetailsScreen,
                     navigateToLoginScreenWithArgs = navigateToLoginScreenWithArgs,
+                    navigateToBusinessDetailsScreen = navigateToBusinessDetailsScreen,
                     modifier = Modifier
                             .weight(1f)
                 )
@@ -485,6 +500,37 @@ fun DashboardScreen(
                 modifier = Modifier
                     .weight(1f)
             )
+
+            NavBarItem.COURIER_ASSIGNMENT -> {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .weight(1f)
+                ) {
+                    Text(text = "Courier assignment")
+                }
+            }
+            NavBarItem.ISSUE_INVOICE -> {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .weight(1f)
+                ) {
+                    Text(text = "Issue invoice")
+                }
+            }
+            NavBarItem.ADD_BUSINESS -> {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .weight(1f)
+                ) {
+                    Text(text = "Add business")
+                }
+            }
         }
         BottomNavBar(
             navItems = navItems,
