@@ -151,7 +151,6 @@ fun NavigationGraph(
                     navController.navigate("${OrderDetailsScreenDestination.route}/${orderId}/${fromPaymentScreen}")
                 },
                 navigateToInvoiceCreationScreen = {
-                    navController.popBackStack()
                     navController.navigate("${InvoiceCreationScreenDestination.route}/${it}")
                 },
                 navigateToPreviousScreen = {
@@ -202,7 +201,6 @@ fun NavigationGraph(
                     navController.navigate("${OrderDetailsScreenDestination.route}/${orderId}/${fromPaymentScreen}")
                 },
                 navigateToInvoiceCreationScreen = {
-                    navController.popBackStack()
                     navController.navigate("${InvoiceCreationScreenDestination.route}/${it}")
                 },
                 navigateToPreviousScreen = {
@@ -341,7 +339,6 @@ fun NavigationGraph(
                     navController.navigate("${OrderDetailsScreenDestination.route}/${orderId}/${fromPaymentScreen}")
                 },
                 navigateToInvoiceCreationScreen = {
-                    navController.popBackStack()
                     navController.navigate("${InvoiceCreationScreenDestination.route}/${it}")
                 },
                 navigateToPreviousScreen = {
@@ -365,7 +362,6 @@ fun NavigationGraph(
                     navController.navigateUp()
                 },
                 navigateToInvoiceCreationScreen = {
-                    navController.popBackStack()
                     navController.navigate("${InvoiceCreationScreenDestination.route}/${it}")
                 }
             )

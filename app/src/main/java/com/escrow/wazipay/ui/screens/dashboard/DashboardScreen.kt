@@ -66,6 +66,7 @@ import com.escrow.wazipay.ui.screens.users.common.NavItem
 import com.escrow.wazipay.ui.screens.users.common.business.businessList.BusinessesScreenComposable
 import com.escrow.wazipay.ui.screens.users.common.invoice.invoicesList.InvoicesScreenComposable
 import com.escrow.wazipay.ui.screens.users.common.order.ordersList.OrdersScreenComposable
+import com.escrow.wazipay.ui.screens.users.common.profile.ProfileScreenComposable
 import com.escrow.wazipay.ui.screens.users.common.transaction.transactionsList.TransactionsScreenComposable
 import com.escrow.wazipay.ui.screens.users.specific.buyer.businessPayment.BusinessSelectionScreenComposable
 import com.escrow.wazipay.ui.screens.users.specific.buyer.dashboard.BuyerDashboardScreenComposable
@@ -461,18 +462,10 @@ fun DashboardScreen(
                     )
                 }
             }
-            NavBarItem.PROFILE -> {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .weight(1f)
-                ) {
-                    Button(onClick = onLogout) {
-                        Text(text = "Logout")
-                    }
-                }
-            }
+            NavBarItem.PROFILE -> ProfileScreenComposable(
+                modifier = Modifier
+                    .weight(1f)
+            )
 
             NavBarItem.BUSINESSES -> BusinessesScreenComposable(
                 navigateToBusinessDetailsScreen = navigateToBusinessDetailsScreen,
