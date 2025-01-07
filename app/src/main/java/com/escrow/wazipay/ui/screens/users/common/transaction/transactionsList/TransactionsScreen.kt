@@ -56,6 +56,8 @@ import com.escrow.wazipay.AppViewModelFactory
 import com.escrow.wazipay.R
 import com.escrow.wazipay.data.network.models.transaction.TransactionData
 import com.escrow.wazipay.data.network.models.transaction.transactions
+import com.escrow.wazipay.data.room.models.Role
+import com.escrow.wazipay.ui.nav.AppNavigation
 import com.escrow.wazipay.ui.screens.users.common.transaction.TransactionCellComposable
 import com.escrow.wazipay.ui.theme.WazipayTheme
 import com.escrow.wazipay.utils.screenFontSize
@@ -66,11 +68,17 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
+object TransactionsScreenDestination: AppNavigation {
+    override val title: String = "Transactions screen"
+    override val route: String = "transactions-screen"
+}
+
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun TransactionsScreenComposable(
     filtering: Boolean,
-    onFilter: () -> Unit,
+    onFilter: () -> Unit = {},
+    navigateToPreviousScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -93,7 +101,8 @@ fun TransactionsScreenComposable(
                 transactionsViewModel.changeSearchText("")
             },
             transactions = transactionsUiState.transactions,
-            onFilter = onFilter
+            onFilter = onFilter,
+            navigateToPreviousScreen = navigateToPreviousScreen
         )
     }
 }
@@ -111,6 +120,7 @@ fun TransactionsScreen(
     transactions: List<TransactionData>,
     onFilter: () -> Unit,
     onClearSearch: () -> Unit,
+    navigateToPreviousScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val dateFormatter = DateTimeFormatter.ofPattern("dd MMM, yyyy")
@@ -124,7 +134,6 @@ fun TransactionsScreen(
                 )
             )
     ) {
-
         if(filtering) {
             ElevatedCard(
                 shape = RoundedCornerShape(0),
@@ -219,6 +228,24 @@ fun TransactionsScreen(
                 }
             }
         } else {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .padding(horizontal = screenWidth(x = 16.0))
+            ) {
+                IconButton(onClick = navigateToPreviousScreen) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Previous screen"
+                    )
+                }
+                Text(
+                    text = "Transactions",
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    fontSize = screenFontSize(x = 16.0).sp
+                )
+            }
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
@@ -433,7 +460,8 @@ fun TransactionsScreenPreview() {
             onChangeEndDate = {},
             onClearSearch = {},
             transactions = transactions,
-            onFilter = { /*TODO*/ }
+            onFilter = { /*TODO*/ },
+            navigateToPreviousScreen = {}
         )
     }
 }

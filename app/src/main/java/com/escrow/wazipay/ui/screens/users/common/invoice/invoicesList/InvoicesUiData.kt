@@ -14,6 +14,6 @@ data class InvoicesUiData(
     val userAuthorized: Boolean = true,
     val invoiceStatus: InvoiceStatus? = null,
     val selectedStatus: String = "All",
-    val statuses: List<String> = listOf("All", "Pending", "Accepted", "Rejected", "Cancelled"),
+    val statuses: List<String> = listOf("All", "Complete", "Pending", "Rejected", "Cancelled"),
     val loadInvoicesStatus: LoadInvoicesStatus = LoadInvoicesStatus.INITIAL
 )

@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.IconButton
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ElevatedCard
@@ -23,6 +24,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -60,6 +62,9 @@ fun BuyerDashboardScreenComposable(
     navigateToWithdrawalScreen: () -> Unit,
     navigateToBusinessSelectionScreen: () -> Unit,
     navigateToOrderDetailsScreen: (orderId: String, fromPaymentScreen: Boolean) -> Unit,
+    navigateToOrderScreen: () -> Unit,
+    navigateToInvoicesScreen: () -> Unit,
+    navigateToTransactionsScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -80,13 +85,17 @@ fun BuyerDashboardScreenComposable(
             walletBalance = formatMoneyValue(uiState.userWalletData.balance),
             userVerified = uiState.userDetailsData.verified,
             username = uiState.userDetails.username ?: "",
+            userId = uiState.userDetails.userId,
             orders = uiState.orders,
             invoices = uiState.invoices,
             transactions = uiState.transactions,
             navigateToDepositScreen = navigateToDepositScreen,
             navigateToWithdrawalScreen = navigateToWithdrawalScreen,
             navigateToBusinessSelectionScreen = navigateToBusinessSelectionScreen,
-            navigateToOrderDetailsScreen = navigateToOrderDetailsScreen
+            navigateToOrderDetailsScreen = navigateToOrderDetailsScreen,
+            navigateToOrderScreen = navigateToOrderScreen,
+            navigateToInvoicesScreen = navigateToInvoicesScreen,
+            navigateToTransactionsScreen = navigateToTransactionsScreen
         )
     }
 }
@@ -97,6 +106,7 @@ fun BuyerDashboardScreen(
     walletBalance: String,
     userVerified: Boolean,
     username: String,
+    userId: Int,
     orders: List<OrderData>,
     invoices: List<InvoiceData>,
     transactions: List<TransactionData>,
@@ -104,6 +114,9 @@ fun BuyerDashboardScreen(
     navigateToWithdrawalScreen: () -> Unit,
     navigateToBusinessSelectionScreen: () -> Unit,
     navigateToOrderDetailsScreen: (orderId: String, fromPaymentScreen: Boolean) -> Unit,
+    navigateToOrderScreen: () -> Unit,
+    navigateToInvoicesScreen: () -> Unit,
+    navigateToTransactionsScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -241,13 +254,21 @@ fun BuyerDashboardScreen(
             }
         }
         Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
-        Text(
-            text = "Recent Orders",
-            color = MaterialTheme.colorScheme.onBackground,
-            fontSize = screenFontSize(x = 16.0).sp,
-            fontWeight = FontWeight.Bold
-        )
-        Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Recent Orders",
+                color = MaterialTheme.colorScheme.onBackground,
+                fontSize = screenFontSize(x = 16.0).sp,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            TextButton(onClick = navigateToOrderScreen) {
+                Text(text = "See all")
+            }
+        }
+        Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
         Row(
             modifier = Modifier
                 .horizontalScroll(rememberScrollState())
@@ -266,13 +287,21 @@ fun BuyerDashboardScreen(
             }
         }
         Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
-        Text(
-            text = "Received Invoices",
-            color = MaterialTheme.colorScheme.onBackground,
-            fontSize = screenFontSize(x = 16.0).sp,
-            fontWeight = FontWeight.Bold
-        )
-        Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Payments (invoices)",
+                color = MaterialTheme.colorScheme.onBackground,
+                fontSize = screenFontSize(x = 16.0).sp,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            TextButton(onClick = navigateToInvoicesScreen) {
+                Text(text = "See all")
+            }
+        }
+        Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
         invoices.take(5).forEach {
             InvoiceItemComposable(
                 invoiceData = it,
@@ -283,13 +312,21 @@ fun BuyerDashboardScreen(
             )
         }
         Spacer(modifier = Modifier.height(screenHeight(x = 24.0)))
-        Text(
-            text = "Recent Transactions",
-            color = MaterialTheme.colorScheme.onBackground,
-            fontSize = screenFontSize(x = 16.0).sp,
-            fontWeight = FontWeight.Bold
-        )
-        Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Recent Transactions",
+                color = MaterialTheme.colorScheme.onBackground,
+                fontSize = screenFontSize(x = 16.0).sp,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            TextButton(onClick = navigateToTransactionsScreen) {
+                Text(text = "See all")
+            }
+        }
+        Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
         transactions.take(5).forEach {
             TransactionCellComposable(
                 transactionData = it,
@@ -311,13 +348,17 @@ fun BuyerDashboardScreenPreview() {
             walletBalance = "Ksh1,000",
             userVerified = true,
             username = "Alex Mbogo",
+            userId = 1,
             orders = orders,
             invoices = invoices,
             transactions = transactions,
             navigateToDepositScreen = {},
             navigateToWithdrawalScreen = {},
             navigateToBusinessSelectionScreen = {},
-            navigateToOrderDetailsScreen = {orderId, fromPaymentScreen ->  }
+            navigateToOrderDetailsScreen = {orderId, fromPaymentScreen ->  },
+            navigateToOrderScreen = {},
+            navigateToInvoicesScreen = {},
+            navigateToTransactionsScreen = {}
         )
     }
 }

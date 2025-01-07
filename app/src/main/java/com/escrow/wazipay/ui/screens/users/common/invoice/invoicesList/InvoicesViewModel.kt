@@ -32,7 +32,7 @@ class InvoicesViewModel(
         when(status) {
             "All" -> filterInvoices(null)
             "Pending" -> filterInvoices(InvoiceStatus.PENDING)
-            "Accepted" -> filterInvoices(InvoiceStatus.ACCEPTED)
+            "Complete" -> filterInvoices(InvoiceStatus.ACCEPTED)
             "Rejected" -> filterInvoices(InvoiceStatus.REJECTED)
         }
     }

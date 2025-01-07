@@ -4,6 +4,10 @@ import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -20,12 +24,16 @@ import com.escrow.wazipay.ui.screens.dashboard.DashboardScreenComposable
 import com.escrow.wazipay.ui.screens.dashboard.DashboardScreenDestination
 import com.escrow.wazipay.ui.screens.users.common.business.businessDetails.BusinessDetailsScreenComposable
 import com.escrow.wazipay.ui.screens.users.common.business.businessDetails.BusinessDetailsScreenDestination
+import com.escrow.wazipay.ui.screens.users.common.invoice.invoicesList.InvoicesScreenComposable
+import com.escrow.wazipay.ui.screens.users.common.invoice.invoicesList.InvoicesScreenDestination
 import com.escrow.wazipay.ui.screens.users.common.order.orderCreation.OrderCreationScreenComposable
 import com.escrow.wazipay.ui.screens.users.common.order.orderCreation.OrderCreationScreenDestination
 import com.escrow.wazipay.ui.screens.users.common.order.orderDetails.OrderDetailsScreenComposable
 import com.escrow.wazipay.ui.screens.users.common.order.orderDetails.OrderDetailsScreenDestination
 import com.escrow.wazipay.ui.screens.users.common.order.ordersList.OrdersScreenComposable
 import com.escrow.wazipay.ui.screens.users.common.order.ordersList.OrdersScreenDestination
+import com.escrow.wazipay.ui.screens.users.common.transaction.transactionsList.TransactionsScreenComposable
+import com.escrow.wazipay.ui.screens.users.common.transaction.transactionsList.TransactionsScreenDestination
 import com.escrow.wazipay.ui.screens.users.common.wallet.deposit.DepositScreenComposable
 import com.escrow.wazipay.ui.screens.users.common.wallet.deposit.DepositScreenDestination
 import com.escrow.wazipay.ui.screens.users.common.wallet.withdrawal.WithdrawalScreenComposable
@@ -148,6 +156,15 @@ fun NavigationGraph(
                 },
                 navigateToPreviousScreen = {
                     navController.navigateUp()
+                },
+                navigateToOrdersScreen = {
+                    navController.navigate(OrdersScreenDestination.route)
+                },
+                navigateToInvoicesScreen = {
+                    navController.navigate(InvoicesScreenDestination.route)
+                },
+                navigateToTransactionsScreen = {
+                    navController.navigate(TransactionsScreenDestination.route)
                 }
             )
         }
@@ -190,6 +207,15 @@ fun NavigationGraph(
                 },
                 navigateToPreviousScreen = {
                     navController.navigateUp()
+                },
+                navigateToOrdersScreen = {
+                    navController.navigate(OrdersScreenDestination.route)
+                },
+                navigateToInvoicesScreen = {
+                    navController.navigate(InvoicesScreenDestination.route)
+                },
+                navigateToTransactionsScreen = {
+                    navController.navigate(TransactionsScreenDestination.route)
                 }
             )
         }
@@ -231,7 +257,21 @@ fun NavigationGraph(
             )
         }
         composable(
-            OrdersScreenDestination.routeWithArgs,
+            OrdersScreenDestination.route) {
+            OrdersScreenComposable(
+                navigateToLoginScreenWithArgs = {phoneNumber, pin ->
+                    navController.navigate("${LoginScreenDestination.route}/${phoneNumber}/${pin}")
+                },
+                navigateToOrderDetailsScreen = { orderId, fromPaymentScreen ->
+                    navController.navigate("${OrderDetailsScreenDestination.route}/${orderId}/${fromPaymentScreen}")
+                },
+                navigateToPreviousScreen = {
+                    navController.navigateUp()
+                }
+            )
+        }
+        composable(
+            OrdersScreenDestination.routeWithBusinessId,
             arguments = listOf(
                 navArgument(OrdersScreenDestination.businessId) {
                     type = NavType.StringType
@@ -244,6 +284,9 @@ fun NavigationGraph(
                 },
                 navigateToOrderDetailsScreen = { orderId, fromPaymentScreen ->
                     navController.navigate("${OrderDetailsScreenDestination.route}/${orderId}/${fromPaymentScreen}")
+                },
+                navigateToPreviousScreen = {
+                    navController.navigateUp()
                 }
             )
         }
@@ -303,6 +346,15 @@ fun NavigationGraph(
                 },
                 navigateToPreviousScreen = {
                     navController.navigateUp()
+                },
+                navigateToOrdersScreen = {
+                    navController.navigate(OrdersScreenDestination.route)
+                },
+                navigateToInvoicesScreen = {
+                    navController.navigate(InvoicesScreenDestination.route)
+                },
+                navigateToTransactionsScreen = {
+                    navController.navigate(TransactionsScreenDestination.route)
                 }
             )
         }
@@ -397,6 +449,27 @@ fun NavigationGraph(
                 },
                 navigateToOrderDetailsScreen = { orderId, fromPaymentScreen ->
                     navController.navigate("${OrderDetailsScreenDestination.route}/${orderId}/${fromPaymentScreen}")
+                }
+            )
+        }
+        composable(InvoicesScreenDestination.route) {
+            InvoicesScreenComposable(
+                navigateToPreviousScreen = {
+                    navController.navigateUp()
+                }
+            )
+        }
+        composable(TransactionsScreenDestination.route) {
+            var filtering by rememberSaveable {
+                mutableStateOf(false)
+            }
+            TransactionsScreenComposable(
+                filtering = filtering,
+                onFilter = {
+                    filtering = !filtering
+                },
+                navigateToPreviousScreen = {
+                    navController.navigateUp()
                 }
             )
         }

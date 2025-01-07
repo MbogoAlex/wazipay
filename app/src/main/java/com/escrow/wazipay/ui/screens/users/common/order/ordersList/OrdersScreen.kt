@@ -18,10 +18,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -30,7 +34,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.escrow.wazipay.AppViewModelFactory
 import com.escrow.wazipay.data.network.models.order.OrderData
@@ -40,6 +46,7 @@ import com.escrow.wazipay.ui.nav.AppNavigation
 import com.escrow.wazipay.ui.screens.users.common.order.LoadOrdersStatus
 import com.escrow.wazipay.ui.screens.users.common.order.OrderItemComposable
 import com.escrow.wazipay.ui.theme.WazipayTheme
+import com.escrow.wazipay.utils.screenFontSize
 import com.escrow.wazipay.utils.screenHeight
 import com.escrow.wazipay.utils.screenWidth
 
@@ -47,7 +54,7 @@ object OrdersScreenDestination: AppNavigation {
     override val title: String = "Orders screen"
     override val route: String = "orders-screen"
     val businessId: String = "businessId"
-    val routeWithArgs: String = "$route/{$businessId}"
+    val routeWithBusinessId: String = "$route/{$businessId}"
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -55,6 +62,7 @@ object OrdersScreenDestination: AppNavigation {
 fun OrdersScreenComposable(
     navigateToLoginScreenWithArgs: (phoneNumber: String, pin: String) -> Unit,
     navigateToOrderDetailsScreen: (orderId: String, fromPaymentScreen: Boolean) -> Unit,
+    navigateToPreviousScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -78,7 +86,8 @@ fun OrdersScreenComposable(
                 viewModel.changeOrderStage(it)
             },
             role = uiState.role,
-            navigateToOrderDetailsScreen = navigateToOrderDetailsScreen
+            navigateToOrderDetailsScreen = navigateToOrderDetailsScreen,
+            navigateToPreviousScreen = navigateToPreviousScreen
         )
     }
 }
@@ -92,17 +101,18 @@ fun OrdersScreen(
     selectedStage: String,
     onChangeOrderStage: (orderStage: String) -> Unit,
     navigateToOrderDetailsScreen: (orderId: String, fromPaymentScreen: Boolean) -> Unit,
+    navigateToPreviousScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
         floatingActionButton = {
             if(role == Role.MERCHANT || role == Role.BUYER) {
-                FloatingActionButton(onClick = { /*TODO*/ }) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = "Create Order"
-                    )
-                }
+//                FloatingActionButton(onClick = { /*TODO*/ }) {
+//                    Icon(
+//                        imageVector = Icons.Default.Add,
+//                        contentDescription = "Create Order"
+//                    )
+//                }
             }
         }
     ) {
@@ -114,17 +124,27 @@ fun OrdersScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(
-                        start = screenWidth(x = 16.0),
-                        end = screenWidth(x = 16.0),
-                        bottom = screenHeight(x = 16.0)
+                        vertical = screenHeight(x = 16.0),
+                        horizontal = screenWidth(x = 16.0)
                     )
             ) {
-//                Text(
-//                    text = "${if(role == Role.BUYER) "My Orders" else if(role == Role.MERCHANT) "Received Orders" else "My Orders"} / $selectedStage",
-//                    fontWeight = FontWeight.Bold,
-//                    fontSize = screenFontSize(x = 16.0).sp
-//                )
-//                Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(onClick = navigateToPreviousScreen) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Previous screen"
+                        )
+                    }
+                    Text(
+                        text = "${if(role == Role.BUYER) "My Orders" else if(role == Role.MERCHANT) "Received Orders" else "My Orders"} / $selectedStage",
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        fontSize = screenFontSize(x = 16.0).sp
+                    )
+                }
+                Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
@@ -182,7 +202,8 @@ fun OrdersScreenPreview() {
             role = Role.BUYER,
             navigateToOrderDetailsScreen = {orderId, fromPaymentScreen ->
 
-            }
+            },
+            navigateToPreviousScreen = {}
         )
     }
 }

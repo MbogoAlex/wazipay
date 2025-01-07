@@ -23,9 +23,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.Button
@@ -33,15 +31,11 @@ import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalDrawerSheet
-import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
@@ -104,7 +98,10 @@ fun DashboardScreenComposable(
     navigateToBusinessSelectionScreen: () -> Unit,
     navigateToOrderDetailsScreen: (orderId: String, fromPaymentScreen: Boolean) -> Unit,
     navigateToInvoiceCreationScreen: (businessId: String) -> Unit,
+    navigateToOrdersScreen: () -> Unit,
+    navigateToInvoicesScreen: () -> Unit,
     navigateToPreviousScreen: () -> Unit,
+    navigateToTransactionsScreen: () -> Unit,
 ) {
     val context = LocalContext.current
 
@@ -266,7 +263,10 @@ fun DashboardScreenComposable(
             },
             navigateToOrderDetailsScreen = navigateToOrderDetailsScreen,
             navigateToInvoiceCreationScreen = navigateToInvoiceCreationScreen,
-            navigateToPreviousScreen = navigateToPreviousScreen
+            navigateToPreviousScreen = navigateToPreviousScreen,
+            navigateToOrderScreen = navigateToOrdersScreen,
+            navigateToInvoicesScreen = navigateToInvoicesScreen,
+            navigateToTransactionsScreen = navigateToTransactionsScreen
         )
     }
 }
@@ -297,6 +297,9 @@ fun DashboardScreen(
     navigateToOrderDetailsScreen: (orderId: String, fromPaymentScreen: Boolean) -> Unit,
     navigateToInvoiceCreationScreen: (businessId: String) -> Unit,
     navigateToPreviousScreen: () -> Unit,
+    navigateToOrderScreen: () -> Unit,
+    navigateToInvoicesScreen: () -> Unit,
+    navigateToTransactionsScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -332,6 +335,21 @@ fun DashboardScreen(
                 fontWeight = FontWeight.Bold
             )
             Spacer(modifier = Modifier.weight(1f))
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Switch role",
+                    fontSize = screenFontSize(x = 14.0).sp,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
+                Icon(
+                    painter = painterResource(id = R.drawable.double_arrow_right),
+                    contentDescription = null
+                )
+            }
             Column {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -400,6 +418,9 @@ fun DashboardScreen(
                     navigateToWithdrawalScreen = navigateToWithdrawalScreen,
                     navigateToBusinessSelectionScreen = navigateToBusinessSelectionScreen,
                     navigateToOrderDetailsScreen = navigateToOrderDetailsScreen,
+                    navigateToOrderScreen = navigateToOrderScreen,
+                    navigateToInvoicesScreen = navigateToInvoicesScreen,
+                    navigateToTransactionsScreen = navigateToTransactionsScreen,
                     modifier = Modifier
                             .weight(1f)
                 )
@@ -417,12 +438,14 @@ fun DashboardScreen(
             NavBarItem.TRANSACTIONS -> TransactionsScreenComposable(
                 onFilter = onFilter,
                 filtering = filtering,
+                navigateToPreviousScreen = navigateToPreviousScreen,
                 modifier = Modifier
                         .weight(1f)
             )
             NavBarItem.ORDERS -> OrdersScreenComposable(
                 navigateToLoginScreenWithArgs = navigateToLoginScreenWithArgs,
                 navigateToOrderDetailsScreen = navigateToOrderDetailsScreen,
+                navigateToPreviousScreen = navigateToPreviousScreen,
                 modifier = Modifier
                         .weight(1f)
             )
@@ -457,6 +480,7 @@ fun DashboardScreen(
                     .weight(1f)
             )
             NavBarItem.INVOICES -> InvoicesScreenComposable(
+                navigateToPreviousScreen = navigateToPreviousScreen,
                 modifier = Modifier
                     .weight(1f)
             )
@@ -655,7 +679,10 @@ fun DashboardScreenPreview() {
             onLogout = {},
             navigateToOrderDetailsScreen = {orderId, fromPaymentScreen ->  },
             navigateToInvoiceCreationScreen = {},
-            navigateToPreviousScreen = {}
+            navigateToPreviousScreen = {},
+            navigateToOrderScreen = {},
+            navigateToInvoicesScreen = {},
+            navigateToTransactionsScreen = {}
         )
     }
 }

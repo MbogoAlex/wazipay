@@ -15,8 +15,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,15 +39,22 @@ import com.escrow.wazipay.AppViewModelFactory
 import com.escrow.wazipay.data.network.models.invoice.InvoiceData
 import com.escrow.wazipay.data.network.models.invoice.invoices
 import com.escrow.wazipay.data.room.models.Role
+import com.escrow.wazipay.ui.nav.AppNavigation
 import com.escrow.wazipay.ui.screens.users.common.invoice.InvoiceItemComposable
 import com.escrow.wazipay.ui.theme.WazipayTheme
 import com.escrow.wazipay.utils.screenFontSize
 import com.escrow.wazipay.utils.screenHeight
 import com.escrow.wazipay.utils.screenWidth
 
+object InvoicesScreenDestination: AppNavigation {
+    override val title: String = "Invoices screen"
+    override val route: String = "invoices-screen"
+}
+
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun InvoicesScreenComposable(
+    navigateToPreviousScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -63,7 +74,8 @@ fun InvoicesScreenComposable(
             onChangeStatus = {
                 invoicesViewModel.onChangeStatus(it)
 
-            }
+            },
+            navigateToPreviousScreen = navigateToPreviousScreen
         )
     }
 
@@ -77,6 +89,7 @@ fun InvoicesScreen(
     statuses: List<String>,
     selectedStatus: String,
     onChangeStatus: (status: String) -> Unit,
+    navigateToPreviousScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -89,12 +102,22 @@ fun InvoicesScreen(
                 vertical = screenHeight(x = 16.0)
             )
     ) {
-        Text(
-            text = "${if(role == Role.BUYER) "Received Invoices" else "Issued Invoices"} / $selectedStatus",
-            fontWeight = FontWeight.Bold,
-            fontSize = screenFontSize(x = 14.0).sp,
-            color = MaterialTheme.colorScheme.onBackground,
-        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(onClick = navigateToPreviousScreen) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Previous screen"
+                )
+            }
+            Text(
+                text = "${if(role == Role.BUYER) "Payments (invoices)" else "Issued Invoices"} / $selectedStatus",
+                fontWeight = FontWeight.Bold,
+                fontSize = screenFontSize(x = 14.0).sp,
+                color = MaterialTheme.colorScheme.onBackground,
+            )
+        }
         Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -142,7 +165,8 @@ fun InvoicesScreenPreview() {
             onChangeStatus = {
                 selectedStatus = it
             },
-            invoices = invoices
+            invoices = invoices,
+            navigateToPreviousScreen = {}
         )
     }
 }
