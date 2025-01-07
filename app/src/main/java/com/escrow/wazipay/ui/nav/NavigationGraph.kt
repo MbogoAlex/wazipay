@@ -46,6 +46,8 @@ import com.escrow.wazipay.ui.screens.users.specific.merchant.courierAssignment.C
 import com.escrow.wazipay.ui.screens.users.specific.merchant.courierAssignment.CourierAssignmentScreenDestination
 import com.escrow.wazipay.ui.screens.users.specific.merchant.courierAssignment.CourierSelectionScreenComposable
 import com.escrow.wazipay.ui.screens.users.specific.merchant.courierAssignment.CourierSelectionScreenDestination
+import com.escrow.wazipay.ui.screens.users.specific.merchant.invoiceCreation.BuyerSelectionScreenComposable
+import com.escrow.wazipay.ui.screens.users.specific.merchant.invoiceCreation.BuyerSelectionScreenDestination
 import com.escrow.wazipay.ui.start.SplashScreenComposable
 import com.escrow.wazipay.ui.start.SplashScreenDestination
 
@@ -164,6 +166,12 @@ fun NavigationGraph(
                 },
                 navigateToTransactionsScreen = {
                     navController.navigate(TransactionsScreenDestination.route)
+                },
+                navigateToBuyerSelectionScreen = {
+                    navController.navigate("${BuyerSelectionScreenDestination.route}/${it}")
+                },
+                navigateToBusinessSelectionScreenWithArgs = {
+                    navController.navigate("${BusinessSelectionScreenDestination.route}/${it}")
                 }
             )
         }
@@ -214,6 +222,12 @@ fun NavigationGraph(
                 },
                 navigateToTransactionsScreen = {
                     navController.navigate(TransactionsScreenDestination.route)
+                },
+                navigateToBuyerSelectionScreen = {
+                    navController.navigate("${BuyerSelectionScreenDestination.route}/${it}")
+                },
+                navigateToBusinessSelectionScreenWithArgs = {
+                    navController.navigate("${BusinessSelectionScreenDestination.route}/${it}")
                 }
             )
         }
@@ -352,6 +366,12 @@ fun NavigationGraph(
                 },
                 navigateToTransactionsScreen = {
                     navController.navigate(TransactionsScreenDestination.route)
+                },
+                navigateToBuyerSelectionScreen = {
+                    navController.navigate("${BuyerSelectionScreenDestination.route}/${it}")
+                },
+                navigateToBusinessSelectionScreenWithArgs = {
+                    navController.navigate("${BusinessSelectionScreenDestination.route}/${it}")
                 }
             )
         }
@@ -363,6 +383,30 @@ fun NavigationGraph(
                 },
                 navigateToInvoiceCreationScreen = {
                     navController.navigate("${InvoiceCreationScreenDestination.route}/${it}")
+                },
+                navigateToBuyerSelectionScreen = {
+                    navController.navigate("${BuyerSelectionScreenDestination.route}/${it}")
+                }
+            )
+        }
+
+        composable(
+            BusinessSelectionScreenDestination.routeWithArgs,
+            arguments = listOf(
+                navArgument(BusinessSelectionScreenDestination.toBuyerSelectionScreen) {
+                    type = NavType.BoolType
+                }
+            )
+        ) {
+            BusinessSelectionScreenComposable(
+                navigateToPreviousScreen = {
+                    navController.navigateUp()
+                },
+                navigateToInvoiceCreationScreen = {
+                    navController.navigate("${InvoiceCreationScreenDestination.route}/${it}")
+                },
+                navigateToBuyerSelectionScreen = {
+                    navController.navigate("${BuyerSelectionScreenDestination.route}/${it}")
                 }
             )
         }
@@ -450,6 +494,9 @@ fun NavigationGraph(
         }
         composable(InvoicesScreenDestination.route) {
             InvoicesScreenComposable(
+                navigateToBusinessSelectionScreenWithArgs = {
+                    navController.navigate("${BusinessSelectionScreenDestination.route}/${it}")
+                },
                 navigateToPreviousScreen = {
                     navController.navigateUp()
                 }
@@ -465,6 +512,22 @@ fun NavigationGraph(
                     filtering = !filtering
                 },
                 navigateToPreviousScreen = {
+                    navController.navigateUp()
+                }
+            )
+        }
+        
+        composable(
+            BuyerSelectionScreenDestination.routeWithBusinessId,
+            arguments = listOf(
+                navArgument(BuyerSelectionScreenDestination.businessId) {
+                    type = NavType.StringType
+                }
+            )
+        ) {
+            BuyerSelectionScreenComposable(
+                navigateToInvoiceCreationScreen = {buyerId, businessId ->  },
+                navigateToPreviousScreen = { 
                     navController.navigateUp()
                 }
             )

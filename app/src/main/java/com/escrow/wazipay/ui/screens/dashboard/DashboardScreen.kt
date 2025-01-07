@@ -101,9 +101,11 @@ fun DashboardScreenComposable(
     navigateToOrderDetailsScreen: (orderId: String, fromPaymentScreen: Boolean) -> Unit,
     navigateToInvoiceCreationScreen: (businessId: String) -> Unit,
     navigateToOrdersScreen: () -> Unit,
+    navigateToBuyerSelectionScreen: (businessId: String) -> Unit,
     navigateToInvoicesScreen: () -> Unit,
     navigateToPreviousScreen: () -> Unit,
     navigateToTransactionsScreen: () -> Unit,
+    navigateToBusinessSelectionScreenWithArgs: (toBuyerSelectionScreen: Boolean) -> Unit,
 ) {
     val context = LocalContext.current
 
@@ -260,10 +262,12 @@ fun DashboardScreenComposable(
             },
             navigateToOrderDetailsScreen = navigateToOrderDetailsScreen,
             navigateToInvoiceCreationScreen = navigateToInvoiceCreationScreen,
+            navigateToBuyerSelectionScreen = navigateToBuyerSelectionScreen,
             navigateToPreviousScreen = navigateToPreviousScreen,
             navigateToOrderScreen = navigateToOrdersScreen,
             navigateToInvoicesScreen = navigateToInvoicesScreen,
-            navigateToTransactionsScreen = navigateToTransactionsScreen
+            navigateToTransactionsScreen = navigateToTransactionsScreen,
+            navigateToBusinessSelectionScreenWithArgs = navigateToBusinessSelectionScreenWithArgs
         )
     }
 }
@@ -293,10 +297,12 @@ fun DashboardScreen(
     onLogout: () -> Unit,
     navigateToOrderDetailsScreen: (orderId: String, fromPaymentScreen: Boolean) -> Unit,
     navigateToInvoiceCreationScreen: (businessId: String) -> Unit,
+    navigateToBuyerSelectionScreen: (businessId: String) -> Unit,
     navigateToPreviousScreen: () -> Unit,
     navigateToOrderScreen: () -> Unit,
     navigateToInvoicesScreen: () -> Unit,
     navigateToTransactionsScreen: () -> Unit,
+    navigateToBusinessSelectionScreenWithArgs: (toBuyerSelectionScreen: Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -489,6 +495,7 @@ fun DashboardScreen(
                     .weight(1f)
             )
             NavBarItem.INVOICES -> InvoicesScreenComposable(
+                navigateToBusinessSelectionScreenWithArgs = navigateToBusinessSelectionScreenWithArgs,
                 navigateToPreviousScreen = navigateToPreviousScreen,
                 modifier = Modifier
                     .weight(1f)
@@ -496,6 +503,7 @@ fun DashboardScreen(
 
             NavBarItem.PAY_BUSINESS -> BusinessSelectionScreenComposable(
                 navigateToInvoiceCreationScreen = navigateToInvoiceCreationScreen,
+                navigateToBuyerSelectionScreen = navigateToBuyerSelectionScreen,
                 navigateToPreviousScreen = navigateToPreviousScreen,
                 showBackArrow = false,
                 modifier = Modifier
@@ -512,26 +520,17 @@ fun DashboardScreen(
                     Text(text = "Courier assignment")
                 }
             }
-            NavBarItem.ISSUE_INVOICE -> {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .weight(1f)
-                ) {
-                    Text(text = "Issue invoice")
-                }
-            }
-            NavBarItem.ADD_BUSINESS -> {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .weight(1f)
-                ) {
-                    Text(text = "Add business")
-                }
-            }
+            NavBarItem.ISSUE_INVOICE -> InvoicesScreenComposable(
+                navigateToBusinessSelectionScreenWithArgs = navigateToBusinessSelectionScreenWithArgs,
+                navigateToPreviousScreen = navigateToPreviousScreen,
+                modifier = Modifier
+                    .weight(1f)
+            )
+            NavBarItem.ADD_BUSINESS -> BusinessesScreenComposable(
+                navigateToBusinessDetailsScreen = navigateToBusinessDetailsScreen,
+                modifier = Modifier
+                    .weight(1f)
+            )
         }
         BottomNavBar(
             navItems = navItems,
@@ -722,7 +721,9 @@ fun DashboardScreenPreview() {
             navigateToPreviousScreen = {},
             navigateToOrderScreen = {},
             navigateToInvoicesScreen = {},
-            navigateToTransactionsScreen = {}
+            navigateToTransactionsScreen = {},
+            navigateToBuyerSelectionScreen = {},
+            navigateToBusinessSelectionScreenWithArgs = {}
         )
     }
 }

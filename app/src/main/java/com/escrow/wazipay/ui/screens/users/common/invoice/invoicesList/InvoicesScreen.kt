@@ -19,9 +19,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Button
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -31,11 +33,13 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.escrow.wazipay.AppViewModelFactory
+import com.escrow.wazipay.R
 import com.escrow.wazipay.data.network.models.invoice.InvoiceData
 import com.escrow.wazipay.data.network.models.invoice.invoices
 import com.escrow.wazipay.data.room.models.Role
@@ -54,6 +58,7 @@ object InvoicesScreenDestination: AppNavigation {
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun InvoicesScreenComposable(
+    navigateToBusinessSelectionScreenWithArgs: (toBuyerSelectionScreen: Boolean) -> Unit,
     navigateToPreviousScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -75,6 +80,9 @@ fun InvoicesScreenComposable(
                 invoicesViewModel.onChangeStatus(it)
 
             },
+            navigateToBusinessSelectionScreen = {
+                navigateToBusinessSelectionScreenWithArgs(true)
+            },
             navigateToPreviousScreen = navigateToPreviousScreen
         )
     }
@@ -89,60 +97,78 @@ fun InvoicesScreen(
     statuses: List<String>,
     selectedStatus: String,
     onChangeStatus: (status: String) -> Unit,
+    navigateToBusinessSelectionScreen: () -> Unit,
     navigateToPreviousScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
 
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(
-                horizontal = screenWidth(x = 16.0),
-                vertical = screenHeight(x = 16.0)
-            )
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            IconButton(onClick = navigateToPreviousScreen) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Previous screen"
-                )
+    Scaffold(
+        floatingActionButton = {
+            if(role == Role.MERCHANT) {
+                FloatingActionButton(onClick = navigateToBusinessSelectionScreen) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.issue_invoice),
+                        contentDescription = "Issue invoice"
+                    )
+                }
             }
-            Text(
-                text = "${if(role == Role.BUYER) "Payments (invoices)" else "Issued Invoices"} / $selectedStatus",
-                fontWeight = FontWeight.Bold,
-                fontSize = screenFontSize(x = 14.0).sp,
-                color = MaterialTheme.colorScheme.onBackground,
-            )
         }
-        Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(
             modifier = Modifier
-                .horizontalScroll(rememberScrollState())
+                .padding(it)
         ) {
-            statuses.forEach {
-                if(selectedStatus == it) {
-                    Button(onClick = { onChangeStatus(it) }) {
-                        Text(text = it)
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(
+                        horizontal = screenWidth(x = 16.0),
+                        vertical = screenHeight(x = 16.0)
+                    )
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(onClick = navigateToPreviousScreen) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Previous screen"
+                        )
                     }
-                } else {
-                    OutlinedButton(onClick = { onChangeStatus(it) }) {
-                        Text(text = it)
+                    Text(
+                        text = "${if(role == Role.BUYER) "Payments (invoices)" else "Issued Invoices"} / $selectedStatus",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = screenFontSize(x = 14.0).sp,
+                        color = MaterialTheme.colorScheme.onBackground,
+                    )
+                }
+                Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .horizontalScroll(rememberScrollState())
+                ) {
+                    statuses.forEach {
+                        if(selectedStatus == it) {
+                            Button(onClick = { onChangeStatus(it) }) {
+                                Text(text = it)
+                            }
+                        } else {
+                            OutlinedButton(onClick = { onChangeStatus(it) }) {
+                                Text(text = it)
+                            }
+                        }
+                        Spacer(modifier = Modifier.width(screenWidth(x = 8.0)))
                     }
                 }
-                Spacer(modifier = Modifier.width(screenWidth(x = 8.0)))
-            }
-        }
-        Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
-        LazyColumn {
-            items(invoices) {
-                InvoiceItemComposable(
-                    invoiceData = it
-                )
+                Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+                LazyColumn {
+                    items(invoices) { invoice ->
+                        InvoiceItemComposable(
+                            invoiceData = invoice
+                        )
+                    }
+                }
             }
         }
     }
@@ -166,6 +192,7 @@ fun InvoicesScreenPreview() {
                 selectedStatus = it
             },
             invoices = invoices,
+            navigateToBusinessSelectionScreen = {},
             navigateToPreviousScreen = {}
         )
     }

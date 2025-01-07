@@ -27,6 +27,7 @@ import com.escrow.wazipay.ui.screens.users.specific.buyer.dashboard.BuyerDashboa
 import com.escrow.wazipay.ui.screens.users.specific.merchant.courierAssignment.CourierAssignmentViewModel
 import com.escrow.wazipay.ui.screens.users.specific.merchant.courierAssignment.CourierSelectionViewModel
 import com.escrow.wazipay.ui.screens.users.specific.merchant.dashboard.MerchantDashboardViewModel
+import com.escrow.wazipay.ui.screens.users.specific.merchant.invoiceCreation.BuyerSelectionViewModel
 import com.escrow.wazipay.ui.start.SplashViewModel
 
 object AppViewModelFactory {
@@ -151,7 +152,8 @@ object AppViewModelFactory {
         initializer {
             BusinessSelectionViewModel(
                 apiRepository = wazipayApplication().container.apiRepository,
-                dbRepository = wazipayApplication().container.dbRepository
+                dbRepository = wazipayApplication().container.dbRepository,
+                savedStateHandle = this.createSavedStateHandle()
             )
         }
 
@@ -191,6 +193,14 @@ object AppViewModelFactory {
             ProfileViewModel(
                 apiRepository = wazipayApplication().container.apiRepository,
                 dbRepository = wazipayApplication().container.dbRepository
+            )
+        }
+
+        initializer {
+            BuyerSelectionViewModel(
+                apiRepository = wazipayApplication().container.apiRepository,
+                dbRepository = wazipayApplication().container.dbRepository,
+                savedStateHandle = this.createSavedStateHandle()
             )
         }
     }

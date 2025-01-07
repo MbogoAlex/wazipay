@@ -1,6 +1,7 @@
 package com.escrow.wazipay.ui.screens.users.specific.buyer.businessPayment
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -56,12 +57,15 @@ import com.escrow.wazipay.utils.screenWidth
 object BusinessSelectionScreenDestination: AppNavigation {
     override val title: String = "Business selection screen"
     override val route: String = "business-selection-screen"
+    val toBuyerSelectionScreen: String = "toBuyerSelectionScreen"
+    val routeWithArgs = "$route/{$toBuyerSelectionScreen}"
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun BusinessSelectionScreenComposable(
     navigateToInvoiceCreationScreen: (businessId: String) -> Unit,
+    navigateToBuyerSelectionScreen: (businessId: String) -> Unit,
     navigateToPreviousScreen: () -> Unit,
     showBackArrow: Boolean = true,
     modifier: Modifier = Modifier
@@ -75,6 +79,7 @@ fun BusinessSelectionScreenComposable(
             .background(MaterialTheme.colorScheme.background)
     ) {
         BusinessSelectionScreen(
+            toBuyerSelectionScreen = uiState.toBuyerSelectionScreen,
             searchQuery = uiState.searchQuery ?: "",
             onChangeSearchQuery = {
                 viewModel.changeSearchText(it)
@@ -84,6 +89,7 @@ fun BusinessSelectionScreenComposable(
             },
             businesses = uiState.businesses,
             navigateToInvoiceCreationScreen = navigateToInvoiceCreationScreen,
+            navigateToBuyerSelectionScreen = navigateToBuyerSelectionScreen,
             navigateToPreviousScreen = navigateToPreviousScreen,
             showBackArrow = showBackArrow
         )
@@ -92,11 +98,13 @@ fun BusinessSelectionScreenComposable(
 
 @Composable
 fun BusinessSelectionScreen(
+    toBuyerSelectionScreen: Boolean,
     searchQuery: String,
     onChangeSearchQuery: (text: String) -> Unit,
     onClearSearchQuery: () -> Unit,
     businesses: List<BusinessData>,
     navigateToInvoiceCreationScreen: (businessId: String) -> Unit,
+    navigateToBuyerSelectionScreen: (businessId: String) -> Unit,
     navigateToPreviousScreen: () -> Unit,
     showBackArrow: Boolean,
     modifier: Modifier = Modifier
@@ -125,12 +133,22 @@ fun BusinessSelectionScreen(
                     )
                 }
                 Spacer(modifier = Modifier.width(screenWidth(x = 8.0)))
-                Text(
-                    text = "Business payment",
-                    fontSize = screenFontSize(x = 16.0).sp,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
+                if(toBuyerSelectionScreen) {
+                    Text(
+                        text = "Invoice issuance",
+                        fontSize = screenFontSize(x = 16.0).sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                } else {
+                    Text(
+                        text = "Business payment",
+                        fontSize = screenFontSize(x = 16.0).sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                }
+
             }
             Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
         }
@@ -196,7 +214,14 @@ fun BusinessSelectionScreen(
                 SelectableBusinessCell(
                     userId = 1,
                     businessData = it,
-                    navigateToInvoiceCreationScreen = navigateToInvoiceCreationScreen
+                    navigateToNextScreen = {businessId ->
+                        if(toBuyerSelectionScreen) {
+                            Log.d("navigatingWithBusinessArgs", businessId)
+                            navigateToBuyerSelectionScreen(businessId)
+                        } else {
+                            navigateToInvoiceCreationScreen(businessId)
+                        }
+                    }
                 )
             }
         }
@@ -207,13 +232,13 @@ fun BusinessSelectionScreen(
 fun SelectableBusinessCell(
     userId: Int,
     businessData: BusinessData,
-    navigateToInvoiceCreationScreen: (businessId: String) -> Unit
+    navigateToNextScreen: (businessId: String) -> Unit
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .clickable {
-                navigateToInvoiceCreationScreen(businessData.id.toString())
+                navigateToNextScreen(businessData.id.toString())
             }
     ) {
         Column(
@@ -283,7 +308,7 @@ fun SelectableBusinessCell(
             }
         }
         IconButton(
-            onClick = { navigateToInvoiceCreationScreen(businessData.id.toString()) },
+            onClick = { navigateToNextScreen(businessData.id.toString()) },
         ) {
             Icon(
                 tint = MaterialTheme.colorScheme.onBackground,
@@ -301,11 +326,13 @@ fun BusinessSelectionScreenPreview(
 ) {
     WazipayTheme {
         BusinessSelectionScreen(
+            toBuyerSelectionScreen = false,
             searchQuery = "",
             businesses = businesses,
             onChangeSearchQuery = {},
             onClearSearchQuery = {},
             navigateToInvoiceCreationScreen = {},
+            navigateToBuyerSelectionScreen = {},
             navigateToPreviousScreen = {},
             showBackArrow = true
         )

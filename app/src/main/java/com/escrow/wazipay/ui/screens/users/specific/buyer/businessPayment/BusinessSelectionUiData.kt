@@ -11,5 +11,6 @@ data class BusinessSelectionUiData(
     val searchQuery: String? = null,
     val businesses: List<BusinessData> = emptyList(),
     val unauthorized: Boolean = false,
+    val toBuyerSelectionScreen: Boolean = false,
     val loadBusinessStatus: LoadBusinessStatus = LoadBusinessStatus.INITIAL
 )

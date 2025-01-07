@@ -1,6 +1,7 @@
 package com.escrow.wazipay.ui.screens.users.specific.buyer.businessPayment
 
 import android.util.Log
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.escrow.wazipay.data.network.repository.ApiRepository
@@ -8,6 +9,7 @@ import com.escrow.wazipay.data.room.models.Role
 import com.escrow.wazipay.data.room.models.UserDetails
 import com.escrow.wazipay.data.room.repository.DBRepository
 import com.escrow.wazipay.ui.screens.users.common.business.LoadBusinessStatus
+import com.escrow.wazipay.ui.screens.users.common.order.orderDetails.OrderDetailsScreenDestination
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,7 +21,8 @@ import kotlinx.coroutines.withContext
 
 class BusinessSelectionViewModel(
     private val apiRepository: ApiRepository,
-    private val dbRepository: DBRepository
+    private val dbRepository: DBRepository,
+    private val savedStateHandle: SavedStateHandle
 ): ViewModel() {
     private val _uiState = MutableStateFlow(BusinessSelectionUiData())
     val uiState: StateFlow<BusinessSelectionUiData> = _uiState.asStateFlow()
@@ -39,7 +42,7 @@ class BusinessSelectionViewModel(
                 val response = apiRepository.getBusinesses(
                     token = uiState.value.userDetails.token!!,
                     query = uiState.value.searchQuery,
-                    ownerId = if(uiState.value.role == Role.MERCHANT) uiState.value.userDetails.userId else null,
+                    ownerId = null,
                     archived = null,
                     startDate = null,
                     endDate = null
@@ -120,6 +123,11 @@ class BusinessSelectionViewModel(
     init {
         getUserDetails()
         getUserRole()
+        _uiState.update {
+            it.copy(
+                toBuyerSelectionScreen = savedStateHandle.get<Boolean>(BusinessSelectionScreenDestination.toBuyerSelectionScreen) ?: false
+            )
+        }
 //        getBusinessSelectionScreenUiData()
     }
 }
