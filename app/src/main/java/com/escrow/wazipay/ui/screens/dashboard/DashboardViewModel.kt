@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.escrow.wazipay.data.room.models.Role
 import com.escrow.wazipay.data.room.models.UserDetails
 import com.escrow.wazipay.data.room.repository.DBRepository
+import com.escrow.wazipay.ui.screens.users.common.NavBarItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -33,7 +34,7 @@ class DashboardViewModel(
         }
     }
 
-    fun changeTab(tab: com.escrow.wazipay.ui.screens.users.common.NavBarItem) {
+    fun changeTab(tab: NavBarItem) {
         _uiState.update {
             it.copy(
                 child = tab

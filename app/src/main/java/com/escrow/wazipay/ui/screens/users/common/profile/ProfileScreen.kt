@@ -1,5 +1,7 @@
 package com.escrow.wazipay.ui.screens.users.common.profile
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -25,6 +27,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,6 +37,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.escrow.wazipay.AppViewModelFactory
 import com.escrow.wazipay.R
 import com.escrow.wazipay.data.room.models.Role
 import com.escrow.wazipay.ui.theme.WazipayTheme
@@ -40,17 +46,22 @@ import com.escrow.wazipay.utils.screenFontSize
 import com.escrow.wazipay.utils.screenHeight
 import com.escrow.wazipay.utils.screenWidth
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ProfileScreenComposable(
     modifier: Modifier = Modifier
 ) {
+
+    val viewModel: ProfileViewModel = viewModel(factory = AppViewModelFactory.Factory)
+    val uiState by viewModel.uiState.collectAsState()
+
     Box(
         modifier = modifier
             .safeDrawingPadding()
     ) {
         ProfileScreen(
-            verificationStatus = VerificationStatus.VERIFIED,
-            role = Role.BUYER
+            verificationStatus = VerificationStatus.valueOf(uiState.userDetailsData.verificationStatus),
+            role = uiState.role
         )
     }
 }
