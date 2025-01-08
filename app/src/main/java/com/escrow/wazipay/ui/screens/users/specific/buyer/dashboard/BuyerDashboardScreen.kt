@@ -366,22 +366,32 @@ fun BuyerDashboardScreen(
             }
         }
         Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
-        Row(
-            modifier = Modifier
-                .horizontalScroll(rememberScrollState())
-        ) {
-            orders.take(5).forEach {
-                OrderItemComposable(
-                    homeScreen = true,
-                    orderData = it,
-                    navigateToOrderDetailsScreen = navigateToOrderDetailsScreen,
-                    modifier = Modifier
-                        .fillMaxWidth(0.7f)
-                        .padding(
-                            screenWidth(x = 8.0)
-                        )
-                )
+        if(orders.isNotEmpty()) {
+            Row(
+                modifier = Modifier
+                    .horizontalScroll(rememberScrollState())
+            ) {
+                orders.take(5).forEach {
+                    OrderItemComposable(
+                        homeScreen = true,
+                        orderData = it,
+                        navigateToOrderDetailsScreen = navigateToOrderDetailsScreen,
+                        modifier = Modifier
+                            .fillMaxWidth(0.7f)
+                            .padding(
+                                screenWidth(x = 8.0)
+                            )
+                    )
+                }
             }
+        } else {
+            Text(
+                text = "No orders found",
+                fontSize = screenFontSize(x = 14.0).sp,
+                color = MaterialTheme.colorScheme.onBackground,
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+            )
         }
         Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
         Row(
@@ -399,14 +409,24 @@ fun BuyerDashboardScreen(
             }
         }
         Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
-        invoices.take(5).forEach {
-            InvoiceItemComposable(
-                invoiceData = it,
-                navigateToInvoiceDetailsScreen = navigateToInvoiceDetailsScreen,
+        if(invoices.isNotEmpty()) {
+            invoices.take(5).forEach {
+                InvoiceItemComposable(
+                    invoiceData = it,
+                    navigateToInvoiceDetailsScreen = navigateToInvoiceDetailsScreen,
+                    modifier = Modifier
+                        .padding(
+                            top = screenHeight(x = 8.0)
+                        )
+                )
+            }
+        } else {
+            Text(
+                text = "No payments (invoices) found",
+                fontSize = screenFontSize(x = 14.0).sp,
+                color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier
-                    .padding(
-                        top = screenHeight(x = 8.0)
-                    )
+                    .align(Alignment.CenterHorizontally)
             )
         }
         Spacer(modifier = Modifier.height(screenHeight(x = 24.0)))
@@ -425,13 +445,23 @@ fun BuyerDashboardScreen(
             }
         }
         Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
-        transactions.take(5).forEach {
-            TransactionCellComposable(
-                transactionData = it,
+        if(transactions.isNotEmpty()) {
+            transactions.take(5).forEach {
+                TransactionCellComposable(
+                    transactionData = it,
+                    modifier = Modifier
+                        .padding(
+                            top = screenHeight(x = 8.0)
+                        )
+                )
+            }
+        } else {
+            Text(
+                text = "No payments (invoices) found",
+                fontSize = screenFontSize(x = 14.0).sp,
+                color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier
-                    .padding(
-                        top = screenHeight(x = 8.0)
-                    )
+                    .align(Alignment.CenterHorizontally)
             )
         }
     }

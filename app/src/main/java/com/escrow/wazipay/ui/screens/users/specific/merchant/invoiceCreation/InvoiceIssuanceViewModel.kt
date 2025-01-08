@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.escrow.wazipay.data.network.models.invoice.InvoiceCreationRequestBody
 import com.escrow.wazipay.data.network.repository.ApiRepository
+import com.escrow.wazipay.data.room.models.UserDetails
 import com.escrow.wazipay.data.room.repository.DBRepository
 import com.escrow.wazipay.ui.screens.users.specific.buyer.businessPayment.InvoiceCreationStatus
 import kotlinx.coroutines.Dispatchers
@@ -172,7 +173,7 @@ class InvoiceIssuanceViewModel(
                 dbRepository.getUsers().collect { users ->
                     _uiState.update {
                         it.copy(
-                            userDetails = users[0]
+                            userDetails = if(users.isNotEmpty()) users[0] else UserDetails()
                         )
                     }
                 }

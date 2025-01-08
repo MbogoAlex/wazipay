@@ -224,5 +224,6 @@ class InvoiceDetailsViewModel(
         getUserRole()
         getUserDetails()
         getInvoiceScreenData()
+        enableButton()
     }
 }
