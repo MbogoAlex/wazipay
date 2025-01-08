@@ -170,10 +170,17 @@ fun BusinessSelectionScreen(
 //                }
 //            },
             label = {
-                Text(
-                    text = "Search business / owner",
-                    fontSize = screenFontSize(x = 14.0).sp
-                )
+                if(toBuyerSelectionScreen) {
+                    Text(
+                        text = "Search your business",
+                        fontSize = screenFontSize(x = 14.0).sp
+                    )
+                } else {
+                    Text(
+                        text = "Search business / owner",
+                        fontSize = screenFontSize(x = 14.0).sp
+                    )
+                }
             },
             colors = TextFieldDefaults.colors(
                 focusedIndicatorColor = Color.Transparent,

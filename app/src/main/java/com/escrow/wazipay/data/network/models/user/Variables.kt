@@ -7,6 +7,14 @@ val userContactData = UserContactData(
     email = "mbogo@gmail.com"
 )
 
+val emptyUserContactData = UserContactData(
+    id = 1,
+    username = "",
+    phoneNumber = "",
+    email = ""
+)
+
+
 val userDetailsData = UserDetailsData(
     userId = 1,
     username = "Alex Mbogo",
