@@ -88,6 +88,7 @@ fun TransactionsScreenComposable(
     Box(
         modifier = modifier
             .safeDrawingPadding()
+            .background(MaterialTheme.colorScheme.background)
     ) {
         TransactionsScreen(
             filtering = filtering,
@@ -127,12 +128,7 @@ fun TransactionsScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .animateContentSize(
-                animationSpec = spring(
-                    dampingRatio = Spring.DampingRatioNoBouncy,
-                    stiffness = Spring.StiffnessMedium
-                )
-            )
+
     ) {
         if(filtering) {
             ElevatedCard(
@@ -145,6 +141,12 @@ fun TransactionsScreen(
                         .padding(
                             horizontal = screenWidth(x = 16.0),
                             vertical = screenHeight(x = 16.0)
+                        )
+                        .animateContentSize(
+                            animationSpec = spring(
+                                dampingRatio = Spring.DampingRatioNoBouncy,
+                                stiffness = Spring.StiffnessMedium
+                            )
                         )
                         .fillMaxWidth()
                 ) {
