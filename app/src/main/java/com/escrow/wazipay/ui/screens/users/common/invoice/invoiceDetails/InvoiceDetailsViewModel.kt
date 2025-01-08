@@ -97,7 +97,10 @@ class InvoiceDetailsViewModel(
                             invoiceData = response.body()!!.data,
                         )
                     }
-                    getOrder()
+                    Log.d("invoiceDetails", uiState.value.invoiceData.toString())
+                    if(uiState.value.invoiceData.orderId != null) {
+                        getOrder()
+                    }
                 }
 
             } catch (e: Exception) {

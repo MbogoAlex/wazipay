@@ -51,7 +51,7 @@ class BusinessSelectionViewModel(
                 if(response.isSuccessful) {
                     _uiState.update {
                         it.copy(
-                            businesses = response.body()?.data!!.filter { business ->
+                            businesses = if(uiState.value.toBuyerSelectionScreen) response.body()?.data!! else response.body()?.data!!.filter { business ->
                                 business.owner?.id != uiState.value.userDetails.userId
                             },
                             loadBusinessStatus = LoadBusinessStatus.SUCCESS
@@ -128,6 +128,8 @@ class BusinessSelectionViewModel(
                 toBuyerSelectionScreen = savedStateHandle.get<Boolean>(BusinessSelectionScreenDestination.toBuyerSelectionScreen) ?: false
             )
         }
-//        getBusinessSelectionScreenUiData()
+        if(uiState.value.toBuyerSelectionScreen) {
+            getBusinessSelectionScreenUiData()
+        }
     }
 }

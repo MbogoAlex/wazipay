@@ -59,7 +59,7 @@ object BuyerSelectionScreenDestination: AppNavigation {
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun BuyerSelectionScreenComposable(
-    navigateToInvoiceCreationScreen: (buyerId: String, businessId: String) -> Unit,
+    navigateToInvoiceIssuanceScreen: (businessId: String, buyerId: String) -> Unit,
     navigateToPreviousScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -81,8 +81,8 @@ fun BuyerSelectionScreenComposable(
             },
             users = uiState.users,
             navigateToPreviousScreen = navigateToPreviousScreen,
-            navigateToInvoiceCreationScreen = { buyerId ->
-                navigateToInvoiceCreationScreen(buyerId, uiState.businessId!!)
+            navigateToInvoiceIssuanceScreen = { buyerId ->
+                navigateToInvoiceIssuanceScreen(uiState.businessId!!, buyerId)
             }
         )
     }
@@ -95,7 +95,7 @@ fun BuyerSelectionScreen(
     onClearSearchQuery: () -> Unit,
     users: List<UserDetailsData>,
     navigateToPreviousScreen: () -> Unit,
-    navigateToInvoiceCreationScreen: (buyerId: String) -> Unit,
+    navigateToInvoiceIssuanceScreen: (buyerId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -184,7 +184,7 @@ fun BuyerSelectionScreen(
                     SelectableBuyerCell(
                         userDetailsData = it,
                         showArrow = true,
-                        navigateToInvoiceCreationScreen = navigateToInvoiceCreationScreen
+                        navigateToInvoiceCreationScreen = navigateToInvoiceIssuanceScreen
                     )
                     Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
                 }
@@ -203,7 +203,7 @@ fun CourierSelectionScreenPreview() {
             onClearSearchQuery = { /*TODO*/ },
             users = users,
             navigateToPreviousScreen = {},
-            navigateToInvoiceCreationScreen = {}
+            navigateToInvoiceIssuanceScreen = {}
         )
     }
 }

@@ -26,6 +26,7 @@ class OrdersViewModel(
     private val _uiState = MutableStateFlow(OrdersUiData())
     val uiState: StateFlow<OrdersUiData> = _uiState.asStateFlow()
 
+
     fun getOrders() {
 
         _uiState.update {
@@ -159,9 +160,11 @@ class OrdersViewModel(
     }
 
     init {
+        val stage: String? = savedStateHandle[OrdersScreenDestination.stage]
         _uiState.update {
             it.copy(
-                businessId = savedStateHandle[OrdersScreenDestination.businessId]
+                businessId = savedStateHandle[OrdersScreenDestination.businessId],
+                orderStage = if(stage != null) OrderStage.valueOf(stage.uppercase()) else OrderStage.All,
             )
         }
         getUserDetails()

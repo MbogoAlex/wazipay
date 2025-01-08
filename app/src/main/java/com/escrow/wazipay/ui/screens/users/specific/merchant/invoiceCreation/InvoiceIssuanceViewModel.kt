@@ -117,9 +117,12 @@ class InvoiceIssuanceViewModel(
                            buyer = response.body()?.data!!
                        )
                    }
+                   Log.d("invoiceIssuance", "Buyer: ${uiState.value.buyer}")
+               } else {
+                   Log.e("invoiceIssuanceBusinessResponse_ERR", response.toString())
                }
             } catch (e: Exception) {
-
+                Log.e("invoiceIssuanceBuyerException_ERR", e.toString())
             }
         }
     }
@@ -138,9 +141,13 @@ class InvoiceIssuanceViewModel(
                             businessData = response.body()?.data!!
                         )
                     }
+                    Log.d("invoiceIssuance", "Business: ${uiState.value.buyer}")
+                } else {
+                    Log.e("invoiceIssuanceBusinessResponse_ERR", response.toString())
                 }
+                Log.d("invoiceIssuance", "Business: ${uiState.value.buyer}")
             } catch (e: Exception) {
-
+                Log.e("invoiceIssuanceBusinessException_ERR", e.toString())
             }
         }
     }

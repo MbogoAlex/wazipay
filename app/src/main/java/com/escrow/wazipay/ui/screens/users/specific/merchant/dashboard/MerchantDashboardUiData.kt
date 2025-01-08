@@ -39,6 +39,7 @@ data class MerchantDashboardUiData(
         owner = UserContactData(id = 1, username = "", phoneNumber = "", email = "")
     ),
     val orders: List<OrderData> = emptyList(),
+    val pendingOrders: List<OrderData> = emptyList(),
     val invoices: List<InvoiceData> = emptyList(),
     val businesses: List<BusinessData> = emptyList(),
     val transactions: List<TransactionData> = emptyList(),

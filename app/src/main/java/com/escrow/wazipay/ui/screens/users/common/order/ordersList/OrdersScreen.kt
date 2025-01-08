@@ -54,7 +54,9 @@ object OrdersScreenDestination: AppNavigation {
     override val title: String = "Orders screen"
     override val route: String = "orders-screen"
     val businessId: String = "businessId"
+    val stage: String = "stage"
     val routeWithBusinessId: String = "$route/{$businessId}"
+    val routeWithStage: String = "$route/status/{$stage}"
 }
 
 @RequiresApi(Build.VERSION_CODES.O)

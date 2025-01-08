@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.IconButton
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ElevatedCard
@@ -72,7 +71,9 @@ fun BuyerDashboardScreenComposable(
     navigateToOrderDetailsScreen: (orderId: String, fromPaymentScreen: Boolean) -> Unit,
     navigateToOrderScreen: () -> Unit,
     navigateToInvoicesScreen: () -> Unit,
+    navigateToInvoicesScreenWithStatus: (status: String) -> Unit,
     navigateToTransactionsScreen: () -> Unit,
+    navigateToInvoiceDetailsScreen: (invoiceId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -96,14 +97,17 @@ fun BuyerDashboardScreenComposable(
             userId = uiState.userDetails.userId,
             orders = uiState.orders,
             invoices = uiState.invoices,
+            pendingInvoices = uiState.pendingInvoices,
             transactions = uiState.transactions,
             navigateToDepositScreen = navigateToDepositScreen,
             navigateToWithdrawalScreen = navigateToWithdrawalScreen,
             navigateToBusinessSelectionScreen = navigateToBusinessSelectionScreen,
             navigateToOrderDetailsScreen = navigateToOrderDetailsScreen,
-            navigateToOrderScreen = navigateToOrderScreen,
+            navigateToOrdersScreen = navigateToOrderScreen,
             navigateToInvoicesScreen = navigateToInvoicesScreen,
-            navigateToTransactionsScreen = navigateToTransactionsScreen
+            navigateToInvoicesScreenWithStatus = navigateToInvoicesScreenWithStatus,
+            navigateToTransactionsScreen = navigateToTransactionsScreen,
+            navigateToInvoiceDetailsScreen = navigateToInvoiceDetailsScreen
         )
     }
 }
@@ -117,14 +121,17 @@ fun BuyerDashboardScreen(
     userId: Int,
     orders: List<OrderData>,
     invoices: List<InvoiceData>,
+    pendingInvoices: List<InvoiceData>,
     transactions: List<TransactionData>,
     navigateToDepositScreen: () -> Unit,
     navigateToWithdrawalScreen: () -> Unit,
     navigateToBusinessSelectionScreen: () -> Unit,
     navigateToOrderDetailsScreen: (orderId: String, fromPaymentScreen: Boolean) -> Unit,
-    navigateToOrderScreen: () -> Unit,
+    navigateToOrdersScreen: () -> Unit,
     navigateToInvoicesScreen: () -> Unit,
+    navigateToInvoicesScreenWithStatus: (status: String) -> Unit,
     navigateToTransactionsScreen: () -> Unit,
+    navigateToInvoiceDetailsScreen: (invoiceId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -315,6 +322,35 @@ fun BuyerDashboardScreen(
             }
         }
         Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+        if(pendingInvoices.isNotEmpty()) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Pending invoices",
+                    color = MaterialTheme.colorScheme.onBackground,
+                    fontSize = screenFontSize(x = 16.0).sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                TextButton(onClick = {
+                    navigateToInvoicesScreenWithStatus("Pending")
+                }) {
+                    Text(text = "See all")
+                }
+            }
+            Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
+            pendingInvoices.take(5).forEach {
+                InvoiceItemComposable(
+                    invoiceData = it,
+                    navigateToInvoiceDetailsScreen = navigateToInvoiceDetailsScreen,
+                    modifier = Modifier
+                        .padding(
+                            top = screenHeight(x = 8.0)
+                        )
+                )
+            }
+        }
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -325,7 +361,7 @@ fun BuyerDashboardScreen(
                 fontWeight = FontWeight.Bold
             )
             Spacer(modifier = Modifier.weight(1f))
-            TextButton(onClick = navigateToOrderScreen) {
+            TextButton(onClick = navigateToOrdersScreen) {
                 Text(text = "See all")
             }
         }
@@ -366,6 +402,7 @@ fun BuyerDashboardScreen(
         invoices.take(5).forEach {
             InvoiceItemComposable(
                 invoiceData = it,
+                navigateToInvoiceDetailsScreen = navigateToInvoiceDetailsScreen,
                 modifier = Modifier
                     .padding(
                         top = screenHeight(x = 8.0)
@@ -412,14 +449,17 @@ fun BuyerDashboardScreenPreview() {
             userId = 1,
             orders = orders,
             invoices = invoices,
+            pendingInvoices = invoices,
             transactions = transactions,
             navigateToDepositScreen = {},
             navigateToWithdrawalScreen = {},
             navigateToBusinessSelectionScreen = {},
             navigateToOrderDetailsScreen = {orderId, fromPaymentScreen ->  },
-            navigateToOrderScreen = {},
+            navigateToOrdersScreen = {},
             navigateToInvoicesScreen = {},
-            navigateToTransactionsScreen = {}
+            navigateToInvoicesScreenWithStatus = {},
+            navigateToTransactionsScreen = {},
+            navigateToInvoiceDetailsScreen = {}
         )
     }
 }

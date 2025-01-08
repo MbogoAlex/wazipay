@@ -133,7 +133,8 @@ object AppViewModelFactory {
         initializer {
             InvoicesViewModel(
                 apiRepository = wazipayApplication().container.apiRepository,
-                dbRepository = wazipayApplication().container.dbRepository
+                dbRepository = wazipayApplication().container.dbRepository,
+                savedStateHandle = this.createSavedStateHandle()
             )
         }
 

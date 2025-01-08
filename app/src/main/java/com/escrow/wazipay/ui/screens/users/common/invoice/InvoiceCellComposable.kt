@@ -35,6 +35,7 @@ import java.time.LocalDateTime
 @Composable
 fun InvoiceItemComposable(
     invoiceData: InvoiceData,
+    navigateToInvoiceDetailsScreen: (invoiceId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -96,7 +97,9 @@ fun InvoiceItemComposable(
             }
             Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
             OutlinedButton(
-                onClick = { /*TODO*/ },
+                onClick = {
+                    navigateToInvoiceDetailsScreen(invoiceData.id.toString())
+                },
                 modifier = Modifier
                     .fillMaxWidth()
             ) {

@@ -26,6 +26,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -45,20 +46,25 @@ import com.escrow.wazipay.data.network.models.invoice.invoices
 import com.escrow.wazipay.data.room.models.Role
 import com.escrow.wazipay.ui.nav.AppNavigation
 import com.escrow.wazipay.ui.screens.users.common.invoice.InvoiceItemComposable
+import com.escrow.wazipay.ui.screens.users.common.invoice.InvoiceStatus
 import com.escrow.wazipay.ui.theme.WazipayTheme
 import com.escrow.wazipay.utils.screenFontSize
 import com.escrow.wazipay.utils.screenHeight
 import com.escrow.wazipay.utils.screenWidth
+import kotlinx.coroutines.delay
 
 object InvoicesScreenDestination: AppNavigation {
     override val title: String = "Invoices screen"
     override val route: String = "invoices-screen"
+    val status: String = "status"
+    val routeWithStatus: String = "$route/{$status}"
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun InvoicesScreenComposable(
     navigateToBusinessSelectionScreenWithArgs: (toBuyerSelectionScreen: Boolean) -> Unit,
+    navigateToInvoiceDetailsScreen: (invoiceId: String) -> Unit,
     navigateToPreviousScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -83,6 +89,7 @@ fun InvoicesScreenComposable(
             navigateToBusinessSelectionScreen = {
                 navigateToBusinessSelectionScreenWithArgs(true)
             },
+            navigateToInvoiceDetailsScreen = navigateToInvoiceDetailsScreen,
             navigateToPreviousScreen = navigateToPreviousScreen
         )
     }
@@ -99,6 +106,7 @@ fun InvoicesScreen(
     onChangeStatus: (status: String) -> Unit,
     navigateToBusinessSelectionScreen: () -> Unit,
     navigateToPreviousScreen: () -> Unit,
+    navigateToInvoiceDetailsScreen: (invoiceId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -165,6 +173,7 @@ fun InvoicesScreen(
                 LazyColumn {
                     items(invoices) { invoice ->
                         InvoiceItemComposable(
+                            navigateToInvoiceDetailsScreen = navigateToInvoiceDetailsScreen,
                             invoiceData = invoice
                         )
                     }
@@ -193,6 +202,7 @@ fun InvoicesScreenPreview() {
             },
             invoices = invoices,
             navigateToBusinessSelectionScreen = {},
+            navigateToInvoiceDetailsScreen = {},
             navigateToPreviousScreen = {}
         )
     }

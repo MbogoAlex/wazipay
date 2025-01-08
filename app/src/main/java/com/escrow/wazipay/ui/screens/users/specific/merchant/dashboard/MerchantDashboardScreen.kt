@@ -5,6 +5,7 @@ import androidx.annotation.RequiresApi
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -19,6 +20,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -39,6 +41,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -50,6 +53,7 @@ import com.escrow.wazipay.data.network.models.business.BusinessData
 import com.escrow.wazipay.data.network.models.business.businesses
 import com.escrow.wazipay.data.network.models.invoice.InvoiceData
 import com.escrow.wazipay.data.network.models.order.OrderData
+import com.escrow.wazipay.data.network.models.order.orders
 import com.escrow.wazipay.data.network.models.transaction.TransactionData
 import com.escrow.wazipay.ui.screens.users.common.business.BusinessCellComposable
 import com.escrow.wazipay.ui.screens.users.common.enums.LoadUserStatus
@@ -70,6 +74,12 @@ fun MerchantDashboardScreenComposable(
     navigateToLoginScreenWithArgs: (phoneNumber: String, pin: String) -> Unit,
     navigateToOrderDetailsScreen: (orderId: String, fromPaymentScreen: Boolean) -> Unit,
     navigateToBusinessDetailsScreen: (userId: String) -> Unit,
+    navigateToInvoiceDetailsScreen: (invoiceId: String) -> Unit,
+    navigateToOrdersScreen: () -> Unit,
+    navigateToOrdersScreenWithStatus: (status: String) -> Unit,
+    navigateToInvoicesScreen: () -> Unit,
+    navigateToBusinessSelectionScreen: () -> Unit,
+    navigateToBusinessSelectionScreenWithArgs: (toBuyerSelectionScreen: Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -91,13 +101,20 @@ fun MerchantDashboardScreenComposable(
             walletBalance = formatMoneyValue(merchantDashboardUiState.userWalletData.balance),
             userVerified = merchantDashboardUiState.userDetailsData.verified,
             orders = merchantDashboardUiState.orders,
+            pendingOrders = merchantDashboardUiState.pendingOrders,
             invoices = merchantDashboardUiState.invoices,
             businesses = merchantDashboardUiState.businesses,
             transactions = merchantDashboardUiState.transactions,
             navigateToDepositScreen = navigateToDepositScreen,
             navigateToWithdrawalScreen = navigateToWithdrawalScreen,
             navigateToOrderDetailsScreen = navigateToOrderDetailsScreen,
-            navigateToBusinessDetailsScreen = navigateToBusinessDetailsScreen
+            navigateToBusinessDetailsScreen = navigateToBusinessDetailsScreen,
+            navigateToInvoiceDetailsScreen = navigateToInvoiceDetailsScreen,
+            navigateToOrdersScreen = navigateToOrdersScreen,
+            navigateToOrdersScreenWithStatus = navigateToOrdersScreenWithStatus,
+            navigateToInvoicesScreen = navigateToInvoicesScreen,
+            navigateToBusinessSelectionScreen = navigateToBusinessSelectionScreen,
+            navigateToBusinessSelectionScreenWithArgs = navigateToBusinessSelectionScreenWithArgs
         )
     }
 }
@@ -110,6 +127,7 @@ fun MerchantDashboardScreen(
     walletBalance: String,
     userVerified: Boolean,
     orders: List<OrderData>,
+    pendingOrders: List<OrderData>,
     invoices: List<InvoiceData>,
     businesses: List<BusinessData>,
     transactions: List<TransactionData>,
@@ -117,6 +135,12 @@ fun MerchantDashboardScreen(
     navigateToWithdrawalScreen: () -> Unit,
     navigateToOrderDetailsScreen: (orderId: String, fromPaymentScreen: Boolean) -> Unit,
     navigateToBusinessDetailsScreen: (userId: String) -> Unit,
+    navigateToInvoiceDetailsScreen: (invoiceId: String) -> Unit,
+    navigateToOrdersScreen: () -> Unit,
+    navigateToOrdersScreenWithStatus: (status: String) -> Unit,
+    navigateToInvoicesScreen: () -> Unit,
+    navigateToBusinessSelectionScreen: () -> Unit,
+    navigateToBusinessSelectionScreenWithArgs: (toBuyerSelectionScreen: Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -284,15 +308,157 @@ fun MerchantDashboardScreen(
 
             }
         }
-        if(orders.isNotEmpty()) {
-            Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+        Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+        Row(
+            modifier = Modifier
+                .horizontalScroll(rememberScrollState())
+        ) {
+            Box(
+                modifier = Modifier
+                    .padding(screenWidth(x = 8.0))
+                    .border(
+                        width = screenWidth(x = 1.0),
+                        color = Color.LightGray,
+                        shape = RoundedCornerShape(screenWidth(x = 10.0))
+                    )
+                    .fillMaxWidth(0.4f)
+                    .clickable { }
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .padding(screenWidth(x = 16.0))
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.add),
+                        contentDescription = "Add business"
+                    )
+                    Text(text = "Add business")
+                }
+            }
+            Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
+            Box(
+                modifier = Modifier
+                    .padding(screenWidth(x = 8.0))
+                    .border(
+                        width = screenWidth(x = 1.0),
+                        color = Color.LightGray,
+                        shape = RoundedCornerShape(screenWidth(x = 10.0))
+                    )
+                    .fillMaxWidth(0.4f)
+                    .clickable {
+                        navigateToBusinessSelectionScreenWithArgs(true)
+                    }
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .padding(screenWidth(x = 16.0))
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.issue_invoice),
+                        contentDescription = "Issue invoice"
+                    )
+                    Text(text = "Issue invoice")
+                }
+            }
+        }
+        Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             Text(
-                text = "Received Orders",
+                text = "Orders pending pickup",
                 color = MaterialTheme.colorScheme.onBackground,
                 fontSize = screenFontSize(x = 16.0).sp,
                 fontWeight = FontWeight.Bold
             )
+            Spacer(modifier = Modifier.weight(1f))
+            TextButton(
+                enabled = pendingOrders.isNotEmpty(),
+                onClick = { navigateToOrdersScreenWithStatus("pending") }
+            ) {
+                Text(
+                    text = "See all",
+                    fontSize = screenFontSize(x = 14.0).sp
+                )
+            }
+        }
+        if(pendingOrders.isNotEmpty()) {
             Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+            Row(
+                modifier = Modifier
+                    .horizontalScroll(rememberScrollState())
+            ) {
+                pendingOrders.take(5).forEach {
+                    OrderItemComposable(
+                        homeScreen = true,
+                        orderData = it,
+                        navigateToOrderDetailsScreen = navigateToOrderDetailsScreen,
+                        modifier = Modifier
+                            .fillMaxWidth(0.7f)
+                            .padding(
+                                screenWidth(x = 8.0)
+                            )
+                    )
+                }
+            }
+        } else {
+            Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+            Text(
+                text = "No new order",
+                fontSize = screenFontSize(x = 14.0).sp,
+                color = MaterialTheme.colorScheme.onBackground,
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+            )
+        }
+        Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+        Button(
+            enabled = pendingOrders.isNotEmpty(),
+            onClick = {
+                navigateToOrdersScreenWithStatus("pending")
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Courier assignment",
+                    fontSize = screenFontSize(x = 14.0).sp
+                )
+                Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
+                Icon(
+                    painter = painterResource(id = R.drawable.motorbike),
+                    contentDescription = "Courier assignment"
+                )
+            }
+        }
+        Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Recent orders",
+                color = MaterialTheme.colorScheme.onBackground,
+                fontSize = screenFontSize(x = 16.0).sp,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            TextButton(
+                enabled = orders.isNotEmpty(),
+                onClick = navigateToOrdersScreen
+            ) {
+                Text(
+                    text = "See all",
+                    fontSize = screenFontSize(x = 14.0).sp
+                )
+            }
+        }
+        Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+        if(orders.isNotEmpty()) {
             Row(
                 modifier = Modifier
                     .horizontalScroll(rememberScrollState())
@@ -310,38 +476,6 @@ fun MerchantDashboardScreen(
                     )
                 }
             }
-        }
-        Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
-        Button(
-            onClick = { /*TODO*/ },
-            modifier = Modifier
-                .fillMaxWidth()
-        ) {
-            Text(
-                text = "Courier assignment",
-                fontSize = screenFontSize(x = 14.0).sp
-            )
-        }
-        Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
-        Text(
-            text = "Recent orders",
-            color = MaterialTheme.colorScheme.onBackground,
-            fontSize = screenFontSize(x = 16.0).sp,
-            fontWeight = FontWeight.Bold
-        )
-        Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
-        if(orders.isNotEmpty()) {
-            orders.take(5).forEach {
-                OrderItemComposable(
-                    homeScreen = true,
-                    orderData = it,
-                    navigateToOrderDetailsScreen = navigateToOrderDetailsScreen,
-                    modifier = Modifier
-                        .padding(
-                            top = screenHeight(x = 8.0)
-                        )
-                )
-            }
         } else {
             Text(
                 text = "No orders found",
@@ -353,17 +487,33 @@ fun MerchantDashboardScreen(
         }
 
         Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
-        Text(
-            text = "Issued invoices",
-            color = MaterialTheme.colorScheme.onBackground,
-            fontSize = screenFontSize(x = 16.0).sp,
-            fontWeight = FontWeight.Bold
-        )
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Issued invoices",
+                color = MaterialTheme.colorScheme.onBackground,
+                fontSize = screenFontSize(x = 16.0).sp,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            TextButton(
+                enabled = invoices.isNotEmpty(),
+                onClick = navigateToInvoicesScreen
+            ) {
+                Text(
+                    text = "See all",
+                    fontSize = screenFontSize(x = 14.0).sp
+                )
+            }
+        }
         Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
         if(invoices.isNotEmpty()) {
             invoices.take(5).forEach {
                 InvoiceItemComposable(
                     invoiceData = it,
+                    navigateToInvoiceDetailsScreen = navigateToInvoiceDetailsScreen,
                     modifier = Modifier
                         .padding(
                             top = screenHeight(x = 8.0)
@@ -371,15 +521,26 @@ fun MerchantDashboardScreen(
                 )
             }
             Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
-            OutlinedButton(
-                onClick = { /*TODO*/ },
+            Button(
+                onClick = {
+                    navigateToBusinessSelectionScreenWithArgs(true)
+                },
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
-                Text(
-                    text = "Issue an invoice",
-                    fontSize = screenFontSize(x = 14.0).sp
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Issue an invoice",
+                        fontSize = screenFontSize(x = 14.0).sp
+                    )
+                    Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
+                    Icon(
+                        painter = painterResource(id = R.drawable.issue_invoice),
+                        contentDescription = "Courier assignment"
+                    )
+                }
             }
         } else {
             Text(
@@ -411,12 +572,26 @@ fun MerchantDashboardScreen(
             }
         }
         Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
-        Text(
-            text = "My businesses",
-            color = MaterialTheme.colorScheme.onBackground,
-            fontSize = screenFontSize(x = 16.0).sp,
-            fontWeight = FontWeight.Bold
-        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "My businesses",
+                color = MaterialTheme.colorScheme.onBackground,
+                fontSize = screenFontSize(x = 16.0).sp,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            TextButton(
+                enabled = businesses.isNotEmpty(),
+                onClick = { /*TODO*/ }
+            ) {
+                Text(
+                    text = "See all",
+                    fontSize = screenFontSize(x = 14.0).sp
+                )
+            }
+        }
         Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
         if(businesses.isNotEmpty()) {
             Row(
@@ -437,14 +612,44 @@ fun MerchantDashboardScreen(
                     )
                 }
             }
-        } else {
-            Text(
-                text = "No business found",
-                fontSize = screenFontSize(x = 14.0).sp,
-                color = MaterialTheme.colorScheme.onBackground,
+            Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
+            Button(
+                onClick = { /*TODO*/ },
                 modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-            )
+                    .fillMaxWidth()
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Add a business",
+                        fontSize = screenFontSize(x = 14.0).sp
+                    )
+                    Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
+                    Icon(
+                        painter = painterResource(id = R.drawable.add),
+                        contentDescription = "Add a business"
+                    )
+                }
+            }
+        } else {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "My businesses",
+                    color = MaterialTheme.colorScheme.onBackground,
+                    fontSize = screenFontSize(x = 16.0).sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                TextButton(onClick = { /*TODO*/ }) {
+                    Text(
+                        text = "See all",
+                        fontSize = screenFontSize(x = 14.0).sp
+                    )
+                }
+            }
             Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
             OutlinedButton(
                 onClick = { /*TODO*/ },
@@ -466,15 +671,27 @@ fun MerchantDashboardScreen(
                 }
             }
         }
-        Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
-
         Spacer(modifier = Modifier.height(screenHeight(x = 24.0)))
-        Text(
-            text = "Recent Transactions",
-            color = MaterialTheme.colorScheme.onBackground,
-            fontSize = screenFontSize(x = 16.0).sp,
-            fontWeight = FontWeight.Bold
-        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Recent Transactions",
+                color = MaterialTheme.colorScheme.onBackground,
+                fontSize = screenFontSize(x = 16.0).sp,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            TextButton(
+                enabled = transactions.isNotEmpty(),
+                onClick = { /*TODO*/ }
+            ) {
+                Text(
+                    text = "See all",
+                    fontSize = screenFontSize(x = 14.0).sp
+                )
+            }
+        }
         Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
         if(transactions.isNotEmpty()) {
             transactions.take(5).forEach {
@@ -509,6 +726,7 @@ fun MerchantDashboardScreenPreview() {
             username = "Alex Mboo",
             walletBalance = formatMoneyValue(1500.0),
             orders = emptyList(),
+            pendingOrders = emptyList(),
             businesses = businesses,
             invoices = emptyList(),
             transactions = emptyList(),
@@ -516,7 +734,13 @@ fun MerchantDashboardScreenPreview() {
             navigateToDepositScreen = {},
             navigateToWithdrawalScreen = {},
             navigateToOrderDetailsScreen = {orderId, fromPaymentScreen ->  },
-            navigateToBusinessDetailsScreen = {}
+            navigateToBusinessDetailsScreen = {},
+            navigateToInvoiceDetailsScreen = {},
+            navigateToOrdersScreen = {},
+            navigateToOrdersScreenWithStatus = {},
+            navigateToBusinessSelectionScreen = {},
+            navigateToInvoicesScreen = {},
+            navigateToBusinessSelectionScreenWithArgs = {}
         )
     }
 }

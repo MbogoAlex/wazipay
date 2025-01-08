@@ -222,6 +222,9 @@ class BuyerDashboardViewModel(
                     _uiState.update {
                         it.copy(
                             invoices = response.body()?.data!!,
+                            pendingInvoices = response.body()?.data!!.filter { invoice ->
+                                invoice.invoiceStatus == "PENDING"
+                            },
                             loadInvoicesStatus = LoadInvoicesStatus.SUCCESS
                         )
                     }

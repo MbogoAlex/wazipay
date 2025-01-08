@@ -15,6 +15,6 @@ data class UserDetailsData(
     val verifiedAt: String?,
     val verificationStatus: String,
     val roles: List<String>,
-    val idFront: String,
-    val idBack: String
+    val idFront: String?,
+    val idBack: String?
 )

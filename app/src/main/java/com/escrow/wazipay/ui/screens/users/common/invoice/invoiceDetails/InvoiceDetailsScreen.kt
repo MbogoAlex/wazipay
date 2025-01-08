@@ -241,7 +241,7 @@ fun InvoiceDetailsScreen(
             )
             Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
             Text(
-                text = "Buyer",
+                text = "Issued to:",
                 fontSize = screenFontSize(x = 14.0).sp,
                 fontWeight = FontWeight.Bold
             )
@@ -252,7 +252,7 @@ fun InvoiceDetailsScreen(
             )
             Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
             Text(
-                text = "Merchant",
+                text = "Issued by:",
                 fontSize = screenFontSize(x = 14.0).sp,
                 fontWeight = FontWeight.Bold
             )
@@ -261,7 +261,7 @@ fun InvoiceDetailsScreen(
                 role = Role.MERCHANT,
                 userContactData = merchant
             )
-            if(orderData != null) {
+            if(invoiceData.orderId != null) {
                 Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
                 Text(
                     text = "Order details",
@@ -271,7 +271,7 @@ fun InvoiceDetailsScreen(
                 Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
                 OrderItemComposable(
                     homeScreen = false,
-                    orderData = orderData,
+                    orderData = orderData!!,
                     navigateToOrderDetailsScreen = navigateToOrderDetailsScreen
                 )
             }
@@ -516,7 +516,7 @@ fun ActorCard(
             }
             Spacer(modifier = Modifier.width(screenWidth(x = 8.0)))
             Column {
-                Text(text = com.escrow.wazipay.data.network.models.user.userContactData.username)
+                Text(text = userContactData.username)
                 Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
                 Row(
                     verticalAlignment = Alignment.CenterVertically
@@ -527,7 +527,7 @@ fun ActorCard(
                     )
                     Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
                     Text(
-                        text = com.escrow.wazipay.data.network.models.user.userContactData.phoneNumber,
+                        text = userContactData.phoneNumber,
                         fontSize = screenFontSize(x = 14.0).sp,
 //                            fontWeight = FontWeight.Bold
                     )
@@ -542,7 +542,7 @@ fun ActorCard(
                     )
                     Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
                     Text(
-                        text = "mbogoalex3@gmail.com",
+                        text = userContactData.email,
                         fontSize = screenFontSize(x = 14.0).sp,
                     )
                 }

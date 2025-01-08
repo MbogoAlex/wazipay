@@ -1,5 +1,6 @@
 package com.escrow.wazipay.ui.screens.users.common.invoice.invoicesList
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.escrow.wazipay.data.network.repository.ApiRepository
@@ -18,10 +19,13 @@ import kotlinx.coroutines.withContext
 
 class InvoicesViewModel(
     private val apiRepository: ApiRepository,
-    private val dbRepository: DBRepository
+    private val dbRepository: DBRepository,
+    private val savedStateHandle: SavedStateHandle
 ): ViewModel() {
     private val _uiState = MutableStateFlow(InvoicesUiData())
     val uiState: StateFlow<InvoicesUiData> = _uiState.asStateFlow()
+
+    private val status: String? = savedStateHandle[InvoicesScreenDestination.status]
 
     fun onChangeStatus(status: String) {
         _uiState.update {
@@ -103,7 +107,11 @@ class InvoicesViewModel(
             while (uiState.value.userDetails.userId == 0) {
                 delay(1000)
             }
-            getInvoices()
+            if(status != null) {
+                onChangeStatus(status)
+            } else {
+                getInvoices()
+            }
         }
     }
 

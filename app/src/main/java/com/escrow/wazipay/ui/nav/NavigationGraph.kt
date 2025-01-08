@@ -24,6 +24,8 @@ import com.escrow.wazipay.ui.screens.dashboard.DashboardScreenComposable
 import com.escrow.wazipay.ui.screens.dashboard.DashboardScreenDestination
 import com.escrow.wazipay.ui.screens.users.common.business.businessDetails.BusinessDetailsScreenComposable
 import com.escrow.wazipay.ui.screens.users.common.business.businessDetails.BusinessDetailsScreenDestination
+import com.escrow.wazipay.ui.screens.users.common.invoice.invoiceDetails.InvoiceDetailsScreenComposable
+import com.escrow.wazipay.ui.screens.users.common.invoice.invoiceDetails.InvoiceDetailsScreenDestination
 import com.escrow.wazipay.ui.screens.users.common.invoice.invoicesList.InvoicesScreenComposable
 import com.escrow.wazipay.ui.screens.users.common.invoice.invoicesList.InvoicesScreenDestination
 import com.escrow.wazipay.ui.screens.users.common.order.orderCreation.OrderCreationScreenComposable
@@ -48,6 +50,8 @@ import com.escrow.wazipay.ui.screens.users.specific.merchant.courierAssignment.C
 import com.escrow.wazipay.ui.screens.users.specific.merchant.courierAssignment.CourierSelectionScreenDestination
 import com.escrow.wazipay.ui.screens.users.specific.merchant.invoiceCreation.BuyerSelectionScreenComposable
 import com.escrow.wazipay.ui.screens.users.specific.merchant.invoiceCreation.BuyerSelectionScreenDestination
+import com.escrow.wazipay.ui.screens.users.specific.merchant.invoiceCreation.InvoiceIssuanceScreenComposable
+import com.escrow.wazipay.ui.screens.users.specific.merchant.invoiceCreation.InvoiceIssuanceScreenDestination
 import com.escrow.wazipay.ui.start.SplashScreenComposable
 import com.escrow.wazipay.ui.start.SplashScreenDestination
 
@@ -172,6 +176,15 @@ fun NavigationGraph(
                 },
                 navigateToBusinessSelectionScreenWithArgs = {
                     navController.navigate("${BusinessSelectionScreenDestination.route}/${it}")
+                },
+                navigateToInvoiceDetailsScreen = {
+                    navController.navigate("${InvoiceDetailsScreenDestination.route}/${it}")
+                },
+                navigateToInvoicesScreenWithStatus = {
+                    navController.navigate("${InvoicesScreenDestination.route}/${it}")
+                },
+                navigateToOrdersScreenWithStatus = {
+                    navController.navigate("${OrdersScreenDestination.route}/status/${it}")
                 }
             )
         }
@@ -228,6 +241,15 @@ fun NavigationGraph(
                 },
                 navigateToBusinessSelectionScreenWithArgs = {
                     navController.navigate("${BusinessSelectionScreenDestination.route}/${it}")
+                },
+                navigateToInvoiceDetailsScreen = {
+                    navController.navigate("${InvoiceDetailsScreenDestination.route}/${it}")
+                },
+                navigateToInvoicesScreenWithStatus = {
+                    navController.navigate("${InvoicesScreenDestination.route}/${it}")
+                },
+                navigateToOrdersScreenWithStatus = {
+                    navController.navigate("${OrdersScreenDestination.route}/status/${it}")
                 }
             )
         }
@@ -286,6 +308,26 @@ fun NavigationGraph(
             OrdersScreenDestination.routeWithBusinessId,
             arguments = listOf(
                 navArgument(OrdersScreenDestination.businessId) {
+                    type = NavType.StringType
+                }
+            )
+        ) {
+            OrdersScreenComposable(
+                navigateToLoginScreenWithArgs = {phoneNumber, pin ->
+                    navController.navigate("${LoginScreenDestination.route}/${phoneNumber}/${pin}")
+                },
+                navigateToOrderDetailsScreen = { orderId, fromPaymentScreen ->
+                    navController.navigate("${OrderDetailsScreenDestination.route}/${orderId}/${fromPaymentScreen}")
+                },
+                navigateToPreviousScreen = {
+                    navController.navigateUp()
+                }
+            )
+        }
+        composable(
+            OrdersScreenDestination.routeWithStage,
+            arguments = listOf(
+                navArgument(OrdersScreenDestination.stage) {
                     type = NavType.StringType
                 }
             )
@@ -372,6 +414,15 @@ fun NavigationGraph(
                 },
                 navigateToBusinessSelectionScreenWithArgs = {
                     navController.navigate("${BusinessSelectionScreenDestination.route}/${it}")
+                },
+                navigateToInvoiceDetailsScreen = {
+                    navController.navigate("${InvoiceDetailsScreenDestination.route}/${it}")
+                },
+                navigateToInvoicesScreenWithStatus = {
+                    navController.navigate("${InvoicesScreenDestination.route}/${it}")
+                },
+                navigateToOrdersScreenWithStatus = {
+                    navController.navigate("${OrdersScreenDestination.route}/status/${it}")
                 }
             )
         }
@@ -497,6 +548,29 @@ fun NavigationGraph(
                 navigateToBusinessSelectionScreenWithArgs = {
                     navController.navigate("${BusinessSelectionScreenDestination.route}/${it}")
                 },
+                navigateToInvoiceDetailsScreen = {
+                    navController.navigate("${InvoiceDetailsScreenDestination.route}/${it}")
+                },
+                navigateToPreviousScreen = {
+                    navController.navigateUp()
+                }
+            )
+        }
+        composable(
+            InvoicesScreenDestination.routeWithStatus,
+            arguments = listOf(
+                navArgument(InvoicesScreenDestination.status) {
+                    type = NavType.StringType
+                }
+            )
+        ) {
+            InvoicesScreenComposable(
+                navigateToBusinessSelectionScreenWithArgs = {
+                    navController.navigate("${BusinessSelectionScreenDestination.route}/${it}")
+                },
+                navigateToInvoiceDetailsScreen = {
+                    navController.navigate("${InvoiceDetailsScreenDestination.route}/${it}")
+                },
                 navigateToPreviousScreen = {
                     navController.navigateUp()
                 }
@@ -526,8 +600,46 @@ fun NavigationGraph(
             )
         ) {
             BuyerSelectionScreenComposable(
-                navigateToInvoiceCreationScreen = {buyerId, businessId ->  },
+                navigateToInvoiceIssuanceScreen = {buyerId, businessId ->
+                    navController.navigate("${InvoiceIssuanceScreenDestination.route}/${buyerId}/${businessId}")
+                },
                 navigateToPreviousScreen = { 
+                    navController.navigateUp()
+                }
+            )
+        }
+        composable(
+            InvoiceIssuanceScreenDestination.routeWithArgs,
+            arguments = listOf(
+                navArgument(InvoiceIssuanceScreenDestination.buyerId) {
+                    type = NavType.StringType
+                },
+                navArgument(InvoiceIssuanceScreenDestination.businessId) {
+                    type = NavType.StringType
+                },
+            )
+        ) {
+            InvoiceIssuanceScreenComposable(
+                navigateToInvoiceDetailsScreen = {
+                    navController.popBackStack()
+                    navController.navigate("${InvoiceDetailsScreenDestination.route}/${it}")
+                },
+                navigateToPreviousScreen = { navController.navigateUp() }
+            )
+        }
+        composable(
+            InvoiceDetailsScreenDestination.routeWithInvoiceId,
+            arguments = listOf(
+                navArgument(InvoiceDetailsScreenDestination.invoiceId) {
+                    type = NavType.StringType
+                }
+            )
+        ) {
+            InvoiceDetailsScreenComposable(
+                navigateToOrderDetailsScreen = { orderId, fromPaymentScreen ->
+                    navController.navigate("${OrderDetailsScreenDestination.route}/${orderId}/${fromPaymentScreen}")
+                },
+                navigateToPreviousScreen = {
                     navController.navigateUp()
                 }
             )

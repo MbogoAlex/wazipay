@@ -103,9 +103,12 @@ fun DashboardScreenComposable(
     navigateToOrdersScreen: () -> Unit,
     navigateToBuyerSelectionScreen: (businessId: String) -> Unit,
     navigateToInvoicesScreen: () -> Unit,
+    navigateToInvoicesScreenWithStatus: (status: String) -> Unit,
     navigateToPreviousScreen: () -> Unit,
     navigateToTransactionsScreen: () -> Unit,
     navigateToBusinessSelectionScreenWithArgs: (toBuyerSelectionScreen: Boolean) -> Unit,
+    navigateToInvoiceDetailsScreen: (invoiceId: String) -> Unit,
+    navigateToOrdersScreenWithStatus: (status: String) -> Unit,
 ) {
     val context = LocalContext.current
 
@@ -184,20 +187,20 @@ fun DashboardScreenComposable(
                     icon = R.drawable.home,
                     tab = NavBarItem.HOME
                 ),
+//                NavItem(
+//                    name = "Courier",
+//                    icon = R.drawable.motorbike,
+//                    tab = NavBarItem.COURIER_ASSIGNMENT
+//                ),
+//                NavItem(
+//                    name = "Invoice",
+//                    icon = R.drawable.issue_invoice,
+//                    tab = NavBarItem.ISSUE_INVOICE
+//                ),
                 NavItem(
-                    name = "Courier",
-                    icon = R.drawable.motorbike,
-                    tab = NavBarItem.COURIER_ASSIGNMENT
-                ),
-                NavItem(
-                    name = "Invoice",
-                    icon = R.drawable.issue_invoice,
-                    tab = NavBarItem.ISSUE_INVOICE
-                ),
-                NavItem(
-                    name = "Business",
-                    icon = R.drawable.add,
-                    tab = NavBarItem.ADD_BUSINESS
+                    name = "My business",
+                    icon = R.drawable.shop,
+                    tab = NavBarItem.BUSINESSES
                 ),
                 NavItem(
                     name = "Profile",
@@ -266,8 +269,11 @@ fun DashboardScreenComposable(
             navigateToPreviousScreen = navigateToPreviousScreen,
             navigateToOrderScreen = navigateToOrdersScreen,
             navigateToInvoicesScreen = navigateToInvoicesScreen,
+            navigateToInvoicesScreenWithStatus = navigateToInvoicesScreenWithStatus,
             navigateToTransactionsScreen = navigateToTransactionsScreen,
-            navigateToBusinessSelectionScreenWithArgs = navigateToBusinessSelectionScreenWithArgs
+            navigateToBusinessSelectionScreenWithArgs = navigateToBusinessSelectionScreenWithArgs,
+            navigateToInvoiceDetailsScreen = navigateToInvoiceDetailsScreen,
+            navigateToOrdersScreenWithStatus = navigateToOrdersScreenWithStatus
         )
     }
 }
@@ -301,8 +307,11 @@ fun DashboardScreen(
     navigateToPreviousScreen: () -> Unit,
     navigateToOrderScreen: () -> Unit,
     navigateToInvoicesScreen: () -> Unit,
+    navigateToInvoicesScreenWithStatus: (status: String) -> Unit,
     navigateToTransactionsScreen: () -> Unit,
     navigateToBusinessSelectionScreenWithArgs: (toBuyerSelectionScreen: Boolean) -> Unit,
+    navigateToInvoiceDetailsScreen: (invoiceId: String) -> Unit,
+    navigateToOrdersScreenWithStatus: (status: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -441,7 +450,10 @@ fun DashboardScreen(
                     navigateToOrderDetailsScreen = navigateToOrderDetailsScreen,
                     navigateToOrderScreen = navigateToOrderScreen,
                     navigateToInvoicesScreen = navigateToInvoicesScreen,
+                    navigateToInvoicesScreenWithStatus = navigateToInvoicesScreenWithStatus,
                     navigateToTransactionsScreen = navigateToTransactionsScreen,
+                    navigateToInvoiceDetailsScreen = navigateToInvoiceDetailsScreen,
+
                     modifier = Modifier
                             .weight(1f)
                 )
@@ -451,6 +463,12 @@ fun DashboardScreen(
                     navigateToOrderDetailsScreen = navigateToOrderDetailsScreen,
                     navigateToLoginScreenWithArgs = navigateToLoginScreenWithArgs,
                     navigateToBusinessDetailsScreen = navigateToBusinessDetailsScreen,
+                    navigateToInvoiceDetailsScreen = navigateToInvoiceDetailsScreen,
+                    navigateToBusinessSelectionScreen = navigateToBusinessSelectionScreen,
+                    navigateToInvoicesScreen = navigateToInvoicesScreen,
+                    navigateToOrdersScreen = navigateToOrderScreen,
+                    navigateToOrdersScreenWithStatus = navigateToOrdersScreenWithStatus,
+                    navigateToBusinessSelectionScreenWithArgs = navigateToBusinessSelectionScreenWithArgs,
                     modifier = Modifier
                             .weight(1f)
                 )
@@ -496,6 +514,7 @@ fun DashboardScreen(
             )
             NavBarItem.INVOICES -> InvoicesScreenComposable(
                 navigateToBusinessSelectionScreenWithArgs = navigateToBusinessSelectionScreenWithArgs,
+                navigateToInvoiceDetailsScreen = navigateToInvoiceDetailsScreen,
                 navigateToPreviousScreen = navigateToPreviousScreen,
                 modifier = Modifier
                     .weight(1f)
@@ -522,6 +541,7 @@ fun DashboardScreen(
             }
             NavBarItem.ISSUE_INVOICE -> InvoicesScreenComposable(
                 navigateToBusinessSelectionScreenWithArgs = navigateToBusinessSelectionScreenWithArgs,
+                navigateToInvoiceDetailsScreen = navigateToInvoiceDetailsScreen,
                 navigateToPreviousScreen = navigateToPreviousScreen,
                 modifier = Modifier
                     .weight(1f)
@@ -723,7 +743,10 @@ fun DashboardScreenPreview() {
             navigateToInvoicesScreen = {},
             navigateToTransactionsScreen = {},
             navigateToBuyerSelectionScreen = {},
-            navigateToBusinessSelectionScreenWithArgs = {}
+            navigateToBusinessSelectionScreenWithArgs = {},
+            navigateToInvoiceDetailsScreen = {},
+            navigateToInvoicesScreenWithStatus = {},
+            navigateToOrdersScreenWithStatus = {}
         )
     }
 }

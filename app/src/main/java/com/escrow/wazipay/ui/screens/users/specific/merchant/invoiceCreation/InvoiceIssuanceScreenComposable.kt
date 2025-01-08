@@ -66,6 +66,7 @@ object InvoiceIssuanceScreenDestination: AppNavigation {
     override val route: String = "invoice-issuance-screen"
     val businessId: String = "businessId"
     val buyerId: String = "buyerId"
+    val routeWithArgs: String = "$route/{$businessId}/{$buyerId}"
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -94,6 +95,7 @@ fun InvoiceIssuanceScreenComposable(
 
     if(showConfirmDialog) {
         InvoiceConfirmationDialog(
+            buyer = uiSate.buyer.username,
             onConfirm = {
                 showConfirmDialog = !showConfirmDialog
 
@@ -109,6 +111,7 @@ fun InvoiceIssuanceScreenComposable(
 
     if(showSuccessDialog) {
         InvoiceCreationSuccessDialog(
+            buyer = uiSate.buyer.username,
             onConfirm = {
                 viewModel.resetStatus()
 
@@ -373,19 +376,20 @@ fun InvoiceConfirmationDialog(
     onDismiss: () -> Unit,
     title: String,
     cost: String,
+    buyer: String,
     modifier: Modifier = Modifier
 ) {
     AlertDialog(
         title = {
             Text(
-                text = "Confirm Business Payment",
+                text = "Confirm Invoice",
                 fontSize = screenFontSize(x = 16.0).sp,
                 fontWeight = FontWeight.Bold
             )
         },
         text = {
             Text(
-                text = "Are you sure you want to pay business for order $title with a cost of $cost?",
+                text = "Are you sure you want to issue an invoice for $title with a cost of $cost to $buyer?",
                 fontSize = screenFontSize(x = 14.0).sp
             )
         },
@@ -415,19 +419,20 @@ fun InvoiceCreationSuccessDialog(
     onDismiss: () -> Unit,
     title: String,
     cost: String,
+    buyer: String,
     modifier: Modifier = Modifier
 ) {
     AlertDialog(
         title = {
             Text(
-                text = "Payment successful",
+                text = "Invoice issued",
                 fontSize = screenFontSize(x = 16.0).sp,
                 fontWeight = FontWeight.Bold
             )
         },
         text = {
             Text(
-                text = "Your invoice for $title with a cost of $cost has been made successfully",
+                text = "Invoice for order $title with a cost of $cost has been issued to $buyer",
                 fontSize = screenFontSize(x = 14.0).sp
             )
         },

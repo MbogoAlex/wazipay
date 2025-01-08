@@ -37,6 +37,7 @@ data class BuyerDashboardUiData(
     ),
     val orders: List<OrderData> = emptyList(),
     val invoices: List<InvoiceData> = emptyList(),
+    val pendingInvoices: List<InvoiceData> = emptyList(),
     val transactions: List<TransactionData> = emptyList(),
     val loadUserStatus: LoadUserStatus = LoadUserStatus.INITIAL,
     val loadInvoicesStatus: LoadInvoicesStatus = LoadInvoicesStatus.INITIAL,

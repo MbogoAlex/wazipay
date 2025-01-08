@@ -79,6 +79,7 @@ fun BusinessSelectionScreenComposable(
             .background(MaterialTheme.colorScheme.background)
     ) {
         BusinessSelectionScreen(
+            userId = uiState.userDetails.userId,
             toBuyerSelectionScreen = uiState.toBuyerSelectionScreen,
             searchQuery = uiState.searchQuery ?: "",
             onChangeSearchQuery = {
@@ -98,6 +99,7 @@ fun BusinessSelectionScreenComposable(
 
 @Composable
 fun BusinessSelectionScreen(
+    userId: Int,
     toBuyerSelectionScreen: Boolean,
     searchQuery: String,
     onChangeSearchQuery: (text: String) -> Unit,
@@ -219,7 +221,7 @@ fun BusinessSelectionScreen(
         LazyColumn {
             items(businesses) {
                 SelectableBusinessCell(
-                    userId = 1,
+                    userId = userId,
                     businessData = it,
                     navigateToNextScreen = {businessId ->
                         if(toBuyerSelectionScreen) {
@@ -333,6 +335,7 @@ fun BusinessSelectionScreenPreview(
 ) {
     WazipayTheme {
         BusinessSelectionScreen(
+            userId = 1,
             toBuyerSelectionScreen = false,
             searchQuery = "",
             businesses = businesses,

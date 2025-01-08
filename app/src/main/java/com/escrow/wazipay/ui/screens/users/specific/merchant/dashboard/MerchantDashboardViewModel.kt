@@ -112,6 +112,9 @@ class MerchantDashboardViewModel(
                     _uiState.update {
                         it.copy(
                             orders = response.body()?.data!!,
+                            pendingOrders = response.body()?.data!!.filter { order ->
+                                order.orderStage == "PENDING_PICKUP"
+                            },
                             loadOrdersStatus = LoadOrdersStatus.SUCCESS
                         )
                     }
