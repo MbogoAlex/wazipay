@@ -19,7 +19,7 @@ data class InvoiceIssuanceUiData(
     val amount: String = "",
     val phoneNumber: String = "",
     val orderId: String = "",
-    val invoiceId: String = "",
+    val invoiceId: Int = 0,
     val businessData: BusinessData = emptyBusinessData,
     val unauthorized: Boolean = false,
     val buttonEnabled: Boolean = false,

@@ -52,6 +52,7 @@ import com.escrow.wazipay.data.network.models.business.BusinessData
 import com.escrow.wazipay.data.network.models.business.businessData
 import com.escrow.wazipay.data.network.models.user.UserDetailsData
 import com.escrow.wazipay.data.network.models.user.userDetailsData
+import com.escrow.wazipay.ui.nav.AppNavigation
 import com.escrow.wazipay.ui.screens.users.specific.buyer.businessPayment.InvoiceCreationStatus
 import com.escrow.wazipay.ui.screens.users.specific.buyer.businessPayment.InvoiceCreationViewModel
 import com.escrow.wazipay.ui.theme.WazipayTheme
@@ -60,21 +61,24 @@ import com.escrow.wazipay.utils.screenFontSize
 import com.escrow.wazipay.utils.screenHeight
 import com.escrow.wazipay.utils.screenWidth
 
+object InvoiceIssuanceScreenDestination: AppNavigation {
+    override val title: String = "Invoice issuance screen"
+    override val route: String = "invoice-issuance-screen"
+    val businessId: String = "businessId"
+    val buyerId: String = "buyerId"
+}
+
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun InvoiceIssuanceScreenComposable(
-    navigateToOrderDetailsScreen: (orderId: String, fromPaymentScreen: Boolean) -> Unit,
+    navigateToInvoiceDetailsScreen: (invoiceId: String) -> Unit,
     navigateToPreviousScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
 
-    val viewModel: InvoiceCreationViewModel = viewModel(factory = AppViewModelFactory.Factory)
+    val viewModel: InvoiceIssuanceViewModel = viewModel(factory = AppViewModelFactory.Factory)
     val uiSate by viewModel.uiState.collectAsState()
-
-//    val invoicesViewModel: InvoicesViewModel = viewModel(factory = AppViewModelFactory.Factory)
-//    val ordersViewModel: OrdersViewModel = viewModel(factory = AppViewModelFactory.Factory)
-//    val buyerDashboardViewModel: BuyerDashboardViewModel = viewModel(factory = AppViewModelFactory.Factory)
 
     var showConfirmDialog by rememberSaveable {
         mutableStateOf(false)
@@ -93,11 +97,7 @@ fun InvoiceIssuanceScreenComposable(
             onConfirm = {
                 showConfirmDialog = !showConfirmDialog
 
-                if(uiSate.amount.toDouble() > uiSate.userWalletData.balance) {
-                    Toast.makeText(context, "Insufficient funds", Toast.LENGTH_SHORT).show()
-                } else {
-                    viewModel.createInvoice()
-                }
+                viewModel.issueInvoice()
             },
             onDismiss = {
                 showConfirmDialog = !showConfirmDialog
@@ -112,11 +112,11 @@ fun InvoiceIssuanceScreenComposable(
             onConfirm = {
                 viewModel.resetStatus()
 
-                navigateToOrderDetailsScreen(uiSate.orderId, true)
+                navigateToInvoiceDetailsScreen(uiSate.invoiceId.toString())
             },
             onDismiss = {
                 viewModel.resetStatus()
-                navigateToOrderDetailsScreen(uiSate.orderId, true)
+                navigateToInvoiceDetailsScreen(uiSate.invoiceId.toString())
             },
             title = uiSate.title,
             cost = formatMoneyValue(uiSate.amount.toDouble())
@@ -134,12 +134,7 @@ fun InvoiceIssuanceScreenComposable(
             title = uiSate.title,
             description = uiSate.description,
             amount = uiSate.amount,
-            phoneNumber = uiSate.phoneNumber.ifEmpty { uiSate.userDetails.phoneNumber ?: "" },
-            onChangePhoneNumber = {
-                viewModel.changePhone(it)
-                viewModel.enableButton()
-            },
-            buyer = userDetailsData,
+            buyer = uiSate.buyer,
             onChangeTitle = {
                 viewModel.changeTitle(it)
                 viewModel.enableButton()
@@ -171,8 +166,6 @@ fun InvoiceIssuanceScreen(
     title: String,
     description: String,
     amount: String,
-    phoneNumber: String,
-    onChangePhoneNumber: (number: String) -> Unit,
     onChangeTitle: (title: String) -> Unit,
     onChangeDescription: (description: String) -> Unit,
     onChangeAmount: (amount: String) -> Unit,
@@ -461,8 +454,6 @@ fun InvoiceIssuanceScreenPreview() {
             title = "",
             description = "",
             amount = "",
-            phoneNumber = "0794649026",
-            onChangePhoneNumber = {},
             onChangeTitle = {},
             onChangeDescription = {},
             onChangeAmount = {},
