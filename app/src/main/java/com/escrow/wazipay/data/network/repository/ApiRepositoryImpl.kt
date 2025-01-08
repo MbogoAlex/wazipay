@@ -212,6 +212,12 @@ class ApiRepositoryImpl(private val apiService: ApiService): ApiRepository {
             endDate = endDate
         )
 
+    override suspend fun getUser(token: String, userId: Int): Response<UserDetailsResponseBody> =
+        apiService.getUser(
+            token = "Bearer $token",
+            userId = userId
+        )
+
     override suspend fun createInvoice(
         token: String,
         invoiceCreationRequestBody: InvoiceCreationRequestBody

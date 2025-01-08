@@ -156,6 +156,12 @@ interface ApiRepository {
         endDate: String?
     ): Response<UsersDetailsResponseBody>
 
+    //    Get user
+    suspend fun getUser(
+        token: String,
+        userId: Int
+    ): Response<UserDetailsResponseBody>
+
     suspend fun createInvoice(
         token: String,
         invoiceCreationRequestBody: InvoiceCreationRequestBody

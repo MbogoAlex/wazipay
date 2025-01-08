@@ -180,6 +180,13 @@ interface ApiService {
         @Query("endDate") endDate: String?
     ): Response<UsersDetailsResponseBody>
 
+//    Get user
+    @GET("user/id/{id}")
+    suspend fun getUser(
+        @Header("Authorization") token: String,
+        @Path("id") userId: Int
+    ): Response<UserDetailsResponseBody>
+
 //    Create invoice
     @POST("merchant/invoice")
     suspend fun createInvoice(

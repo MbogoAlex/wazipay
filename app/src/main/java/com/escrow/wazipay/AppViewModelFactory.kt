@@ -13,6 +13,7 @@ import com.escrow.wazipay.ui.screens.auth.RegistrationViewModel
 import com.escrow.wazipay.ui.screens.dashboard.DashboardViewModel
 import com.escrow.wazipay.ui.screens.users.common.business.businessDetails.BusinessDetailsViewModel
 import com.escrow.wazipay.ui.screens.users.common.business.businessList.BusinessViewModel
+import com.escrow.wazipay.ui.screens.users.common.invoice.invoiceDetails.InvoiceDetailsViewModel
 import com.escrow.wazipay.ui.screens.users.common.invoice.invoicesList.InvoicesViewModel
 import com.escrow.wazipay.ui.screens.users.common.order.orderCreation.OrderCreationViewModel
 import com.escrow.wazipay.ui.screens.users.common.order.orderDetails.OrderDetailsViewModel
@@ -198,6 +199,14 @@ object AppViewModelFactory {
 
         initializer {
             BuyerSelectionViewModel(
+                apiRepository = wazipayApplication().container.apiRepository,
+                dbRepository = wazipayApplication().container.dbRepository,
+                savedStateHandle = this.createSavedStateHandle()
+            )
+        }
+
+        initializer {
+            InvoiceDetailsViewModel(
                 apiRepository = wazipayApplication().container.apiRepository,
                 dbRepository = wazipayApplication().container.dbRepository,
                 savedStateHandle = this.createSavedStateHandle()

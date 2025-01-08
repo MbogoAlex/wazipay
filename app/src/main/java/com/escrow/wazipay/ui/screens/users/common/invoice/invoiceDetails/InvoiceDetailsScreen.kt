@@ -1,11 +1,11 @@
 package com.escrow.wazipay.ui.screens.users.common.invoice.invoiceDetails
 
 import android.os.Build
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -23,7 +24,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
@@ -31,17 +32,26 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.escrow.wazipay.AppViewModelFactory
 import com.escrow.wazipay.R
 import com.escrow.wazipay.data.network.models.invoice.InvoiceData
 import com.escrow.wazipay.data.network.models.invoice.invoiceData
@@ -52,9 +62,10 @@ import com.escrow.wazipay.data.network.models.user.userContactData
 import com.escrow.wazipay.data.network.models.wallet.UserWalletData
 import com.escrow.wazipay.data.network.models.wallet.userWalletData
 import com.escrow.wazipay.data.room.models.Role
+import com.escrow.wazipay.ui.nav.AppNavigation
 import com.escrow.wazipay.ui.screens.users.common.order.OrderItemComposable
-import com.escrow.wazipay.ui.screens.users.specific.buyer.businessPayment.InvoiceCreationStatus
 import com.escrow.wazipay.ui.screens.users.specific.buyer.businessPayment.PaymentMethod
+import com.escrow.wazipay.ui.screens.users.specific.merchant.courierAssignment.LoadingStatus
 import com.escrow.wazipay.ui.theme.WazipayTheme
 import com.escrow.wazipay.utils.composables.TextFieldComposable
 import com.escrow.wazipay.utils.formatMoneyValue
@@ -62,10 +73,104 @@ import com.escrow.wazipay.utils.screenFontSize
 import com.escrow.wazipay.utils.screenHeight
 import com.escrow.wazipay.utils.screenWidth
 
+object InvoiceDetailsScreenDestination: AppNavigation {
+    override val title: String = "Invoice details screen"
+    override val route: String = "invoice-details-screen"
+    val invoiceId: String = "invoiceId"
+    val routeWithInvoiceId: String = "$route/{$invoiceId}"
+
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun InvoiceDetailsScreenComposable(
+    navigateToOrderDetailsScreen: (orderId: String, fromPaymentScreen: Boolean) -> Unit,
+    navigateToPreviousScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
+
+    val viewModel: InvoiceDetailsViewModel = viewModel(factory = AppViewModelFactory.Factory)
+    val uiState by viewModel.uiState.collectAsState()
+
+    var showConfirmDialog by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+    var showSuccessDialog by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+    if(uiState.loadingStatus == LoadingStatus.SUCCESS) {
+        showSuccessDialog = true
+    }
+
+    if(showConfirmDialog) {
+        InvoicePaymentConfirmationDialog(
+            onConfirm = {
+                showConfirmDialog = !showConfirmDialog
+                if(uiState.invoiceData.amount > uiState.userWalletData.balance) {
+                    Toast.makeText(context, "Insufficient funds", Toast.LENGTH_SHORT).show()
+                } else {
+                    viewModel.payInvoice()
+                }
+            },
+            onDismiss = {
+                showConfirmDialog = !showConfirmDialog
+            },
+            title = uiState.invoiceData.title,
+            cost = formatMoneyValue(uiState.invoiceData.amount)
+        )
+    }
+
+    if(showSuccessDialog) {
+        InvoicePaymentSuccessDialog(
+            onConfirm = {
+                viewModel.resetStatus()
+                showSuccessDialog = !showSuccessDialog
+                navigateToOrderDetailsScreen(uiState.newOrderId.toString(), true)
+            },
+            onDismiss = {
+                viewModel.resetStatus()
+                showSuccessDialog = !showSuccessDialog
+                navigateToOrderDetailsScreen(uiState.newOrderId.toString(), true)
+            },
+            title = uiState.invoiceData.title,
+            cost = formatMoneyValue(uiState.invoiceData.amount)
+        )
+    }
+
+    Box(
+        modifier = Modifier
+            .safeDrawingPadding()
+    ) {
+        InvoiceDetailsScreen(
+            invoiceData = uiState.invoiceData,
+            role = uiState.role,
+            userWalletData = uiState.userWalletData,
+            orderData = uiState.orderData,
+            buyer = uiState.invoiceData.buyer,
+            merchant = uiState.invoiceData.merchant,
+            phoneNumber = uiState.phoneNumber,
+            onChangePhoneNumber = {
+                viewModel.changePhoneNumber(it)
+                viewModel.enableButton()
+            },
+            paymentMethod = uiState.paymentMethod,
+            onChangePaymentMethod = {
+                viewModel.changePaymentMethod(it)
+                viewModel.enableButton()
+            },
+            navigateToOrderDetailsScreen = navigateToOrderDetailsScreen,
+            navigateToPreviousScreen = navigateToPreviousScreen,
+            loadingStatus = uiState.loadingStatus,
+            onPayInvoice = {
+                showConfirmDialog = !showConfirmDialog
+            },
+            buttonEnabled = uiState.buttonEnabled
+        )
+    }
+
 
 }
 
@@ -84,6 +189,9 @@ fun InvoiceDetailsScreen(
     onChangePaymentMethod: (paymentMethod: PaymentMethod) -> Unit,
     navigateToOrderDetailsScreen: (orderId: String, fromPaymentScreen: Boolean) -> Unit,
     navigateToPreviousScreen: () -> Unit,
+    loadingStatus: LoadingStatus,
+    onPayInvoice: () -> Unit,
+    buttonEnabled: Boolean,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -122,7 +230,10 @@ fun InvoiceDetailsScreen(
                 paymentMethod = paymentMethod,
                 onChangePaymentMethod = onChangePaymentMethod,
                 phoneNumber = phoneNumber,
-                onChangePhoneNumber = onChangePhoneNumber
+                onChangePhoneNumber = onChangePhoneNumber,
+                loadingStatus = loadingStatus,
+                buttonEnabled = buttonEnabled,
+                onPayInvoice = onPayInvoice
             )
             Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
             Text(
@@ -173,6 +284,9 @@ fun InvoiceDetailsCard(
     onChangePaymentMethod: (paymentMethod: PaymentMethod) -> Unit,
     phoneNumber: String,
     onChangePhoneNumber: (phone: String) -> Unit,
+    loadingStatus: LoadingStatus,
+    onPayInvoice: () -> Unit,
+    buttonEnabled: Boolean,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -352,7 +466,8 @@ fun InvoiceDetailsCard(
                 }
                 Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
                 Button(
-                    onClick = { /*TODO*/ },
+                    enabled = buttonEnabled && loadingStatus != LoadingStatus.LOADING,
+                    onClick = onPayInvoice,
                     modifier = Modifier
                         .fillMaxWidth()
                 ) {
@@ -432,6 +547,82 @@ fun ActorCard(
     }
 }
 
+@Composable
+fun InvoicePaymentConfirmationDialog(
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+    title: String,
+    cost: String,
+    modifier: Modifier = Modifier
+) {
+    AlertDialog(
+        title = {
+            Text(
+                text = "Confirm Invoice Payment",
+                fontSize = screenFontSize(x = 16.0).sp,
+                fontWeight = FontWeight.Bold
+            )
+        },
+        text = {
+            Text(
+                text = "Are you sure you want to pay $cost for $title?",
+                fontSize = screenFontSize(x = 14.0).sp
+            )
+        },
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            Button(onClick = onConfirm) {
+                Text(
+                    text = "Confirm",
+                    fontSize = screenFontSize(x = 14.0).sp
+                )
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(
+                    text = "Cancel",
+                    fontSize = screenFontSize(x = 14.0).sp
+                )
+            }
+        }
+    )
+}
+
+@Composable
+fun InvoicePaymentSuccessDialog(
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+    title: String,
+    cost: String,
+    modifier: Modifier = Modifier
+) {
+    AlertDialog(
+        title = {
+            Text(
+                text = "Invoice Payment and Order Creation",
+                fontSize = screenFontSize(x = 16.0).sp,
+                fontWeight = FontWeight.Bold
+            )
+        },
+        text = {
+            Text(
+                text = "Your invoice payment has been done and an order has been created for $title",
+                fontSize = screenFontSize(x = 14.0).sp
+            )
+        },
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            Button(onClick = onConfirm) {
+                Text(
+                    text = "Done",
+                    fontSize = screenFontSize(x = 14.0).sp
+                )
+            }
+        },
+    )
+}
+
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
@@ -451,7 +642,10 @@ fun InvoiceDetailsScreenPreview(
             onChangePhoneNumber = {},
             navigateToPreviousScreen = {},
             orderData = orderData,
-            navigateToOrderDetailsScreen = {orderId: String, fromPaymentScreen: Boolean ->}
+            navigateToOrderDetailsScreen = {orderId: String, fromPaymentScreen: Boolean ->},
+            loadingStatus = LoadingStatus.INITIAL,
+            onPayInvoice = {},
+            buttonEnabled = false
         )
     }
 }
