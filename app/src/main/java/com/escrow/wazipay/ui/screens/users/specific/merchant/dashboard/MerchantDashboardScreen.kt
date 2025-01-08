@@ -417,7 +417,7 @@ fun MerchantDashboardScreen(
         Button(
             enabled = pendingOrders.isNotEmpty(),
             onClick = {
-                navigateToOrdersScreenWithStatus("pending")
+                navigateToOrdersScreenWithStatus("pending_pickup")
             },
             modifier = Modifier
                 .fillMaxWidth()

@@ -333,7 +333,9 @@ fun BuyerDashboardScreen(
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.weight(1f))
-                TextButton(onClick = {
+                TextButton(
+                    enabled = pendingInvoices.isNotEmpty(),
+                    onClick = {
                     navigateToInvoicesScreenWithStatus("Pending")
                 }) {
                     Text(text = "See all")
@@ -361,7 +363,10 @@ fun BuyerDashboardScreen(
                 fontWeight = FontWeight.Bold
             )
             Spacer(modifier = Modifier.weight(1f))
-            TextButton(onClick = navigateToOrdersScreen) {
+            TextButton(
+                enabled = orders.isNotEmpty(),
+                onClick = navigateToOrdersScreen
+            ) {
                 Text(text = "See all")
             }
         }
@@ -440,7 +445,10 @@ fun BuyerDashboardScreen(
                 fontWeight = FontWeight.Bold
             )
             Spacer(modifier = Modifier.weight(1f))
-            TextButton(onClick = navigateToTransactionsScreen) {
+            TextButton(
+                enabled = transactions.isNotEmpty(),
+                onClick = navigateToTransactionsScreen
+            ) {
                 Text(text = "See all")
             }
         }
@@ -457,7 +465,7 @@ fun BuyerDashboardScreen(
             }
         } else {
             Text(
-                text = "No payments (invoices) found",
+                text = "No transactions found",
                 fontSize = screenFontSize(x = 14.0).sp,
                 color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier

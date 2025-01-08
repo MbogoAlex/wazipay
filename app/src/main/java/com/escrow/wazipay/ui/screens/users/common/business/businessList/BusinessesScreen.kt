@@ -64,6 +64,7 @@ fun BusinessesScreenComposable(
     Box(
         modifier = modifier
             .safeDrawingPadding()
+            .background(MaterialTheme.colorScheme.background)
     ) {
         BusinessesScreen(
             homeScreen = homeScreen,
@@ -107,6 +108,7 @@ fun BusinessesScreen(
         Box(
             modifier = Modifier
                 .padding(it)
+                .background(MaterialTheme.colorScheme.background)
         ) {
             Column(
                 modifier = Modifier
