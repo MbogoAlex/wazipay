@@ -127,11 +127,15 @@ fun InvoiceDetailsScreenComposable(
         InvoicePaymentSuccessDialog(
             onConfirm = {
                 viewModel.resetStatus()
+                viewModel.getInvoiceDetails()
+                viewModel.getUserWallet()
                 showSuccessDialog = !showSuccessDialog
                 navigateToOrderDetailsScreen(uiState.newOrderId.toString(), true)
             },
             onDismiss = {
                 viewModel.resetStatus()
+                viewModel.getInvoiceDetails()
+                viewModel.getUserWallet()
                 showSuccessDialog = !showSuccessDialog
                 navigateToOrderDetailsScreen(uiState.newOrderId.toString(), true)
             },

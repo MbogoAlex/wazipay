@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.escrow.wazipay.data.network.repository.ApiRepository
 import com.escrow.wazipay.data.room.repository.DBRepository
-import com.escrow.wazipay.ui.screens.users.common.order.LoadOrdersStatus
 import com.escrow.wazipay.ui.screens.users.specific.buyer.businessPayment.PaymentMethod
 import com.escrow.wazipay.ui.screens.users.specific.merchant.courierAssignment.LoadingStatus
 import kotlinx.coroutines.Dispatchers
@@ -107,6 +106,30 @@ class InvoiceDetailsViewModel(
         }
     }
 
+    fun getUserWallet() {
+        viewModelScope.launch {
+            try {
+                while(uiState.value.userDetails.userId == 0) {
+                    delay(1000)
+                }
+                val response = apiRepository.getUserWallet(
+                    token = uiState.value.userDetails.token!!,
+                )
+
+                if(response.isSuccessful) {
+                    _uiState.update {
+                        it.copy(
+                            userWalletData = response.body()?.data!!,
+                        )
+                    }
+                }
+
+            } catch (e: Exception) {
+                Log.e("getUserException_err", e.toString())
+            }
+        }
+    }
+
     private fun getOrder() {
         viewModelScope.launch {
             try {
@@ -174,6 +197,7 @@ class InvoiceDetailsViewModel(
                 delay(1000)
             }
             getInvoiceDetails()
+            getUserWallet()
         }
     }
 
