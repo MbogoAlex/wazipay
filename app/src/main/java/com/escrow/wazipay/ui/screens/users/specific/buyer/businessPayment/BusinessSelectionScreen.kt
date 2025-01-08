@@ -218,6 +218,18 @@ fun BusinessSelectionScreen(
                 .fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+        if(businesses.isEmpty()) {
+            if(toBuyerSelectionScreen) {
+                Text(
+                    text = "You have no business yet",
+                    fontSize = screenFontSize(x = 14.0).sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                )
+            }
+        }
         LazyColumn {
             items(businesses) {
                 SelectableBusinessCell(

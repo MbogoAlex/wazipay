@@ -42,7 +42,7 @@ class BusinessSelectionViewModel(
                 val response = apiRepository.getBusinesses(
                     token = uiState.value.userDetails.token!!,
                     query = uiState.value.searchQuery,
-                    ownerId = null,
+                    ownerId = if(uiState.value.toBuyerSelectionScreen) uiState.value.userDetails.userId else null,
                     archived = null,
                     startDate = null,
                     endDate = null
