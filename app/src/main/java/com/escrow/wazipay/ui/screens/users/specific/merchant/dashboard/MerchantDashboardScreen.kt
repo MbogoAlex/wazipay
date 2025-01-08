@@ -376,7 +376,7 @@ fun MerchantDashboardScreen(
             Spacer(modifier = Modifier.weight(1f))
             TextButton(
                 enabled = pendingOrders.isNotEmpty(),
-                onClick = { navigateToOrdersScreenWithStatus("pending") }
+                onClick = { navigateToOrdersScreenWithStatus("pending_pickup") }
             ) {
                 Text(
                     text = "See all",

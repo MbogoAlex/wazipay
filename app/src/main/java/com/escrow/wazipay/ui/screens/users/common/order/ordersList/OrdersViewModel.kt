@@ -166,6 +166,7 @@ class OrdersViewModel(
             it.copy(
                 businessId = savedStateHandle[OrdersScreenDestination.businessId],
                 orderStage = if(stage != null) OrderStage.valueOf(stage.uppercase()) else OrderStage.All,
+                selectedStage = if(stage != null) if(stage == "IN_TRANSIT".lowercase()) "In Transit" else if (stage == "PENDING_PICKUP".lowercase()) "Pending pickup" else stage.replaceFirstChar { first -> first.uppercase() } else "All",
             )
         }
         getUserDetails()
