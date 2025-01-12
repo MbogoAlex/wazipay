@@ -211,7 +211,26 @@ fun DashboardScreenComposable(
             )
         }
 
-        else -> listOf()
+        Role.COURIER -> {
+            listOf(
+                NavItem(
+                    name = "Home",
+                    icon = R.drawable.home,
+                    tab = NavBarItem.HOME
+                ),
+                NavItem(
+                    name = "Assigned Orders",
+                    icon = R.drawable.motorbike,
+                    tab = NavBarItem.ASSIGNED_ORDERS
+                ),
+                NavItem(
+                    name = "Profile",
+                    icon = R.drawable.profile,
+                    tab = NavBarItem.PROFILE
+                ),
+            )
+        }
+
     }
 
     Box(
@@ -330,6 +349,7 @@ fun DashboardScreen(
         NavBarItem.COURIER_ASSIGNMENT -> "Courier assignment"
         NavBarItem.ISSUE_INVOICE -> "Issue invoice"
         NavBarItem.ADD_BUSINESS -> "Add business"
+        NavBarItem.ASSIGNED_ORDERS -> "Assigned orders"
     }
 
     Column(
@@ -557,6 +577,20 @@ fun DashboardScreen(
                 modifier = Modifier
                     .weight(1f)
             )
+
+            NavBarItem.ASSIGNED_ORDERS -> {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .weight(1f)
+                ) {
+                    Text(
+                        text = "Assigned orders",
+                        fontSize = screenFontSize(x = 14.0).sp
+                    )
+                }
+            }
         }
         BottomNavBar(
             navItems = navItems,

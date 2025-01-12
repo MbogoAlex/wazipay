@@ -53,10 +53,12 @@ import com.escrow.wazipay.data.network.models.order.OrderData
 import com.escrow.wazipay.data.network.models.order.orders
 import com.escrow.wazipay.data.network.models.transaction.TransactionData
 import com.escrow.wazipay.data.network.models.transaction.transactions
+import com.escrow.wazipay.data.room.models.Role
 import com.escrow.wazipay.ui.screens.users.common.enums.LoadUserStatus
 import com.escrow.wazipay.ui.screens.users.common.invoice.InvoiceItemComposable
 import com.escrow.wazipay.ui.screens.users.common.order.OrderItemComposable
 import com.escrow.wazipay.ui.screens.users.common.transaction.TransactionCellComposable
+import com.escrow.wazipay.ui.screens.users.common.wallet.WalletCard
 import com.escrow.wazipay.ui.theme.WazipayTheme
 import com.escrow.wazipay.utils.formatMoneyValue
 import com.escrow.wazipay.utils.screenFontSize
@@ -167,158 +169,19 @@ fun BuyerDashboardScreen(
             .verticalScroll(rememberScrollState())
 
     ) {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-        ) {
-            Column(
-                modifier = Modifier
-                    .padding(screenWidth(x = 16.0))
-                    .animateContentSize(
-                        animationSpec = spring(
-                            dampingRatio = Spring.DampingRatioNoBouncy,
-                            stiffness = Spring.StiffnessMedium
-                        )
-                    )
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.person),
-                        contentDescription = null
-                    )
-                    Text(
-                        text = username.split(" ")[0].uppercase(),
-                        color = MaterialTheme.colorScheme.onBackground,
-                        fontSize = screenFontSize(x = 14.0).sp
-                    )
-                    Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
-                    ElevatedCard {
-                        Text(
-                            text = if(userVerified) "VERIFIED" else "UNVERIFIED",
-                            fontSize = screenFontSize(x = 12.0).sp,
-                            color = MaterialTheme.colorScheme.onBackground,
-                            modifier = Modifier
-                                .padding(screenWidth(x = 3.0))
-                        )
-                    }
-                    Spacer(modifier = Modifier.weight(1f))
-                    Text(
-                        text = "BUYER",
-                        color = MaterialTheme.colorScheme.onBackground,
-                        fontSize = screenFontSize(x = 14.0).sp
-                    )
-                }
-                Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
-                Text(
-                    text = "Wallet Balance",
-                    color = MaterialTheme.colorScheme.onBackground,
-                    fontSize = screenFontSize(x = 14.0).sp
-                )
-                Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
-                if(!walletExpanded) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center,
-                        modifier = Modifier
-                            .clickable {
-                                walletExpanded = !walletExpanded
-                            }
-                            .fillMaxWidth()
-                    ) {
-                        Text(text = "Click to expand")
-                        Icon(
-                            painter = painterResource(id = R.drawable.double_arrow_right),
-                            contentDescription = "Expand wallet"
-                        )
-                    }
-                }
-                if(walletExpanded) {
-                    Column {
-                        Text(
-                            text = walletBalance,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onBackground,
-                            fontSize = screenFontSize(x = 24.0).sp
-                        )
-                        Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Button(onClick = {
-                                navigateToDepositScreen()
-                            }) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Text(
-                                        text = "+",
-                                        fontSize = screenFontSize(x = 14.0).sp
-                                    )
-                                    Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
-                                    Text(
-                                        text = "Deposit",
-                                        fontSize = screenFontSize(x = 14.0).sp
-                                    )
-                                }
-                            }
-                            Spacer(modifier = Modifier.width(screenWidth(x = 8.0)))
-                            OutlinedButton(onClick = {
-                                navigateToWithdrawalScreen()
-                            }) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Text(
-                                        text = "-",
-                                        fontSize = screenFontSize(x = 14.0).sp
-                                    )
-                                    Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
-                                    Text(
-                                        text = "Withdraw",
-                                        fontSize = screenFontSize(x = 14.0).sp
-                                    )
-                                }
-                            }
-                        }
-                        Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = "Hide Balance",
-                                color = MaterialTheme.colorScheme.onBackground,
-                                fontSize = screenFontSize(x = 14.0).sp
-                            )
-                            Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
-                            Switch(checked = false, onCheckedChange = {})
-                        }
-                        Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
-                        if(walletExpanded) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Center,
-                                modifier = Modifier
-                                    .clickable {
-                                        walletExpanded = !walletExpanded
-                                    }
-                                    .fillMaxWidth()
-                            ) {
-                                Text(text = "Click to collapse")
-                                Icon(
-                                    painter = painterResource(id = R.drawable.double_arrow_left),
-                                    contentDescription = "Collapse wallet"
-                                )
-                            }
-                        }
-                    }
-                }
-
+        WalletCard(
+            walletExpanded = walletExpanded,
+            role = Role.BUYER,
+            username = username,
+            userVerified = userVerified,
+            walletBalance = walletBalance,
+            navigateToDepositScreen = navigateToDepositScreen,
+            navigateToWithdrawalScreen = navigateToWithdrawalScreen,
+            onExpandWallet = {
+                walletExpanded = !walletExpanded
             }
-        }
-        Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
-        Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
+        )
+        Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
         Button(
             onClick = navigateToBusinessSelectionScreen,
             modifier = Modifier

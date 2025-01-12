@@ -6,6 +6,7 @@ import com.escrow.wazipay.data.network.models.transaction.TransactionData
 import com.escrow.wazipay.data.network.models.user.UserContactData
 import com.escrow.wazipay.data.network.models.user.UserDetailsData
 import com.escrow.wazipay.data.network.models.wallet.UserWalletData
+import com.escrow.wazipay.data.room.models.Role
 import com.escrow.wazipay.data.room.models.UserDetails
 import com.escrow.wazipay.ui.screens.users.common.invoice.LoadInvoicesStatus
 import com.escrow.wazipay.ui.screens.users.common.transaction.LoadTransactionsStatus
@@ -15,6 +16,7 @@ import com.escrow.wazipay.ui.screens.users.common.order.LoadOrdersStatus
 
 data class BuyerDashboardUiData(
     val userDetails: UserDetails = UserDetails(),
+    val role: Role = Role.BUYER,
     val userDetailsData: UserDetailsData = UserDetailsData(
         userId = 1,
         username = "",

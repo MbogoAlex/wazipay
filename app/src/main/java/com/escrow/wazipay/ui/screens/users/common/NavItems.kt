@@ -12,6 +12,7 @@ enum class NavBarItem {
     COURIER_ASSIGNMENT,
     ISSUE_INVOICE,
     ADD_BUSINESS,
+    ASSIGNED_ORDERS,
 
 //    Seller
     SHOPS,
