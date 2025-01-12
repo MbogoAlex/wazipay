@@ -1,5 +1,6 @@
 package com.escrow.wazipay.data.network.repository
 
+import com.escrow.wazipay.data.network.models.business.BusinessAdditionRequestBody
 import com.escrow.wazipay.data.network.models.business.BusinessResponseBody
 import com.escrow.wazipay.data.network.models.business.BusinessesResponseBody
 import com.escrow.wazipay.data.network.models.common.LoginRequestBody
@@ -207,4 +208,11 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Body courierAssignmentRequestBody: CourierAssignmentRequestBody
     ): Response<CourierAssignmentResponseBody>
+
+//    Add business
+    @POST("merchant/business")
+    suspend fun addBusiness(
+        @Header("Authorization") token: String,
+        @Body businessAdditionRequestBody: BusinessAdditionRequestBody
+    ): Response<BusinessResponseBody>
 }

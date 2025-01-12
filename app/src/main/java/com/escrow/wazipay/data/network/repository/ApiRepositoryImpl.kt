@@ -1,5 +1,6 @@
 package com.escrow.wazipay.data.network.repository
 
+import com.escrow.wazipay.data.network.models.business.BusinessAdditionRequestBody
 import com.escrow.wazipay.data.network.models.business.BusinessResponseBody
 import com.escrow.wazipay.data.network.models.business.BusinessesResponseBody
 import com.escrow.wazipay.data.network.models.common.LoginRequestBody
@@ -243,5 +244,14 @@ class ApiRepositoryImpl(private val apiService: ApiService): ApiRepository {
         apiService.assignCourier(
             token = "Bearer $token",
             courierAssignmentRequestBody = courierAssignmentRequestBody
+        )
+
+    override suspend fun addBusiness(
+        token: String,
+        businessAdditionRequestBody: BusinessAdditionRequestBody
+    ): Response<BusinessResponseBody> =
+        apiService.addBusiness(
+            token = "Bearer $token",
+            businessAdditionRequestBody = businessAdditionRequestBody
         )
 }
