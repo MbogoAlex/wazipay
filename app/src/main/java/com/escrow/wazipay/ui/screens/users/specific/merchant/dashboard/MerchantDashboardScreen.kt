@@ -581,7 +581,9 @@ fun MerchantDashboardScreen(
             )
             Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
             OutlinedButton(
-                onClick = { /*TODO*/ },
+                onClick = {
+                    navigateToBusinessSelectionScreenWithArgs(true)
+                },
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
@@ -643,7 +645,9 @@ fun MerchantDashboardScreen(
             }
             Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
             Button(
-                onClick = { /*TODO*/ },
+                onClick = {
+                    navigateToBusinessAdditionScreen()
+                },
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
