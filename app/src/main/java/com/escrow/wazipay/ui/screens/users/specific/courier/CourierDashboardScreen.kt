@@ -3,6 +3,7 @@ package com.escrow.wazipay.ui.screens.users.specific.courier
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -19,6 +21,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -29,12 +33,17 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.escrow.wazipay.AppViewModelFactory
 import com.escrow.wazipay.R
 import com.escrow.wazipay.data.network.models.order.OrderData
 import com.escrow.wazipay.data.network.models.order.orders
 import com.escrow.wazipay.data.network.models.transaction.TransactionData
 import com.escrow.wazipay.data.network.models.transaction.transactions
 import com.escrow.wazipay.data.room.models.Role
+import com.escrow.wazipay.ui.screens.users.common.enums.LoadUserStatus
 import com.escrow.wazipay.ui.screens.users.common.order.OrderItemComposable
 import com.escrow.wazipay.ui.screens.users.common.transaction.TransactionCellComposable
 import com.escrow.wazipay.ui.screens.users.common.wallet.WalletCard
@@ -44,10 +53,60 @@ import com.escrow.wazipay.utils.screenFontSize
 import com.escrow.wazipay.utils.screenHeight
 import com.escrow.wazipay.utils.screenWidth
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun CourierScreenDashboardScreenComposable(
+    navigateToLoginScreenWithArgs: (phoneNumber: String, pin: String) -> Unit,
+    navigateToDepositScreen: () -> Unit,
+    navigateToWithdrawalScreen: () -> Unit,
+    navigateToOrderDetailsScreen: (orderId: String, fromPaymentScreen: Boolean) -> Unit,
+    navigateToOrdersScreenWithStatus: (childScreen: String) -> Unit,
+    navigateToOrderScreen: () -> Unit,
+    navigateToTransactionsScreen: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val viewModel: CourierDashboardViewModel = viewModel(factory = AppViewModelFactory.Factory)
+    val uiState by viewModel.uiState.collectAsState()
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val lifecycleState by lifecycleOwner.lifecycle.currentStateFlow.collectAsState()
+
+    LaunchedEffect(lifecycleState) {
+        when(lifecycleState) {
+            Lifecycle.State.DESTROYED -> {}
+            Lifecycle.State.INITIALIZED -> {}
+            Lifecycle.State.CREATED -> {}
+            Lifecycle.State.STARTED -> {}
+            Lifecycle.State.RESUMED -> {
+                viewModel.loadDashboardData()
+            }
+        }
+    }
+
+    if(uiState.unauthorized && uiState.loadUserStatus == LoadUserStatus.FAIL) {
+        navigateToLoginScreenWithArgs(uiState.userDetails.phoneNumber!!, uiState.userDetails.pin!!)
+        viewModel.resetStatus()
+    }
+
+    Box(
+        modifier = modifier
+            .safeDrawingPadding()
+    ) {
+        CourierScreenDashboardScreen(
+            username = uiState.userDetails.username ?: "",
+            userVerified = uiState.userDetailsData.verified,
+            walletBalance = formatMoneyValue(uiState.userWalletData.balance),
+            orders = uiState.orders,
+            pendingDeliveryOrders = uiState.pendingDeliveryOrders,
+            transactions = uiState.transactions,
+            navigateToDepositScreen = navigateToDepositScreen,
+            navigateToWithdrawalScreen = navigateToWithdrawalScreen,
+            navigateToOrdersScreenWithStatus = navigateToOrdersScreenWithStatus,
+            navigateToOrderDetailsScreen = navigateToOrderDetailsScreen,
+            navigateToTransactionsScreen = navigateToTransactionsScreen,
+            navigateToOrderScreen = navigateToOrderScreen
+        )
+    }
 
 }
 
@@ -57,12 +116,14 @@ fun CourierScreenDashboardScreen(
     username: String,
     userVerified: Boolean,
     walletBalance: String,
-    assignedOrders: List<OrderData>,
+    orders: List<OrderData>,
+    pendingDeliveryOrders: List<OrderData>,
     transactions: List<TransactionData>,
     navigateToDepositScreen: () -> Unit,
     navigateToWithdrawalScreen: () -> Unit,
     navigateToOrdersScreenWithStatus: (childScreen: String) -> Unit,
     navigateToOrderDetailsScreen: (orderId: String, fromPaymentScreen: Boolean) -> Unit,
+    navigateToOrderScreen: () -> Unit,
     navigateToTransactionsScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -107,7 +168,7 @@ fun CourierScreenDashboardScreen(
             )
             Spacer(modifier = Modifier.weight(1f))
             TextButton(
-                enabled = assignedOrders.isNotEmpty(),
+                enabled = pendingDeliveryOrders.isNotEmpty(),
                 onClick = { navigateToOrdersScreenWithStatus("in_transit") },
             ) {
                 Text(
@@ -116,13 +177,13 @@ fun CourierScreenDashboardScreen(
                 )
             }
         }
-        if(assignedOrders.isNotEmpty()) {
+        if(pendingDeliveryOrders.isNotEmpty()) {
             Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
             Row(
                 modifier = Modifier
                     .horizontalScroll(rememberScrollState())
             ) {
-                assignedOrders.take(5).forEach {
+                pendingDeliveryOrders.take(5).forEach {
                     OrderItemComposable(
                         homeScreen = true,
                         orderData = it,
@@ -138,15 +199,16 @@ fun CourierScreenDashboardScreen(
         } else {
             Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
             Text(
-                text = "No pending assigned order",
+                text = "No assigned order pending delivery",
                 fontSize = screenFontSize(x = 14.0).sp,
                 color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier
                         .align(Alignment.CenterHorizontally)
             )
         }
-        Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+        Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
         Button(
+            enabled = pendingDeliveryOrders.isNotEmpty(),
             onClick = { navigateToOrdersScreenWithStatus("in_transit") },
             modifier = Modifier
                 .fillMaxWidth()
@@ -162,6 +224,58 @@ fun CourierScreenDashboardScreen(
                     contentDescription = "Complete delivery"
                 )
             }
+        }
+        Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "All my assigned orders",
+                color = MaterialTheme.colorScheme.onBackground,
+                fontSize = screenFontSize(x = 16.0).sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier
+                    .weight(1f)
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            TextButton(
+                enabled = orders.isNotEmpty(),
+                onClick = navigateToOrderScreen,
+            ) {
+                Text(
+                    text = "See all",
+                    fontSize = screenFontSize(x = 14.0).sp
+                )
+            }
+        }
+        if(orders.isNotEmpty()) {
+            Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+            Row(
+                modifier = Modifier
+                    .horizontalScroll(rememberScrollState())
+            ) {
+                orders.take(5).forEach {
+                    OrderItemComposable(
+                        homeScreen = true,
+                        orderData = it,
+                        navigateToOrderDetailsScreen = navigateToOrderDetailsScreen,
+                        modifier = Modifier
+                            .fillMaxWidth(0.7f)
+                            .padding(
+                                screenWidth(x = 8.0)
+                            )
+                    )
+                }
+            }
+        } else {
+            Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+            Text(
+                text = "No assigned order",
+                fontSize = screenFontSize(x = 14.0).sp,
+                color = MaterialTheme.colorScheme.onBackground,
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+            )
         }
         Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
         Row(
@@ -213,14 +327,16 @@ fun CourierScreenDashboardScreenPreview() {
         CourierScreenDashboardScreen(
             username = "Alex Mbogo",
             userVerified = true,
-            assignedOrders = orders,
+            orders = orders,
+            pendingDeliveryOrders = orders,
             transactions = transactions,
             walletBalance = formatMoneyValue(1560.0),
             navigateToDepositScreen = {},
             navigateToWithdrawalScreen = {},
             navigateToOrdersScreenWithStatus = {},
             navigateToOrderDetailsScreen = {_, _ ->},
-            navigateToTransactionsScreen = {}
+            navigateToTransactionsScreen = {},
+            navigateToOrderScreen = {}
         )
     }
 }

@@ -149,14 +149,6 @@ fun BusinessesScreen(
                 if(role != Role.MERCHANT) {
                     TextField(
                         shape = RoundedCornerShape(screenWidth(x = 10.0)),
-//            leadingIcon = {
-//                IconButton(onClick = { /*TODO*/ }) {
-//                    Icon(
-//                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-//                        contentDescription = "Back"
-//                    )
-//                }
-//            },
                         label = {
                             Text(
                                 text = "Search business / owner",

@@ -71,6 +71,7 @@ import com.escrow.wazipay.ui.screens.users.common.profile.ProfileScreenComposabl
 import com.escrow.wazipay.ui.screens.users.common.transaction.transactionsList.TransactionsScreenComposable
 import com.escrow.wazipay.ui.screens.users.specific.buyer.businessPayment.BusinessSelectionScreenComposable
 import com.escrow.wazipay.ui.screens.users.specific.buyer.dashboard.BuyerDashboardScreenComposable
+import com.escrow.wazipay.ui.screens.users.specific.courier.CourierScreenDashboardScreenComposable
 import com.escrow.wazipay.ui.screens.users.specific.merchant.dashboard.MerchantDashboardScreenComposable
 import com.escrow.wazipay.ui.theme.WazipayTheme
 import com.escrow.wazipay.utils.screenFontSize
@@ -497,7 +498,17 @@ fun DashboardScreen(
                             .weight(1f)
                 )
 
-                Role.COURIER -> {}
+                Role.COURIER -> CourierScreenDashboardScreenComposable(
+                    navigateToDepositScreen = navigateToDepositScreen,
+                    navigateToWithdrawalScreen = navigateToWithdrawalScreen,
+                    navigateToOrderDetailsScreen = navigateToOrderDetailsScreen,
+                    navigateToLoginScreenWithArgs = navigateToLoginScreenWithArgs,
+                    navigateToTransactionsScreen = navigateToTransactionsScreen,
+                    navigateToOrderScreen = navigateToOrderScreen,
+                    navigateToOrdersScreenWithStatus = navigateToOrdersScreenWithStatus,
+                    modifier = Modifier
+                        .weight(1f)
+                )
             }
             NavBarItem.TRANSACTIONS -> TransactionsScreenComposable(
                 onFilter = onFilter,
@@ -578,19 +589,14 @@ fun DashboardScreen(
                     .weight(1f)
             )
 
-            NavBarItem.ASSIGNED_ORDERS -> {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .weight(1f)
-                ) {
-                    Text(
-                        text = "Assigned orders",
-                        fontSize = screenFontSize(x = 14.0).sp
-                    )
-                }
-            }
+            NavBarItem.ASSIGNED_ORDERS -> OrdersScreenComposable(
+                showBackArrow = false,
+                navigateToLoginScreenWithArgs = navigateToLoginScreenWithArgs,
+                navigateToOrderDetailsScreen = navigateToOrderDetailsScreen,
+                navigateToPreviousScreen = navigateToPreviousScreen,
+                modifier = Modifier
+                    .weight(1f)
+            )
         }
         BottomNavBar(
             navItems = navItems,

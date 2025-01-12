@@ -11,6 +11,8 @@ data class OrdersUiData(
     val role: Role = Role.BUYER,
     val orders: List<OrderData> = emptyList(),
     val businessId: String? = null,
+    val searchQuery: String? = null,
+    val code: String? = null,
     val orderStage: OrderStage = OrderStage.All,
     val selectedStage: String = "All",
     val stages: List<String> = listOf("All", "Completed", "In Transit", "Pending pickup", "Cancelled", "Refunded"),

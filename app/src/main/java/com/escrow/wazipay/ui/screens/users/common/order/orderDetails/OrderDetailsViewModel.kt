@@ -157,6 +157,16 @@ class OrderDetailsViewModel(
         }
     }
 
+    fun resetStatus() {
+        _uiState.update {
+            it.copy(
+                loadOrdersStatus = LoadOrdersStatus.INITIAL,
+                completeDeliveryStatus = CompleteDeliveryStatus.INITIAL
+
+            )
+        }
+    }
+
     init {
         getUserDetails()
         getUserRole()

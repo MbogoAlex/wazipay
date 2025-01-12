@@ -116,10 +116,12 @@ fun OrderDetailsScreenComposable(
         CompleteDeliverySuccessDialog(
             onConfirm = {
                 viewModel.getOrder()
-                showSuccessDialog = !showSuccessDialog
+                viewModel.resetStatus()
+                showSuccessDialog = false
             },
             onDismiss = {
-                showSuccessDialog = !showSuccessDialog
+                viewModel.resetStatus()
+                showSuccessDialog = false
             },
             orderName = uiState.orderData.name,
             buyerName = uiState.orderData.buyer?.username ?: ""
@@ -187,7 +189,7 @@ fun OrderDetailsScreen(
                 )
             }
             Text(
-                text = "Order details",
+                text = "Order details / ${if(orderData.orderStage == "PENDING_PICKUP") "Pending pickup" else if(orderData.orderStage == "IN_TRANSIT") "In transit" else ("Complete")}",
                 color = MaterialTheme.colorScheme.onBackground,
                 fontWeight = FontWeight.Bold,
                 fontSize = screenFontSize(x = 16.0).sp

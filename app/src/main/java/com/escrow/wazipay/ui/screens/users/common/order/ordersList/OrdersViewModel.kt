@@ -27,6 +27,14 @@ class OrdersViewModel(
     private val _uiState = MutableStateFlow(OrdersUiData())
     val uiState: StateFlow<OrdersUiData> = _uiState.asStateFlow()
 
+    fun changeCode(code: String?) {
+        _uiState.update {
+            it.copy(
+                code = code
+            )
+        }
+        getOrders()
+    }
 
     fun getOrders() {
 
@@ -42,10 +50,10 @@ class OrdersViewModel(
                 val response = apiRepository.getOrders(
                     token = uiState.value.userDetails.token!!,
                     query = null,
-                    code = null,
+                    code = uiState.value.code,
                     merchantId = if(uiState.value.role == Role.MERCHANT) uiState.value.userDetails.userId else null,
                     buyerId = if(uiState.value.role == Role.BUYER) uiState.value.userDetails.userId else null,
-                    courierId = null,
+                    courierId = if(uiState.value.role == Role.COURIER) uiState.value.userDetails.userId else null,
                     businessId = if(uiState.value.businessId != null) uiState.value.businessId!!.toInt() else null,
                     stage = if(uiState.value.orderStage == OrderStage.All) null else uiState.value.orderStage.name,
                     startDate = null,

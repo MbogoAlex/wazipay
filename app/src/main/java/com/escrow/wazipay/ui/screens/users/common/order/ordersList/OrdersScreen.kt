@@ -2,6 +2,8 @@ package com.escrow.wazipay.ui.screens.users.common.order.ordersList
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,14 +15,19 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.Button
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -29,13 +36,18 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
@@ -65,6 +77,7 @@ object OrdersScreenDestination: AppNavigation {
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun OrdersScreenComposable(
+    showBackArrow: Boolean = true,
     navigateToLoginScreenWithArgs: (phoneNumber: String, pin: String) -> Unit,
     navigateToOrderDetailsScreen: (orderId: String, fromPaymentScreen: Boolean) -> Unit,
     navigateToPreviousScreen: () -> Unit,
@@ -99,8 +112,20 @@ fun OrdersScreenComposable(
             .safeDrawingPadding()
     ) {
         OrdersScreen(
+            showBackArrow = showBackArrow,
             orders = uiState.orders,
             stages = uiState.stages,
+            code = uiState.code ?: "",
+            onChangeCodeQuery = {
+                if(it.isEmpty()) {
+                    viewModel.changeCode(null)
+                } else {
+                    viewModel.changeCode(it)
+                }
+            },
+            onClearCodeQuery = {
+                viewModel.changeCode(null)
+            },
             selectedStage = uiState.selectedStage,
             onChangeOrderStage = {
                 viewModel.changeOrderStage(it)
@@ -115,10 +140,14 @@ fun OrdersScreenComposable(
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun OrdersScreen(
+    showBackArrow: Boolean,
     role: Role,
     orders: List<OrderData>,
     stages: List<String>,
     selectedStage: String,
+    code: String,
+    onChangeCodeQuery: (text: String) -> Unit,
+    onClearCodeQuery: () -> Unit,
     onChangeOrderStage: (orderStage: String) -> Unit,
     navigateToOrderDetailsScreen: (orderId: String, fromPaymentScreen: Boolean) -> Unit,
     navigateToPreviousScreen: () -> Unit,
@@ -141,30 +170,85 @@ fun OrdersScreen(
                 .padding(it)
         ) {
             Column(
-                modifier = Modifier
+                modifier = if(!showBackArrow && role == Role.COURIER) Modifier
+                    .fillMaxSize()
+                    .padding(
+                        start = screenWidth(x = 16.0),
+                        top = screenHeight(x = 0.0),
+                        end = screenWidth(x = 16.0),
+                        bottom = screenHeight(x = 8.0)
+                    ) else Modifier
                     .fillMaxSize()
                     .padding(
                         vertical = screenHeight(x = 16.0),
                         horizontal = screenWidth(x = 16.0)
                     )
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    IconButton(onClick = navigateToPreviousScreen) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Previous screen"
+                if(showBackArrow) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        IconButton(onClick = navigateToPreviousScreen) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Previous screen"
+                            )
+                        }
+                        Text(
+                            text = "${if(role == Role.BUYER) "My Orders" else if(role == Role.MERCHANT) "Received Orders" else "Assigned Orders"} / $selectedStage",
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onBackground,
+                            fontSize = screenFontSize(x = 16.0).sp
                         )
                     }
-                    Text(
-                        text = "${if(role == Role.BUYER) "My Orders" else if(role == Role.MERCHANT) "Received Orders" else "My Orders"} / $selectedStage",
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        fontSize = screenFontSize(x = 16.0).sp
-                    )
+                    Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
                 }
-                Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+
+                if(role == Role.COURIER) {
+                    TextField(
+                        shape = RoundedCornerShape(screenWidth(x = 10.0)),
+                        label = {
+                            Text(
+                                text = "Enter order code",
+                                fontSize = screenFontSize(x = 14.0).sp
+                            )
+                        },
+                        colors = TextFieldDefaults.colors(
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent
+                        ),
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            imeAction = ImeAction.Done
+                        ),
+                        value = code,
+                        trailingIcon = {
+                            Box(
+                                contentAlignment = Alignment.Center,
+                                modifier = Modifier
+                                    .clip(CircleShape)
+                                    .background(MaterialTheme.colorScheme.inverseOnSurface)
+                                    .padding(screenWidth(x = 5.0))
+                                    .clickable {
+                                        onClearCodeQuery()
+                                    }
+
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Clear,
+                                    contentDescription = "Clear search",
+                                    modifier = Modifier
+                                        .size(screenWidth(x = 16.0))
+                                )
+                            }
+
+                        },
+                        onValueChange = onChangeCodeQuery,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    )
+                    Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
+                }
+
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
@@ -215,9 +299,13 @@ fun OrdersScreenPreview() {
     WazipayTheme {
         val stages = listOf("All", "Completed", "In Transit", "Pending pickup", "Cancelled", "Refunded")
         OrdersScreen(
+            showBackArrow = true,
             orders = orders,
             selectedStage = "All",
             stages = stages,
+            code = "",
+            onChangeCodeQuery = {},
+            onClearCodeQuery = {},
             onChangeOrderStage = {},
             role = Role.BUYER,
             navigateToOrderDetailsScreen = {orderId, fromPaymentScreen ->
