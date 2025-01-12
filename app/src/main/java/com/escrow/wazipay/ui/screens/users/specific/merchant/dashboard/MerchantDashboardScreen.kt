@@ -34,6 +34,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -46,6 +47,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.escrow.wazipay.AppViewModelFactory
 import com.escrow.wazipay.R
@@ -86,6 +89,21 @@ fun MerchantDashboardScreenComposable(
 
     val merchantDashboardViewModel: MerchantDashboardViewModel = viewModel(factory = AppViewModelFactory.Factory)
     val merchantDashboardUiState by merchantDashboardViewModel.uiState.collectAsState()
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val lifecycleState by lifecycleOwner.lifecycle.currentStateFlow.collectAsState()
+
+    LaunchedEffect(lifecycleState) {
+        when(lifecycleState) {
+            Lifecycle.State.DESTROYED -> {}
+            Lifecycle.State.INITIALIZED -> {}
+            Lifecycle.State.CREATED -> {}
+            Lifecycle.State.STARTED -> {}
+            Lifecycle.State.RESUMED -> {
+                merchantDashboardViewModel.loadDashboardData()
+            }
+        }
+    }
 
     if(merchantDashboardUiState.unauthorized && merchantDashboardUiState.loadUserStatus == LoadUserStatus.FAIL) {
         navigateToLoginScreenWithArgs(merchantDashboardUiState.userDetails.phoneNumber!!, merchantDashboardUiState.userDetails.pin!!)

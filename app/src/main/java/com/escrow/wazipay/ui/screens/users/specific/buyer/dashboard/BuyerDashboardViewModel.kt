@@ -328,7 +328,7 @@ class BuyerDashboardViewModel(
         }
     }
 
-    private fun loadDashboardData() {
+    fun loadDashboardData() {
         viewModelScope.launch {
             while (uiState.value.userDetails.userId == 0) {
                 delay(1000)
