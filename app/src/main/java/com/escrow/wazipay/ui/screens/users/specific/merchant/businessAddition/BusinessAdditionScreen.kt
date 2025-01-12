@@ -44,11 +44,17 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.escrow.wazipay.AppViewModelFactory
 import com.escrow.wazipay.R
+import com.escrow.wazipay.ui.nav.AppNavigation
 import com.escrow.wazipay.ui.screens.users.specific.merchant.courierAssignment.LoadingStatus
 import com.escrow.wazipay.ui.theme.WazipayTheme
 import com.escrow.wazipay.utils.screenFontSize
 import com.escrow.wazipay.utils.screenHeight
 import com.escrow.wazipay.utils.screenWidth
+
+object BusinessAdditionScreenDestination: AppNavigation {
+    override val title: String = "Business addition screen"
+    override val route: String = "business-addition-screen"
+}
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -126,6 +132,7 @@ fun BusinessAdditionScreenComposable(
             },
             onChangeProduct = {product, index ->
                 viewModel.changeProduct(product, index)
+                viewModel.enableButton()
             },
             onAddBusiness = { showConfirmationDialog =! showConfirmationDialog },
             buttonEnabled = uiState.buttonEnabled,
@@ -205,6 +212,10 @@ fun BusinessAdditionScreen(
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent
                 ),
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Next,
+                    keyboardType = KeyboardType.Text
+                ),
                 onValueChange = onChangeBusinessName,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -223,6 +234,10 @@ fun BusinessAdditionScreen(
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent
                 ),
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Next,
+                    keyboardType = KeyboardType.Text
+                ),
                 onValueChange = onChangeBusinessDescription,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -240,6 +255,10 @@ fun BusinessAdditionScreen(
                 colors = TextFieldDefaults.colors(
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent
+                ),
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Done,
+                    keyboardType = KeyboardType.Text
                 ),
                 onValueChange = onChangeBusinessLocation,
                 modifier = Modifier
@@ -277,16 +296,15 @@ fun BusinessAdditionScreen(
                         )
                     }
                 }
-
+                Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
             }
-            Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
             IconButton(onClick = onAddProductField) {
                 Icon(
                     painter = painterResource(id = R.drawable.add),
                     contentDescription = "Add product"
                 )
             }
-            Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.height(screenHeight(x = 32.0)))
             Button(
                 enabled = buttonEnabled && loadingStatus != LoadingStatus.LOADING,
                 onClick = onAddBusiness,

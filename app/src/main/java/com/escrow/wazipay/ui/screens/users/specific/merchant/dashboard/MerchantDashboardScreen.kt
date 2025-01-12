@@ -73,13 +73,14 @@ fun MerchantDashboardScreenComposable(
     navigateToWithdrawalScreen: () -> Unit,
     navigateToLoginScreenWithArgs: (phoneNumber: String, pin: String) -> Unit,
     navigateToOrderDetailsScreen: (orderId: String, fromPaymentScreen: Boolean) -> Unit,
-    navigateToBusinessDetailsScreen: (userId: String) -> Unit,
+    navigateToBusinessDetailsScreen: (businessId: String) -> Unit,
     navigateToInvoiceDetailsScreen: (invoiceId: String) -> Unit,
     navigateToOrdersScreen: () -> Unit,
     navigateToOrdersScreenWithStatus: (status: String) -> Unit,
     navigateToInvoicesScreen: () -> Unit,
     navigateToBusinessSelectionScreen: () -> Unit,
     navigateToBusinessSelectionScreenWithArgs: (toBuyerSelectionScreen: Boolean) -> Unit,
+    navigateToBusinessAdditionScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -114,7 +115,8 @@ fun MerchantDashboardScreenComposable(
             navigateToOrdersScreenWithStatus = navigateToOrdersScreenWithStatus,
             navigateToInvoicesScreen = navigateToInvoicesScreen,
             navigateToBusinessSelectionScreen = navigateToBusinessSelectionScreen,
-            navigateToBusinessSelectionScreenWithArgs = navigateToBusinessSelectionScreenWithArgs
+            navigateToBusinessSelectionScreenWithArgs = navigateToBusinessSelectionScreenWithArgs,
+            navigateToBusinessAdditionScreen = navigateToBusinessAdditionScreen,
         )
     }
 }
@@ -134,12 +136,13 @@ fun MerchantDashboardScreen(
     navigateToDepositScreen: () -> Unit,
     navigateToWithdrawalScreen: () -> Unit,
     navigateToOrderDetailsScreen: (orderId: String, fromPaymentScreen: Boolean) -> Unit,
-    navigateToBusinessDetailsScreen: (userId: String) -> Unit,
+    navigateToBusinessDetailsScreen: (businessId: String) -> Unit,
     navigateToInvoiceDetailsScreen: (invoiceId: String) -> Unit,
     navigateToOrdersScreen: () -> Unit,
     navigateToOrdersScreenWithStatus: (status: String) -> Unit,
     navigateToInvoicesScreen: () -> Unit,
     navigateToBusinessSelectionScreen: () -> Unit,
+    navigateToBusinessAdditionScreen: () -> Unit,
     navigateToBusinessSelectionScreenWithArgs: (toBuyerSelectionScreen: Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -322,7 +325,9 @@ fun MerchantDashboardScreen(
                         shape = RoundedCornerShape(screenWidth(x = 10.0))
                     )
                     .fillMaxWidth(0.4f)
-                    .clickable { }
+                    .clickable {
+                        navigateToBusinessAdditionScreen()
+                    }
             ) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -333,7 +338,10 @@ fun MerchantDashboardScreen(
                         painter = painterResource(id = R.drawable.add),
                         contentDescription = "Add business"
                     )
-                    Text(text = "Add business")
+                    Text(
+                        text = "Add business",
+                        fontSize = screenFontSize(x = 14.0).sp
+                    )
                 }
             }
             Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
@@ -359,7 +367,10 @@ fun MerchantDashboardScreen(
                         painter = painterResource(id = R.drawable.issue_invoice),
                         contentDescription = "Issue invoice"
                     )
-                    Text(text = "Issue invoice")
+                    Text(
+                        text = "Issue invoice",
+                        fontSize = screenFontSize(x = 14.0).sp
+                    )
                 }
             }
         }
@@ -740,7 +751,8 @@ fun MerchantDashboardScreenPreview() {
             navigateToOrdersScreenWithStatus = {},
             navigateToBusinessSelectionScreen = {},
             navigateToInvoicesScreen = {},
-            navigateToBusinessSelectionScreenWithArgs = {}
+            navigateToBusinessSelectionScreenWithArgs = {},
+            navigateToBusinessAdditionScreen = {}
         )
     }
 }

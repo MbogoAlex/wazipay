@@ -29,6 +29,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -39,6 +40,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.escrow.wazipay.AppViewModelFactory
 import com.escrow.wazipay.R
@@ -56,10 +59,26 @@ import com.escrow.wazipay.utils.screenWidth
 fun BusinessesScreenComposable(
     homeScreen: Boolean = false,
     navigateToBusinessDetailsScreen: (businessId: String) -> Unit,
+    navigateToBusinessAdditionScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val viewModel: BusinessViewModel = viewModel(factory = AppViewModelFactory.Factory)
     val uiState by viewModel.uiState.collectAsState()
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val lifecycleState by lifecycleOwner.lifecycle.currentStateFlow.collectAsState()
+
+    LaunchedEffect(lifecycleState) {
+        when(lifecycleState) {
+            Lifecycle.State.DESTROYED -> {}
+            Lifecycle.State.INITIALIZED -> {}
+            Lifecycle.State.CREATED -> {}
+            Lifecycle.State.STARTED -> {}
+            Lifecycle.State.RESUMED -> {
+                viewModel.getBusinessesScreenData()
+            }
+        }
+    }
 
     Box(
         modifier = modifier
@@ -76,7 +95,8 @@ fun BusinessesScreenComposable(
             },
             userId = uiState.userDetails.userId,
             businesses = uiState.businesses,
-            navigateToBusinessDetailsScreen = navigateToBusinessDetailsScreen
+            navigateToBusinessDetailsScreen = navigateToBusinessDetailsScreen,
+            navigateToBusinessAdditionScreen = navigateToBusinessAdditionScreen
         )
     }
 }
@@ -91,12 +111,13 @@ fun BusinessesScreen(
     userId: Int,
     businesses: List<BusinessData>,
     navigateToBusinessDetailsScreen: (businessId: String) -> Unit,
+    navigateToBusinessAdditionScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
         floatingActionButton = {
             if(role == Role.MERCHANT) {
-                FloatingActionButton(onClick = { /*TODO*/ }) {
+                FloatingActionButton(onClick = navigateToBusinessAdditionScreen) {
                     Icon(
                         painter = painterResource(id = R.drawable.add),
                         contentDescription = "Add new business"
@@ -178,14 +199,14 @@ fun BusinessesScreen(
                     Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
                 }
                 LazyColumn {
-                    items(businesses) {
+                    items(businesses) { business ->
                         BusinessCellComposable(
                             homeScreen = homeScreen,
                             userId = userId,
-                            businessData = it,
+                            businessData = business,
                             navigateToBusinessDetailsScreen = navigateToBusinessDetailsScreen
                         )
-                        HorizontalDivider()
+                        Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
                     }
                 }
             }
@@ -205,7 +226,8 @@ fun BusinessScreenPreview() {
             onChangeSearchQuery = {},
             userId = 1,
             businesses = businesses,
-            navigateToBusinessDetailsScreen = {}
+            navigateToBusinessDetailsScreen = {},
+            navigateToBusinessAdditionScreen = {}
         )
     }
 }

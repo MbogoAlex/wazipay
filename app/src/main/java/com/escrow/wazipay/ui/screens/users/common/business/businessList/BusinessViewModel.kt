@@ -94,7 +94,7 @@ class BusinessViewModel(
         }
     }
 
-    private fun getBusinessesScreenData() {
+    fun getBusinessesScreenData() {
         viewModelScope.launch {
             while (uiState.value.userDetails.userId == 0) {
                 delay(1000)

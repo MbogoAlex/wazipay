@@ -44,6 +44,8 @@ import com.escrow.wazipay.ui.screens.users.specific.buyer.businessPayment.Busine
 import com.escrow.wazipay.ui.screens.users.specific.buyer.businessPayment.BusinessSelectionScreenDestination
 import com.escrow.wazipay.ui.screens.users.specific.buyer.businessPayment.InvoiceCreationScreenComposable
 import com.escrow.wazipay.ui.screens.users.specific.buyer.businessPayment.InvoiceCreationScreenDestination
+import com.escrow.wazipay.ui.screens.users.specific.merchant.businessAddition.BusinessAdditionScreenComposable
+import com.escrow.wazipay.ui.screens.users.specific.merchant.businessAddition.BusinessAdditionScreenDestination
 import com.escrow.wazipay.ui.screens.users.specific.merchant.courierAssignment.CourierAssignmentScreenComposable
 import com.escrow.wazipay.ui.screens.users.specific.merchant.courierAssignment.CourierAssignmentScreenDestination
 import com.escrow.wazipay.ui.screens.users.specific.merchant.courierAssignment.CourierSelectionScreenComposable
@@ -185,6 +187,9 @@ fun NavigationGraph(
                 },
                 navigateToOrdersScreenWithStatus = {
                     navController.navigate("${OrdersScreenDestination.route}/status/${it}")
+                },
+                navigateToBusinessAdditionScreen = {
+                    navController.navigate(BusinessAdditionScreenDestination.route)
                 }
             )
         }
@@ -250,6 +255,9 @@ fun NavigationGraph(
                 },
                 navigateToOrdersScreenWithStatus = {
                     navController.navigate("${OrdersScreenDestination.route}/status/${it}")
+                },
+                navigateToBusinessAdditionScreen = {
+                    navController.navigate(BusinessAdditionScreenDestination.route)
                 }
             )
         }
@@ -423,6 +431,9 @@ fun NavigationGraph(
                 },
                 navigateToOrdersScreenWithStatus = {
                     navController.navigate("${OrdersScreenDestination.route}/status/${it}")
+                },
+                navigateToBusinessAdditionScreen = {
+                    navController.navigate(BusinessAdditionScreenDestination.route)
                 }
             )
         }
@@ -638,6 +649,17 @@ fun NavigationGraph(
             InvoiceDetailsScreenComposable(
                 navigateToOrderDetailsScreen = { orderId, fromPaymentScreen ->
                     navController.navigate("${OrderDetailsScreenDestination.route}/${orderId}/${fromPaymentScreen}")
+                },
+                navigateToPreviousScreen = {
+                    navController.navigateUp()
+                }
+            )
+        }
+        composable(BusinessAdditionScreenDestination.route) {
+            BusinessAdditionScreenComposable(
+                navigateToBusinessDetailsScreen = {
+                    navController.popBackStack()
+                    navController.navigate("${BusinessDetailsScreenDestination.route}/${it}")
                 },
                 navigateToPreviousScreen = {
                     navController.navigateUp()
