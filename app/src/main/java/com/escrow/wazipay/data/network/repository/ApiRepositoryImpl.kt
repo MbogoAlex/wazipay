@@ -254,4 +254,12 @@ class ApiRepositoryImpl(private val apiService: ApiService): ApiRepository {
             token = "Bearer $token",
             businessAdditionRequestBody = businessAdditionRequestBody
         )
+
+    override suspend fun completeDelivery(
+        token: String,
+        orderId: Int
+    ): Response<OrderResponseBody> = apiService.completeDelivery(
+        token = "Bearer $token",
+        orderId = orderId
+    )
 }

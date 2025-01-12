@@ -185,4 +185,10 @@ interface ApiRepository {
         token: String,
         businessAdditionRequestBody: BusinessAdditionRequestBody
     ): Response<BusinessResponseBody>
+
+    //    Complete delivery
+    suspend fun completeDelivery(
+        token: String,
+        orderId: Int,
+    ): Response<OrderResponseBody>
 }

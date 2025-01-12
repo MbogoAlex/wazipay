@@ -215,4 +215,11 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Body businessAdditionRequestBody: BusinessAdditionRequestBody
     ): Response<BusinessResponseBody>
+
+//    Complete delivery
+    @PUT("courier/complete-delivery/{orderId}")
+    suspend fun completeDelivery(
+        @Header("Authorization") token: String,
+        @Path("orderId") orderId: Int,
+    ): Response<OrderResponseBody>
 }

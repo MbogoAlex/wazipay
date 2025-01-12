@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.escrow.wazipay.data.network.repository.ApiRepository
 import com.escrow.wazipay.data.room.models.UserDetails
 import com.escrow.wazipay.data.room.repository.DBRepository
+import com.escrow.wazipay.ui.screens.users.common.order.CompleteDeliveryStatus
 import com.escrow.wazipay.ui.screens.users.common.order.LoadOrdersStatus
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -28,7 +29,7 @@ class OrderDetailsViewModel(
 
     private val orderId: String? = savedStateHandle[OrderDetailsScreenDestination.orderId]
 
-    private fun getOrder() {
+    fun getOrder() {
 
         _uiState.update {
             it.copy(
@@ -75,6 +76,46 @@ class OrderDetailsViewModel(
                 }
                 Log.e("getOrderException_err", e.toString())
 
+            }
+        }
+    }
+
+    fun completeDelivery() {
+        _uiState.update {
+            it.copy(
+                completeDeliveryStatus = CompleteDeliveryStatus.LOADING
+            )
+        }
+
+        viewModelScope.launch {
+            try {
+               val response = apiRepository.completeDelivery(
+                   token = uiState.value.userDetails.token!!,
+                   orderId = orderId!!.toInt()
+               )
+
+                if(response.isSuccessful) {
+                    _uiState.update {
+                        it.copy(
+                            completeDeliveryStatus = CompleteDeliveryStatus.SUCCESS
+                        )
+                    }
+                } else {
+                    _uiState.update {
+                        it.copy(
+                            completeDeliveryStatus = CompleteDeliveryStatus.FAIL
+                        )
+                    }
+                    Log.e("completeDeliveryResponse_Err", response.toString())
+                }
+
+            } catch (e: Exception) {
+                _uiState.update {
+                    it.copy(
+                        completeDeliveryStatus = CompleteDeliveryStatus.FAIL
+                    )
+                }
+                Log.e("completeDeliveryException_Err", e.toString())
             }
         }
     }

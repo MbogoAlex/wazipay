@@ -4,6 +4,7 @@ import com.escrow.wazipay.data.network.models.order.OrderData
 import com.escrow.wazipay.data.network.models.order.emptyOrderData
 import com.escrow.wazipay.data.room.models.Role
 import com.escrow.wazipay.data.room.models.UserDetails
+import com.escrow.wazipay.ui.screens.users.common.order.CompleteDeliveryStatus
 import com.escrow.wazipay.ui.screens.users.common.order.LoadOrdersStatus
 
 data class OrderDetailsUiData(
@@ -12,5 +13,6 @@ data class OrderDetailsUiData(
     val orderData: OrderData = emptyOrderData,
     val unauthorized: Boolean = false,
     val fromPaymentScreen: Boolean = false,
-    val loadOrdersStatus: LoadOrdersStatus = LoadOrdersStatus.INITIAL
+    val loadOrdersStatus: LoadOrdersStatus = LoadOrdersStatus.INITIAL,
+    val completeDeliveryStatus: CompleteDeliveryStatus = CompleteDeliveryStatus.INITIAL
 )
