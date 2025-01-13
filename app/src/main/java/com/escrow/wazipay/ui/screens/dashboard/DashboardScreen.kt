@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -236,7 +237,7 @@ fun DashboardScreenComposable(
 
     Box(
         modifier = Modifier
-            .safeDrawingPadding()
+            .safeContentPadding()
             .background(MaterialTheme.colorScheme.background)
     ) {
         DashboardScreen(
@@ -342,7 +343,7 @@ fun DashboardScreen(
         NavBarItem.HOME -> "Dashboard"
         NavBarItem.TRANSACTIONS -> "Transactions"
         NavBarItem.ORDERS -> "Orders"
-        NavBarItem.PROFILE -> "Profile"
+        NavBarItem.PROFILE -> "User profile"
         NavBarItem.BUSINESSES -> "Businesses"
         NavBarItem.INVOICES -> "Invoices"
         NavBarItem.SHOPS -> "Shops"
@@ -375,88 +376,90 @@ fun DashboardScreen(
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.weight(1f)
             )
-            Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
-            Box(
-                modifier = Modifier.weight(1f)
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
+            if(selectedTab != NavBarItem.PROFILE) {
+                Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
+                Box(
+                    modifier = Modifier.weight(1f)
                 ) {
                     Row(
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Text(
-                            text = "Switch role",
-                            fontSize = screenFontSize(x = 14.0).sp,
-                            color = MaterialTheme.colorScheme.onBackground,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
-                        Icon(
-                            painter = painterResource(id = R.drawable.double_arrow_right),
-                            contentDescription = null
-                        )
-                    }
-                    Column {
                         Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier
-                                .clickable {
-                                    onExpandDropdown()
-                                }
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = role.name.lowercase().replaceFirstChar { it.uppercase() },
+                                text = "Switch role",
+                                fontSize = screenFontSize(x = 14.0).sp,
                                 color = MaterialTheme.colorScheme.onBackground,
-                                fontSize = screenFontSize(x = 16.0).sp
+                                fontWeight = FontWeight.Bold
                             )
-                            Box(
-                                modifier = Modifier.wrapContentWidth()
+                            Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
+                            Icon(
+                                painter = painterResource(id = R.drawable.double_arrow_right),
+                                contentDescription = null
+                            )
+                        }
+                        Column {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier
+                                    .clickable {
+                                        onExpandDropdown()
+                                    }
                             ) {
-                                IconButton(onClick = onExpandDropdown) {
-                                    Icon(
-                                        tint = MaterialTheme.colorScheme.onBackground,
-                                        imageVector = Icons.Default.KeyboardArrowDown,
-                                        contentDescription = "Switch role"
-                                    )
+                                Text(
+                                    text = role.name.lowercase().replaceFirstChar { it.uppercase() },
+                                    color = MaterialTheme.colorScheme.onBackground,
+                                    fontSize = screenFontSize(x = 16.0).sp
+                                )
+                                Box(
+//                                modifier = Modifier.wrapContentWidth()
+                                ) {
+                                    IconButton(onClick = onExpandDropdown) {
+                                        Icon(
+                                            tint = MaterialTheme.colorScheme.onBackground,
+                                            imageVector = Icons.Default.KeyboardArrowDown,
+                                            contentDescription = "Switch role"
+                                        )
+                                    }
                                 }
                             }
-                        }
-                        DropdownMenu(
-                            expanded = dropdownExpanded,
-                            onDismissRequest = onExpandDropdown
-                        ) {
-                            profiles.forEach {
-                                DropdownMenuItem(
-                                    text = {
-                                        if (it.lowercase() == role.name.lowercase()) {
-                                            Row(
-                                                verticalAlignment = Alignment.CenterVertically
-                                            ) {
-                                                Icon(
-                                                    painter = painterResource(id = R.drawable.check),
-                                                    contentDescription = null
-                                                )
-                                                Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
+                            DropdownMenu(
+                                expanded = dropdownExpanded,
+                                onDismissRequest = onExpandDropdown
+                            ) {
+                                profiles.forEach {
+                                    DropdownMenuItem(
+                                        text = {
+                                            if (it.lowercase() == role.name.lowercase()) {
+                                                Row(
+                                                    verticalAlignment = Alignment.CenterVertically
+                                                ) {
+                                                    Icon(
+                                                        painter = painterResource(id = R.drawable.check),
+                                                        contentDescription = null
+                                                    )
+                                                    Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
+                                                    Text(
+                                                        text = it,
+                                                        color = MaterialTheme.colorScheme.onBackground,
+                                                        fontSize = screenFontSize(x = 14.0).sp
+                                                    )
+                                                }
+                                            } else {
                                                 Text(
                                                     text = it,
                                                     color = MaterialTheme.colorScheme.onBackground,
                                                     fontSize = screenFontSize(x = 14.0).sp
                                                 )
                                             }
-                                        } else {
-                                            Text(
-                                                text = it,
-                                                color = MaterialTheme.colorScheme.onBackground,
-                                                fontSize = screenFontSize(x = 14.0).sp
-                                            )
+                                        },
+                                        onClick = {
+                                            onSelectRole(Role.valueOf(it.uppercase()))
+                                            onExpandDropdown()
                                         }
-                                    },
-                                    onClick = {
-                                        onSelectRole(Role.valueOf(it.uppercase()))
-                                        onExpandDropdown()
-                                    }
-                                )
+                                    )
+                                }
                             }
                         }
                     }

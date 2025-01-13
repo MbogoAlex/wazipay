@@ -289,7 +289,10 @@ fun BuyerDashboardScreen(
                 fontWeight = FontWeight.Bold
             )
             Spacer(modifier = Modifier.weight(1f))
-            TextButton(onClick = navigateToInvoicesScreen) {
+            TextButton(
+                enabled = invoices.isNotEmpty(),
+                onClick = navigateToInvoicesScreen
+            ) {
                 Text(text = "See all")
             }
         }

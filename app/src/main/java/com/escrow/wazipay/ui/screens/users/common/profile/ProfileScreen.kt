@@ -83,12 +83,31 @@ fun ProfileScreen(
                 vertical = screenHeight(x = 16.0),
                 horizontal = screenWidth(x = 16.0)
             )
-
     ) {
-        when(role) {
-            Role.BUYER -> BuyerProfileScreen()
-            Role.MERCHANT -> MerchantProfileScreen()
-            Role.COURIER -> CourierProfileScreen()
+        Column(
+            modifier = Modifier
+                .verticalScroll(rememberScrollState())
+        ) {
+            ProfileCard(
+                icon = R.drawable.user_details,
+                title = "Account Overview",
+                description = "View your account details, verification status, and personal information in one place.",
+                onClick = { /*TODO*/ }
+            )
+            Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+            ProfileCard(
+                icon = R.drawable.shop,
+                title = "My Businesses",
+                description = "Explore and manage the businesses you've added.",
+                onClick = { /*TODO*/ }
+            )
+            Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+            ProfileCard(
+                icon = R.drawable.transactions,
+                title = "Transaction History",
+                description = "Access a complete record of all your past transactions.",
+                onClick = { /*TODO*/ }
+            )
         }
         Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
         TextButton(
@@ -110,9 +129,9 @@ fun ProfileScreen(
                 )
             }
         }
-
     }
 }
+
 
 @Composable
 fun BuyerProfileScreen(

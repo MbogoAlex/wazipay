@@ -190,15 +190,27 @@ fun BusinessesScreen(
                     )
                     Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
                 }
-                LazyColumn {
-                    items(businesses) { business ->
-                        BusinessCellComposable(
-                            homeScreen = homeScreen,
-                            userId = userId,
-                            businessData = business,
-                            navigateToBusinessDetailsScreen = navigateToBusinessDetailsScreen
+                if(businesses.isNotEmpty()) {
+                    LazyColumn {
+                        items(businesses) { business ->
+                            BusinessCellComposable(
+                                homeScreen = homeScreen,
+                                userId = userId,
+                                businessData = business,
+                                navigateToBusinessDetailsScreen = navigateToBusinessDetailsScreen
+                            )
+                            Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+                        }
+                    }
+                } else {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                    ) {
+                        Text(
+                            text = "You have added no business yet",
+                            fontSize = screenFontSize(x = 14.0).sp
                         )
-                        Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
                     }
                 }
             }
