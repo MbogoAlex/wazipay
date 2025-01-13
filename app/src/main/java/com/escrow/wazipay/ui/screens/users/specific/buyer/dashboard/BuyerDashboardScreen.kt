@@ -322,7 +322,7 @@ fun BuyerDashboardScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Recent Transactions",
+                text = "Buyer Transactions",
                 color = MaterialTheme.colorScheme.onBackground,
                 fontSize = screenFontSize(x = 16.0).sp,
                 fontWeight = FontWeight.Bold
@@ -339,6 +339,8 @@ fun BuyerDashboardScreen(
         if(transactions.isNotEmpty()) {
             transactions.take(5).forEach {
                 TransactionCellComposable(
+                    userId = userId,
+                    role = Role.BUYER,
                     transactionData = it,
                     modifier = Modifier
                         .padding(

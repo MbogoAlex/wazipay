@@ -91,6 +91,7 @@ fun TransactionsScreenComposable(
             .background(MaterialTheme.colorScheme.background)
     ) {
         TransactionsScreen(
+            userId = transactionsUiState.userDetails.userId,
             filtering = filtering,
             searchText = transactionsUiState.searchText,
             startDate = LocalDate.parse(transactionsUiState.startDate),
@@ -111,6 +112,7 @@ fun TransactionsScreenComposable(
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun TransactionsScreen(
+    userId: Int,
     filtering: Boolean,
     searchText: String,
     startDate: LocalDate,
@@ -285,6 +287,8 @@ fun TransactionsScreen(
         ) {
             items(transactions) { item ->
                 TransactionCellComposable(
+                    userId = userId,
+                    role = null,
                     transactionData = item,
                     modifier = Modifier
                         .padding(
@@ -453,6 +457,7 @@ fun DateRangePicker(
 fun TransactionsScreenPreview() {
     WazipayTheme {
         TransactionsScreen(
+            userId = 1,
             filtering = false,
             searchText = "",
             startDate = LocalDate.now().withDayOfMonth(1),

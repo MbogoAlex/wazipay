@@ -85,6 +85,7 @@ fun MerchantDashboardScreenComposable(
     navigateToBusinessSelectionScreen: () -> Unit,
     navigateToBusinessSelectionScreenWithArgs: (toBuyerSelectionScreen: Boolean) -> Unit,
     navigateToBusinessAdditionScreen: () -> Unit,
+    navigateToTransactionsScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -136,6 +137,7 @@ fun MerchantDashboardScreenComposable(
             navigateToBusinessSelectionScreen = navigateToBusinessSelectionScreen,
             navigateToBusinessSelectionScreenWithArgs = navigateToBusinessSelectionScreenWithArgs,
             navigateToBusinessAdditionScreen = navigateToBusinessAdditionScreen,
+            navigateToTransactionsScreen = navigateToTransactionsScreen
         )
     }
 }
@@ -163,6 +165,7 @@ fun MerchantDashboardScreen(
     navigateToBusinessSelectionScreen: () -> Unit,
     navigateToBusinessAdditionScreen: () -> Unit,
     navigateToBusinessSelectionScreenWithArgs: (toBuyerSelectionScreen: Boolean) -> Unit,
+    navigateToTransactionsScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -572,7 +575,7 @@ fun MerchantDashboardScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Recent Transactions",
+                text = "Merchant Transactions",
                 color = MaterialTheme.colorScheme.onBackground,
                 fontSize = screenFontSize(x = 16.0).sp,
                 fontWeight = FontWeight.Bold
@@ -580,7 +583,7 @@ fun MerchantDashboardScreen(
             Spacer(modifier = Modifier.weight(1f))
             TextButton(
                 enabled = transactions.isNotEmpty(),
-                onClick = { /*TODO*/ }
+                onClick = navigateToTransactionsScreen
             ) {
                 Text(
                     text = "See all",
@@ -592,6 +595,8 @@ fun MerchantDashboardScreen(
         if(transactions.isNotEmpty()) {
             transactions.take(5).forEach {
                 TransactionCellComposable(
+                    userId = userId,
+                    role = Role.MERCHANT,
                     transactionData = it,
                     modifier = Modifier
                         .padding(
@@ -637,7 +642,8 @@ fun MerchantDashboardScreenPreview() {
             navigateToBusinessSelectionScreen = {},
             navigateToInvoicesScreen = {},
             navigateToBusinessSelectionScreenWithArgs = {},
-            navigateToBusinessAdditionScreen = {}
+            navigateToBusinessAdditionScreen = {},
+            navigateToTransactionsScreen = {}
         )
     }
 }

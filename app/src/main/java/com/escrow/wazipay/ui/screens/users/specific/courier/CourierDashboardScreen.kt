@@ -93,6 +93,7 @@ fun CourierScreenDashboardScreenComposable(
             .safeDrawingPadding()
     ) {
         CourierScreenDashboardScreen(
+            userId = uiState.userDetails.userId,
             username = uiState.userDetails.username ?: "",
             userVerified = uiState.userDetailsData.verified,
             walletBalance = formatMoneyValue(uiState.userWalletData.balance),
@@ -113,6 +114,7 @@ fun CourierScreenDashboardScreenComposable(
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun CourierScreenDashboardScreen(
+    userId: Int,
     username: String,
     userVerified: Boolean,
     walletBalance: String,
@@ -282,7 +284,7 @@ fun CourierScreenDashboardScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Recent Transactions",
+                text = "Courier Transactions",
                 color = MaterialTheme.colorScheme.onBackground,
                 fontSize = screenFontSize(x = 16.0).sp,
                 fontWeight = FontWeight.Bold
@@ -299,6 +301,8 @@ fun CourierScreenDashboardScreen(
         if(transactions.isNotEmpty()) {
             transactions.take(5).forEach {
                 TransactionCellComposable(
+                    userId = userId,
+                    role = Role.COURIER,
                     transactionData = it,
                     modifier = Modifier
                         .padding(
@@ -325,6 +329,7 @@ fun CourierScreenDashboardScreen(
 fun CourierScreenDashboardScreenPreview() {
     WazipayTheme {
         CourierScreenDashboardScreen(
+            userId = 1,
             username = "Alex Mbogo",
             userVerified = true,
             orders = orders,

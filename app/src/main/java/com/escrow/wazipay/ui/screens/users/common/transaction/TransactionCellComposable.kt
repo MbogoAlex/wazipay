@@ -14,7 +14,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.escrow.wazipay.data.network.models.transaction.TransactionData
+import com.escrow.wazipay.data.room.models.Role
 import com.escrow.wazipay.utils.formatIsoDateTime
+import com.escrow.wazipay.utils.formatMoneyValue
 import com.escrow.wazipay.utils.screenFontSize
 import com.escrow.wazipay.utils.screenWidth
 import java.time.LocalDateTime
@@ -22,6 +24,8 @@ import java.time.LocalDateTime
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun TransactionCellComposable(
+    userId: Int,
+    role: Role?,
     transactionData: TransactionData,
     modifier: Modifier = Modifier
 ) {
@@ -36,6 +40,70 @@ fun TransactionCellComposable(
         "COURIER_PAYMENT" -> "Courier payment"
         else -> "N/A"
     }.uppercase()
+
+    val amount = when(role) {
+        Role.BUYER -> {
+            when(transactionData.transactionType) {
+                "WALLET_DEPOSIT" -> "+ ${transactionData.amount}"
+                "WALLET_WITHDRAWAL" -> "- ${transactionData.amount}"
+                "ESCROW_PAYMENT" -> "- ${transactionData.amount}"
+                "ESCROW_RELEASE" -> "+ ${transactionData.amount}"
+                "ESCROW_REFUND_TO_BUYER" -> "+ ${transactionData.amount}"
+                "MERCHANT_REFUND_TO_BUYER" -> "+ ${transactionData.amount}"
+                "COURIER_PAYMENT" -> "+ ${transactionData.amount}"
+                else -> "N/A"
+            }
+        }
+        Role.MERCHANT -> {
+            when(transactionData.transactionType) {
+                "WALLET_DEPOSIT" -> "+ ${transactionData.amount}"
+                "WALLET_WITHDRAWAL" -> "- ${transactionData.amount}"
+                "ESCROW_PAYMENT" -> "- ${transactionData.amount}"
+                "ESCROW_RELEASE" -> "+ ${transactionData.amount}"
+                "ESCROW_REFUND_TO_BUYER" -> "- ${transactionData.amount}"
+                "MERCHANT_REFUND_TO_BUYER" -> "- ${transactionData.amount}"
+                "COURIER_PAYMENT" -> "- ${transactionData.amount}"
+                else -> "N/A"
+            }
+        }
+        Role.COURIER -> {
+            when(transactionData.transactionType) {
+                "WALLET_DEPOSIT" -> "+ ${transactionData.amount}"
+                "WALLET_WITHDRAWAL" -> "- ${transactionData.amount}"
+                "ESCROW_PAYMENT" -> "- ${transactionData.amount}"
+                "ESCROW_RELEASE" -> "+ ${transactionData.amount}"
+                "ESCROW_REFUND_TO_BUYER" -> "- ${transactionData.amount}"
+                "MERCHANT_REFUND_TO_BUYER" -> "- ${transactionData.amount}"
+                "COURIER_PAYMENT" -> "+ ${transactionData.amount}"
+                else -> "N/A"
+            }
+        }
+
+        null -> {
+            when(transactionData.transactionType) {
+                "WALLET_DEPOSIT" -> "+ ${transactionData.amount}"
+                "WALLET_WITHDRAWAL" -> "- ${transactionData.amount}"
+                "ESCROW_PAYMENT" -> "- ${transactionData.amount}"
+                "ESCROW_RELEASE" -> "+ ${transactionData.amount}"
+                "ESCROW_REFUND_TO_BUYER" -> "+ ${transactionData.amount}"
+                "MERCHANT_REFUND_TO_BUYER" -> {
+                    if(transactionData.order!!.merchant!!.id == userId) {
+                        "- ${transactionData.amount}"
+                    } else {
+                        "+ ${transactionData.amount}"
+                    }
+                }
+                "COURIER_PAYMENT" -> {
+                    if(transactionData.order!!.courier!!.id == userId) {
+                        "+ ${transactionData.amount}"
+                    } else {
+                        "- ${transactionData.amount}"
+                    }
+                }
+                else -> "N/A"
+            }
+        }
+    }
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -72,8 +140,8 @@ fun TransactionCellComposable(
                 .weight(1f)
         ) {
             Text(
-                text = transactionData.amount.toString(),
-                color = if(transactionType.lowercase() == "withdrawal" || transactionType.lowercase() == "refund" || transactionType.lowercase() == "payment" || transactionType.lowercase() == "courier payment") MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
+                text = amount,
+                color = if(amount.startsWith("-")) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.Bold,
                 fontSize = screenFontSize(x = 16.0).sp
             )

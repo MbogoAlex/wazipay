@@ -497,6 +497,7 @@ fun DashboardScreen(
                     navigateToOrdersScreenWithStatus = navigateToOrdersScreenWithStatus,
                     navigateToBusinessSelectionScreenWithArgs = navigateToBusinessSelectionScreenWithArgs,
                     navigateToBusinessAdditionScreen = navigateToBusinessAdditionScreen,
+                    navigateToTransactionsScreen = navigateToTransactionsScreen,
                     modifier = Modifier
                             .weight(1f)
                 )

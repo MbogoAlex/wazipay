@@ -280,7 +280,11 @@ class BuyerDashboardViewModel(
                 if(response.isSuccessful) {
                     _uiState.update {
                         it.copy(
-                            transactions = response.body()?.data!!,
+                            transactions = response.body()?.data!!.filter { transaction ->
+                                transaction.transactionType == "ESCROW_PAYMENT" && transaction.order?.buyer?.id == uiState.value.userDetails.userId ||
+                                        transaction.transactionType == "ESCROW_REFUND_TO_BUYER" ||
+                                        transaction.transactionType == "MERCHANT_REFUND_TO_BUYER"
+                            },
                             loadInvoicesStatus = LoadInvoicesStatus.SUCCESS
                         )
                     }

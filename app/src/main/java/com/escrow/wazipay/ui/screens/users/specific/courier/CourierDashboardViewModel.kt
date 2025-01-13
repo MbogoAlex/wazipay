@@ -221,7 +221,9 @@ class CourierDashboardViewModel(
                 if(response.isSuccessful) {
                     _uiState.update {
                         it.copy(
-                            transactions = response.body()?.data!!,
+                            transactions = response.body()?.data!!.filter { transaction ->
+                                transaction.transactionType == "COURIER_PAYMENT" && transaction.order?.courier?.id == uiState.value.userDetails.userId
+                            },
                             loadInvoicesStatus = LoadInvoicesStatus.SUCCESS
                         )
                     }
