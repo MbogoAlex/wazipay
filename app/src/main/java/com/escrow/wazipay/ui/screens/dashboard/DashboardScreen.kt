@@ -541,6 +541,7 @@ fun DashboardScreen(
                 }
             }
             NavBarItem.PROFILE -> ProfileScreenComposable(
+                navigateToTransactionsScreen = navigateToTransactionsScreen,
                 onLogout = onLogout,
                 modifier = Modifier
                     .weight(1f)

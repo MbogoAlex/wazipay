@@ -80,8 +80,13 @@ class TransactionsViewModel(
                 if(response.isSuccessful) {
                     _uiState.update {
                         it.copy(
-                            transactions = if(uiState.value.role == Role.BUYER) response.body()?.data!! else response.body()?.data!!.filter { transaction ->
-                                transaction.transactionType != "ESCROW_PAYMENT"
+                            transactions = response.body()?.data!!.filter {transaction ->
+                                when(transaction.transactionType) {
+                                    "ESCROW_RELEASE" -> transaction.order?.merchant?.id == uiState.value.userDetails.userId
+                                    "ESCROW_PAYMENT" -> transaction.order?.buyer?.id == uiState.value.userDetails.userId
+//                                    "MERCHANT_REFUND_TO_BUYER" -> transaction.order?.merchant?.id == uiState.value.userDetails.userId
+                                    else -> true
+                                }
                             },
                             loadTransactionsStatus = LoadTransactionsStatus.SUCCESS
                         )

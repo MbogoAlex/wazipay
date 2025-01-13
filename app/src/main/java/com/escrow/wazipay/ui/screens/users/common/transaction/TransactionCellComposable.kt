@@ -40,7 +40,7 @@ fun TransactionCellComposable(
         "COURIER_PAYMENT" -> "Courier payment"
         else -> "N/A"
     }.uppercase()
-
+"- ${transactionData.amount}"
     val amount = when(role) {
         Role.BUYER -> {
             when(transactionData.transactionType) {
@@ -83,7 +83,13 @@ fun TransactionCellComposable(
             when(transactionData.transactionType) {
                 "WALLET_DEPOSIT" -> "+ ${transactionData.amount}"
                 "WALLET_WITHDRAWAL" -> "- ${transactionData.amount}"
-                "ESCROW_PAYMENT" -> "- ${transactionData.amount}"
+                "ESCROW_PAYMENT" -> {
+                    if(transactionData.order!!.merchant!!.id == userId) {
+                        "+ ${transactionData.amount}"
+                    } else {
+                        "- ${transactionData.amount}"
+                    }
+                }
                 "ESCROW_RELEASE" -> "+ ${transactionData.amount}"
                 "ESCROW_REFUND_TO_BUYER" -> "+ ${transactionData.amount}"
                 "MERCHANT_REFUND_TO_BUYER" -> {

@@ -50,6 +50,7 @@ import com.escrow.wazipay.utils.screenWidth
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ProfileScreenComposable(
+    navigateToTransactionsScreen: () -> Unit,
     onLogout: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -64,6 +65,7 @@ fun ProfileScreenComposable(
         ProfileScreen(
             verificationStatus = VerificationStatus.valueOf(uiState.userDetailsData.verificationStatus),
             role = uiState.role,
+            navigateToTransactionsScreen = navigateToTransactionsScreen,
             onLogout = onLogout
         )
     }
@@ -73,6 +75,7 @@ fun ProfileScreenComposable(
 fun ProfileScreen(
     verificationStatus: VerificationStatus,
     role: Role,
+    navigateToTransactionsScreen: () -> Unit,
     onLogout: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -106,7 +109,7 @@ fun ProfileScreen(
                 icon = R.drawable.transactions,
                 title = "Transaction History",
                 description = "Access a complete record of all your past transactions.",
-                onClick = { /*TODO*/ }
+                onClick = navigateToTransactionsScreen
             )
         }
         Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
@@ -317,6 +320,7 @@ fun ProfileScreenPreview() {
         ProfileScreen(
             role = Role.BUYER,
             verificationStatus = VerificationStatus.PENDING_VERIFICATION,
+            navigateToTransactionsScreen = {},
             onLogout = {}
         )
     }

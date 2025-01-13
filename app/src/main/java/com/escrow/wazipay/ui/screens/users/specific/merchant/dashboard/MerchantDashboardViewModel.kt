@@ -316,7 +316,7 @@ class MerchantDashboardViewModel(
                     _uiState.update {
                         it.copy(
                             transactions = response.body()?.data!!.filter { transaction ->
-                                transaction.transactionType == "ESCROW_RELEASE" ||
+                                transaction.transactionType == "ESCROW_RELEASE" && transaction.order?.merchant?.id == uiState.value.userDetails.userId ||
                                         transaction.transactionType == "MERCHANT_REFUND_TO_BUYER" ||
                                         transaction.transactionType == "COURIER_PAYMENT" && transaction.order?.merchant?.id == uiState.value.userDetails.userId
                             },
