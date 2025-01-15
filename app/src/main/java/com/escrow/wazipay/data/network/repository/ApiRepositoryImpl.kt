@@ -9,6 +9,7 @@ import com.escrow.wazipay.data.network.models.common.RegistrationRequestBody
 import com.escrow.wazipay.data.network.models.common.RegistrationResponseBody
 import com.escrow.wazipay.data.network.models.common.SetPinRequestBody
 import com.escrow.wazipay.data.network.models.common.SetPinResponseBody
+import com.escrow.wazipay.data.network.models.common.UserVerificationResponseBody
 import com.escrow.wazipay.data.network.models.courier.CourierAssignmentRequestBody
 import com.escrow.wazipay.data.network.models.courier.CourierAssignmentResponseBody
 import com.escrow.wazipay.data.network.models.invoice.InvoiceCreationRequestBody
@@ -27,6 +28,7 @@ import com.escrow.wazipay.data.network.models.user.UsersDetailsResponseBody
 import com.escrow.wazipay.data.network.models.wallet.DepositRequestBody
 import com.escrow.wazipay.data.network.models.wallet.UserWalletResponseBody
 import com.escrow.wazipay.data.network.models.wallet.WithdrawalRequestBody
+import okhttp3.MultipartBody
 import retrofit2.Response
 
 class ApiRepositoryImpl(private val apiService: ApiService): ApiRepository {
@@ -272,5 +274,14 @@ class ApiRepositoryImpl(private val apiService: ApiService): ApiRepository {
         apiService.getTransactionStatus(
             token = "Bearer $token",
             transactionCode = transactionCode
+        )
+
+    override suspend fun requestUserVerification(
+        token: String,
+        files: List<MultipartBody.Part>
+    ): Response<UserVerificationResponseBody> =
+        apiService.requestUserVerification(
+            token = "Bearer $token",
+            files = files
         )
 }

@@ -9,6 +9,7 @@ import com.escrow.wazipay.data.network.models.common.RegistrationRequestBody
 import com.escrow.wazipay.data.network.models.common.RegistrationResponseBody
 import com.escrow.wazipay.data.network.models.common.SetPinRequestBody
 import com.escrow.wazipay.data.network.models.common.SetPinResponseBody
+import com.escrow.wazipay.data.network.models.common.UserVerificationResponseBody
 import com.escrow.wazipay.data.network.models.courier.CourierAssignmentRequestBody
 import com.escrow.wazipay.data.network.models.courier.CourierAssignmentResponseBody
 import com.escrow.wazipay.data.network.models.invoice.InvoiceCreationRequestBody
@@ -27,7 +28,10 @@ import com.escrow.wazipay.data.network.models.user.UsersDetailsResponseBody
 import com.escrow.wazipay.data.network.models.wallet.DepositRequestBody
 import com.escrow.wazipay.data.network.models.wallet.UserWalletResponseBody
 import com.escrow.wazipay.data.network.models.wallet.WithdrawalRequestBody
+import okhttp3.MultipartBody
 import retrofit2.Response
+import retrofit2.http.POST
+import retrofit2.http.Part
 
 interface ApiRepository {
     suspend fun registerUser(
@@ -199,4 +203,10 @@ interface ApiRepository {
         token: String,
         transactionCode: String
     ): Response<TransactionStatusResponseBody>
+
+    //    Request user verification
+    suspend fun requestUserVerification(
+        token: String,
+        @Part("data") files: List<MultipartBody.Part>
+    ): Response<UserVerificationResponseBody>
 }
