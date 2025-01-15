@@ -54,6 +54,7 @@ import com.escrow.wazipay.utils.screenWidth
 fun ProfileScreenComposable(
     navigateToTransactionsScreen: () -> Unit,
     navigateToBusinessScreenWithOwnerId: (ownerId: String) -> Unit,
+    navigateToUserVerificationScreen: () -> Unit,
     onLogout: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -71,6 +72,7 @@ fun ProfileScreenComposable(
             role = uiState.role,
             navigateToTransactionsScreen = navigateToTransactionsScreen,
             navigateToBusinessScreenWithOwnerId = navigateToBusinessScreenWithOwnerId,
+            navigateToUserVerificationScreen = navigateToUserVerificationScreen,
             onLogout = onLogout
         )
     }
@@ -83,6 +85,7 @@ fun ProfileScreen(
     role: Role,
     navigateToTransactionsScreen: () -> Unit,
     navigateToBusinessScreenWithOwnerId: (ownerId: String) -> Unit,
+    navigateToUserVerificationScreen: () -> Unit,
     onLogout: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -96,7 +99,7 @@ fun ProfileScreen(
     ) {
         if(verificationStatus == VerificationStatus.UNVERIFIED) {
             Button(
-                onClick = { /*TODO*/ },
+                onClick = navigateToUserVerificationScreen,
                 modifier = Modifier
                     .align(Alignment.End)
             ) {
@@ -399,6 +402,7 @@ fun ProfileScreenPreview() {
             verificationStatus = VerificationStatus.UNVERIFIED,
             navigateToTransactionsScreen = {},
             navigateToBusinessScreenWithOwnerId = {},
+            navigateToUserVerificationScreen = {},
             onLogout = {}
         )
     }

@@ -12,5 +12,6 @@ data class UserVerificationUiData(
     val idFront: Uri? = null,
     val idBack: Uri? = null,
     val buttonEnabled: Boolean = false,
+    val unauthorized: Boolean = false,
     val loadingStatus: LoadingStatus = LoadingStatus.INITIAL
 )

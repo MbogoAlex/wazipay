@@ -19,6 +19,7 @@ import com.escrow.wazipay.ui.screens.users.common.order.orderCreation.OrderCreat
 import com.escrow.wazipay.ui.screens.users.common.order.orderDetails.OrderDetailsViewModel
 import com.escrow.wazipay.ui.screens.users.common.order.ordersList.OrdersViewModel
 import com.escrow.wazipay.ui.screens.users.common.profile.ProfileViewModel
+import com.escrow.wazipay.ui.screens.users.common.profile.verification.UserVerificationViewModel
 import com.escrow.wazipay.ui.screens.users.common.transaction.transactionsList.TransactionsViewModel
 import com.escrow.wazipay.ui.screens.users.common.wallet.deposit.DepositViewModel
 import com.escrow.wazipay.ui.screens.users.common.wallet.withdrawal.WithdrawalViewModel
@@ -235,6 +236,13 @@ object AppViewModelFactory {
 
         initializer {
             CourierDashboardViewModel(
+                apiRepository = wazipayApplication().container.apiRepository,
+                dbRepository = wazipayApplication().container.dbRepository
+            )
+        }
+
+        initializer {
+            UserVerificationViewModel(
                 apiRepository = wazipayApplication().container.apiRepository,
                 dbRepository = wazipayApplication().container.dbRepository
             )

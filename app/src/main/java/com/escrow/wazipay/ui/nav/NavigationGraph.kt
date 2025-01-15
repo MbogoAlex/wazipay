@@ -36,6 +36,8 @@ import com.escrow.wazipay.ui.screens.users.common.order.orderDetails.OrderDetail
 import com.escrow.wazipay.ui.screens.users.common.order.orderDetails.OrderDetailsScreenDestination
 import com.escrow.wazipay.ui.screens.users.common.order.ordersList.OrdersScreenComposable
 import com.escrow.wazipay.ui.screens.users.common.order.ordersList.OrdersScreenDestination
+import com.escrow.wazipay.ui.screens.users.common.profile.verification.UserVerificationScreenComposable
+import com.escrow.wazipay.ui.screens.users.common.profile.verification.UserVerificationScreenDestination
 import com.escrow.wazipay.ui.screens.users.common.transaction.transactionsList.TransactionsScreenComposable
 import com.escrow.wazipay.ui.screens.users.common.transaction.transactionsList.TransactionsScreenDestination
 import com.escrow.wazipay.ui.screens.users.common.wallet.deposit.DepositScreenComposable
@@ -195,6 +197,9 @@ fun NavigationGraph(
                 },
                 navigateToBusinessScreenWithOwnerId = {
                     navController.navigate("${BusinessesScreenDestination.route}/${it}")
+                },
+                navigateToUserVerificationScreen = {
+                    navController.navigate(UserVerificationScreenDestination.route)
                 }
             )
         }
@@ -266,6 +271,9 @@ fun NavigationGraph(
                 },
                 navigateToBusinessScreenWithOwnerId = {
                     navController.navigate("${BusinessesScreenDestination.route}/${it}")
+                },
+                navigateToUserVerificationScreen = {
+                    navController.navigate(UserVerificationScreenDestination.route)
                 }
             )
         }
@@ -448,6 +456,9 @@ fun NavigationGraph(
                 },
                 navigateToBusinessScreenWithOwnerId = {
                     navController.navigate("${BusinessesScreenDestination.route}/${it}")
+                },
+                navigateToUserVerificationScreen = {
+                    navController.navigate(UserVerificationScreenDestination.route)
                 }
             )
         }
@@ -695,6 +706,13 @@ fun NavigationGraph(
                 navigateToBusinessAdditionScreen = {
                     navController.navigate(BusinessAdditionScreenDestination.route)
                 },
+                navigateToPreviousScreen = {
+                    navController.navigateUp()
+                }
+            )
+        }
+        composable(UserVerificationScreenDestination.route) {
+            UserVerificationScreenComposable(
                 navigateToPreviousScreen = {
                     navController.navigateUp()
                 }
