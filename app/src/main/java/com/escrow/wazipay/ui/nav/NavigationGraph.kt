@@ -36,6 +36,8 @@ import com.escrow.wazipay.ui.screens.users.common.order.orderDetails.OrderDetail
 import com.escrow.wazipay.ui.screens.users.common.order.orderDetails.OrderDetailsScreenDestination
 import com.escrow.wazipay.ui.screens.users.common.order.ordersList.OrdersScreenComposable
 import com.escrow.wazipay.ui.screens.users.common.order.ordersList.OrdersScreenDestination
+import com.escrow.wazipay.ui.screens.users.common.profile.UserAccountOverviewScreenComposable
+import com.escrow.wazipay.ui.screens.users.common.profile.UserAccountOverviewScreenDestination
 import com.escrow.wazipay.ui.screens.users.common.profile.verification.UserVerificationScreenComposable
 import com.escrow.wazipay.ui.screens.users.common.profile.verification.UserVerificationScreenDestination
 import com.escrow.wazipay.ui.screens.users.common.transaction.transactionsList.TransactionsScreenComposable
@@ -200,6 +202,9 @@ fun NavigationGraph(
                 },
                 navigateToUserVerificationScreen = {
                     navController.navigate(UserVerificationScreenDestination.route)
+                },
+                navigateToUserAccountOverviewScreen = {
+                    navController.navigate(UserAccountOverviewScreenDestination.route)
                 }
             )
         }
@@ -274,6 +279,9 @@ fun NavigationGraph(
                 },
                 navigateToUserVerificationScreen = {
                     navController.navigate(UserVerificationScreenDestination.route)
+                },
+                navigateToUserAccountOverviewScreen = {
+                    navController.navigate(UserAccountOverviewScreenDestination.route)
                 }
             )
         }
@@ -459,6 +467,9 @@ fun NavigationGraph(
                 },
                 navigateToUserVerificationScreen = {
                     navController.navigate(UserVerificationScreenDestination.route)
+                },
+                navigateToUserAccountOverviewScreen = {
+                    navController.navigate(UserAccountOverviewScreenDestination.route)
                 }
             )
         }
@@ -713,6 +724,19 @@ fun NavigationGraph(
         }
         composable(UserVerificationScreenDestination.route) {
             UserVerificationScreenComposable(
+                navigateToPreviousScreen = {
+                    navController.navigateUp()
+                }
+            )
+        }
+        composable(UserAccountOverviewScreenDestination.route) {
+            UserAccountOverviewScreenComposable(
+                navigateToLoginScreenWithArgs = {phoneNumber, pin ->
+                    navController.navigate("${LoginScreenDestination.route}/${phoneNumber}/${pin}")
+                },
+                navigateToUserVerificationScreen = {
+                    navController.navigate(UserVerificationScreenDestination.route)
+                },
                 navigateToPreviousScreen = {
                     navController.navigateUp()
                 }

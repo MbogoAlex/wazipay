@@ -114,6 +114,7 @@ fun DashboardScreenComposable(
     navigateToBusinessAdditionScreen: () -> Unit,
     navigateToBusinessScreenWithOwnerId: (ownerId: String) -> Unit,
     navigateToUserVerificationScreen: () -> Unit,
+    navigateToUserAccountOverviewScreen: () -> Unit,
 ) {
     val context = LocalContext.current
 
@@ -300,7 +301,8 @@ fun DashboardScreenComposable(
             navigateToOrdersScreenWithStatus = navigateToOrdersScreenWithStatus,
             navigateToBusinessAdditionScreen = navigateToBusinessAdditionScreen,
             navigateToBusinessScreenWithOwnerId = navigateToBusinessScreenWithOwnerId,
-            navigateToUserVerificationScreen = navigateToUserVerificationScreen
+            navigateToUserVerificationScreen = navigateToUserVerificationScreen,
+            navigateToUserAccountOverviewScreen = navigateToUserAccountOverviewScreen
         )
     }
 }
@@ -342,6 +344,7 @@ fun DashboardScreen(
     navigateToBusinessAdditionScreen: () -> Unit,
     navigateToBusinessScreenWithOwnerId: (ownerId: String) -> Unit,
     navigateToUserVerificationScreen: () -> Unit,
+    navigateToUserAccountOverviewScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -552,6 +555,7 @@ fun DashboardScreen(
                 onLogout = onLogout,
                 navigateToBusinessScreenWithOwnerId = navigateToBusinessScreenWithOwnerId,
                 navigateToUserVerificationScreen = navigateToUserVerificationScreen,
+                navigateToUserAccountOverviewScreen = navigateToUserAccountOverviewScreen,
                 modifier = Modifier
                     .weight(1f)
             )
@@ -812,7 +816,8 @@ fun DashboardScreenPreview() {
             navigateToOrdersScreenWithStatus = {},
             navigateToBusinessAdditionScreen = {},
             navigateToBusinessScreenWithOwnerId = {},
-            navigateToUserVerificationScreen = {}
+            navigateToUserVerificationScreen = {},
+            navigateToUserAccountOverviewScreen = {}
         )
     }
 }

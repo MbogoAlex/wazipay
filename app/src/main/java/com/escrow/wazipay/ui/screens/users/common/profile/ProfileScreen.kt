@@ -30,6 +30,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -40,6 +41,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.escrow.wazipay.AppViewModelFactory
 import com.escrow.wazipay.R
@@ -55,12 +58,28 @@ fun ProfileScreenComposable(
     navigateToTransactionsScreen: () -> Unit,
     navigateToBusinessScreenWithOwnerId: (ownerId: String) -> Unit,
     navigateToUserVerificationScreen: () -> Unit,
+    navigateToUserAccountOverviewScreen: () -> Unit,
     onLogout: () -> Unit,
     modifier: Modifier = Modifier
 ) {
 
     val viewModel: ProfileViewModel = viewModel(factory = AppViewModelFactory.Factory)
     val uiState by viewModel.uiState.collectAsState()
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val lifecycleState by lifecycleOwner.lifecycle.currentStateFlow.collectAsState()
+
+    LaunchedEffect(lifecycleState) {
+        when(lifecycleState) {
+            Lifecycle.State.DESTROYED -> {}
+            Lifecycle.State.INITIALIZED -> {}
+            Lifecycle.State.CREATED -> {}
+            Lifecycle.State.STARTED -> {}
+            Lifecycle.State.RESUMED -> {
+                viewModel.profileScreenStartupData()
+            }
+        }
+    }
 
     Box(
         modifier = modifier
@@ -73,6 +92,7 @@ fun ProfileScreenComposable(
             navigateToTransactionsScreen = navigateToTransactionsScreen,
             navigateToBusinessScreenWithOwnerId = navigateToBusinessScreenWithOwnerId,
             navigateToUserVerificationScreen = navigateToUserVerificationScreen,
+            navigateToUserAccountOverviewScreen = navigateToUserAccountOverviewScreen,
             onLogout = onLogout
         )
     }
@@ -86,6 +106,7 @@ fun ProfileScreen(
     navigateToTransactionsScreen: () -> Unit,
     navigateToBusinessScreenWithOwnerId: (ownerId: String) -> Unit,
     navigateToUserVerificationScreen: () -> Unit,
+    navigateToUserAccountOverviewScreen: () -> Unit,
     onLogout: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -172,7 +193,7 @@ fun ProfileScreen(
                 icon = R.drawable.user_details,
                 title = "Account Overview",
                 description = "View your account details, verification status, and personal information in one place.",
-                onClick = { /*TODO*/ }
+                onClick = navigateToUserAccountOverviewScreen
             )
             Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
             ProfileCard(
@@ -403,6 +424,7 @@ fun ProfileScreenPreview() {
             navigateToTransactionsScreen = {},
             navigateToBusinessScreenWithOwnerId = {},
             navigateToUserVerificationScreen = {},
+            navigateToUserAccountOverviewScreen = {},
             onLogout = {}
         )
     }

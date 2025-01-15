@@ -86,7 +86,7 @@ class ProfileViewModel(
         }
     }
 
-    private fun profileScreenStartupData() {
+    fun profileScreenStartupData() {
         viewModelScope.launch {
             while (uiState.value.userDetails.userId == 0) {
                 delay(1000)

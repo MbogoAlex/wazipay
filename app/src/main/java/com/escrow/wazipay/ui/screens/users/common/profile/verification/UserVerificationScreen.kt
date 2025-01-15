@@ -78,20 +78,6 @@ fun UserVerificationScreenComposable(
     val viewModel: UserVerificationViewModel = viewModel(factory = AppViewModelFactory.Factory)
     val uiState by viewModel.uiState.collectAsState()
 
-    val lifecycleOwner = LocalLifecycleOwner.current
-    val lifecycleState by lifecycleOwner.lifecycle.currentStateFlow.collectAsState()
-
-    LaunchedEffect(lifecycleState) {
-        when(lifecycleState) {
-            Lifecycle.State.DESTROYED -> {}
-            Lifecycle.State.INITIALIZED -> {}
-            Lifecycle.State.CREATED -> {}
-            Lifecycle.State.STARTED -> {}
-            Lifecycle.State.RESUMED -> {
-                viewModel.loadVerificationScreenUiData()
-            }
-        }
-    }
 
     var showConfirmDialog by rememberSaveable {
         mutableStateOf(false)
@@ -267,22 +253,24 @@ fun UserVerificationScreen(
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(10.dp))
                     )
-                    IconButton(
-                        modifier = Modifier
-                            .alpha(0.5f)
-                            .background(Color.Black)
-                            .padding(
-                                start = 5.dp,
-                                end = 5.dp,
+                    if(verificationStatus != VerificationStatus.PENDING_VERIFICATION && verificationStatus != VerificationStatus.VERIFIED) {
+                        IconButton(
+                            modifier = Modifier
+                                .alpha(0.5f)
+                                .background(Color.Black)
+                                .padding(
+                                    start = 5.dp,
+                                    end = 5.dp,
+                                )
+                                .align(Alignment.TopEnd),
+                            onClick = removeFrontPhoto
+                        ) {
+                            Icon(
+                                tint = Color.White,
+                                imageVector = Icons.Default.Clear,
+                                contentDescription = "Remove front id"
                             )
-                            .align(Alignment.TopEnd),
-                        onClick = removeFrontPhoto
-                    ) {
-                        Icon(
-                            tint = Color.White,
-                            imageVector = Icons.Default.Clear,
-                            contentDescription = "Remove front id"
-                        )
+                        }
                     }
                 }
             } else {
@@ -290,6 +278,7 @@ fun UserVerificationScreen(
                     onIdUpload = onIdFrontUpload,
                     uploadText = "Upload ID front",
                     imageUri = frontIdUri,
+                    verificationStatus = verificationStatus,
                     modifier = Modifier
                 )
             }
@@ -316,22 +305,24 @@ fun UserVerificationScreen(
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(10.dp))
                     )
-                    IconButton(
-                        modifier = Modifier
-                            .alpha(0.5f)
-                            .background(Color.Black)
-                            .padding(
-                                start = 5.dp,
-                                end = 5.dp,
+                    if(verificationStatus != VerificationStatus.PENDING_VERIFICATION && verificationStatus != VerificationStatus.VERIFIED) {
+                        IconButton(
+                            modifier = Modifier
+                                .alpha(0.5f)
+                                .background(Color.Black)
+                                .padding(
+                                    start = 5.dp,
+                                    end = 5.dp,
+                                )
+                                .align(Alignment.TopEnd),
+                            onClick = removeBackPhoto
+                        ) {
+                            Icon(
+                                tint = Color.White,
+                                imageVector = Icons.Default.Clear,
+                                contentDescription = "Remove back id"
                             )
-                            .align(Alignment.TopEnd),
-                        onClick = removeBackPhoto
-                    ) {
-                        Icon(
-                            tint = Color.White,
-                            imageVector = Icons.Default.Clear,
-                            contentDescription = "Remove back id"
-                        )
+                        }
                     }
                 }
             } else {
@@ -339,6 +330,7 @@ fun UserVerificationScreen(
                     onIdUpload = onIdBackUpload,
                     uploadText = "Upload ID back",
                     imageUri = backIdUri,
+                    verificationStatus = verificationStatus,
                     modifier = Modifier
                 )
             }
@@ -372,6 +364,7 @@ fun IdUpload(
     onIdUpload: () -> Unit,
     uploadText: String,
     imageUri: Uri?,
+    verificationStatus: VerificationStatus,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -388,7 +381,10 @@ fun IdUpload(
                     shape = RoundedCornerShape(10.dp)
                 )
         ) {
-            IconButton(onClick = onIdUpload) {
+            IconButton(
+                enabled = verificationStatus != VerificationStatus.PENDING_VERIFICATION && verificationStatus != VerificationStatus.VERIFIED,
+                onClick = onIdUpload
+            ) {
                 Icon(
                     painter = painterResource(id = R.drawable.upload),
                     contentDescription = uploadText

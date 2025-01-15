@@ -75,7 +75,7 @@ class UserVerificationViewModel(
                     val mimeType = context.contentResolver.getType(uri)
                     val extension = MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType)
                     val requestFile = RequestBody.create(mimeType?.toMediaTypeOrNull(), byteArray)
-                    val imagePart = MultipartBody.Part.createFormData("files", "upload.$extension", requestFile)
+                    val imagePart = MultipartBody.Part.createFormData("file", "upload.$extension", requestFile)
                     imageParts.add(imagePart)
                 }
             }
