@@ -21,6 +21,7 @@ data class InvoiceData(
     val rejectionReason: String?,
     val cancellationReason: String?,
     val transactionId: Int?,
+    val transactionCode: String?,
     val orderId: Int?,
     val paymentLink: String
 )

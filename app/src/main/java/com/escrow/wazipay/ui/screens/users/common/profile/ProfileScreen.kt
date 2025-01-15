@@ -22,9 +22,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -51,6 +53,7 @@ import com.escrow.wazipay.utils.screenWidth
 @Composable
 fun ProfileScreenComposable(
     navigateToTransactionsScreen: () -> Unit,
+    navigateToBusinessScreenWithOwnerId: (ownerId: String) -> Unit,
     onLogout: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -63,9 +66,11 @@ fun ProfileScreenComposable(
             .safeDrawingPadding()
     ) {
         ProfileScreen(
+            userId = uiState.userDetails.userId,
             verificationStatus = VerificationStatus.valueOf(uiState.userDetailsData.verificationStatus),
             role = uiState.role,
             navigateToTransactionsScreen = navigateToTransactionsScreen,
+            navigateToBusinessScreenWithOwnerId = navigateToBusinessScreenWithOwnerId,
             onLogout = onLogout
         )
     }
@@ -73,9 +78,11 @@ fun ProfileScreenComposable(
 
 @Composable
 fun ProfileScreen(
+    userId: Int,
     verificationStatus: VerificationStatus,
     role: Role,
     navigateToTransactionsScreen: () -> Unit,
+    navigateToBusinessScreenWithOwnerId: (ownerId: String) -> Unit,
     onLogout: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -87,6 +94,73 @@ fun ProfileScreen(
                 horizontal = screenWidth(x = 16.0)
             )
     ) {
+        if(verificationStatus == VerificationStatus.UNVERIFIED) {
+            Button(
+                onClick = { /*TODO*/ },
+                modifier = Modifier
+                    .align(Alignment.End)
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.user_details),
+                        contentDescription = "Start verification"
+                    )
+                    Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
+                    Text(
+                        text = "Start verification",
+                        fontSize = screenFontSize(x = 14.0).sp
+                    )
+                }
+            }
+        } else if(verificationStatus == VerificationStatus.PENDING_VERIFICATION) {
+            OutlinedButton(
+                enabled = false,
+                onClick = { /*TODO*/ },
+                modifier = Modifier
+                    .align(Alignment.End)
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.user_details),
+                        contentDescription = "Start verification"
+                    )
+                    Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
+                    Text(text = verificationStatus.name.lowercase().replace("_", " ").replaceFirstChar { it.uppercase() })
+                }
+            }
+        } else {
+            Box(
+                modifier = Modifier
+                    .border(
+                        width = screenWidth(x = 1.0),
+                        color = Color.LightGray,
+                        shape = RoundedCornerShape(screenWidth(x = 16.0))
+                    )
+                    .align(Alignment.End)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .padding(screenWidth(x = 8.0))
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.user_details),
+                        contentDescription = null
+                    )
+                    Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
+                    Text(text = verificationStatus.name.lowercase().replace("_", " ").replaceFirstChar { it.uppercase() })
+                    Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
+                    Icon(
+                        painter = painterResource(id = R.drawable.verified),
+                        contentDescription = "Verified"
+                    )
+                }
+            }
+        }
+        Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
         Column(
             modifier = Modifier
                 .verticalScroll(rememberScrollState())
@@ -102,7 +176,9 @@ fun ProfileScreen(
                 icon = R.drawable.shop,
                 title = "My Businesses",
                 description = "Explore and manage the businesses you've added.",
-                onClick = { /*TODO*/ }
+                onClick = {
+                    navigateToBusinessScreenWithOwnerId(userId.toString())
+                }
             )
             Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
             ProfileCard(
@@ -318,9 +394,11 @@ fun ProfileCard(
 fun ProfileScreenPreview() {
     WazipayTheme {
         ProfileScreen(
+            userId = 1,
             role = Role.BUYER,
-            verificationStatus = VerificationStatus.PENDING_VERIFICATION,
+            verificationStatus = VerificationStatus.UNVERIFIED,
             navigateToTransactionsScreen = {},
+            navigateToBusinessScreenWithOwnerId = {},
             onLogout = {}
         )
     }

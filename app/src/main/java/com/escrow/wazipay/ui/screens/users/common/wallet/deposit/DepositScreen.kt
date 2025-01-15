@@ -59,6 +59,7 @@ object DepositScreenDestination: AppNavigation {
 @Composable
 fun DepositScreenComposable(
     navigateToDashboardScreen: () -> Unit,
+    navigateToPreviousScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -128,11 +129,11 @@ fun DepositScreenComposable(
                 viewModel.updateAmount(validAmount)
                 viewModel.enableButton()
             },
+            phoneNumber = uiState.phoneNumber.ifEmpty { uiState.userDetails.phoneNumber ?: "" },
+            onChangePhoneNumber = viewModel::onChangePhoneNumber,
             depositStatus = uiState.depositStatus,
             buttonEnabled = uiState.buttonEnabled,
-            navigateToPreviousScreen = {
-                navigateToDashboardScreen()
-            },
+            navigateToPreviousScreen = navigateToPreviousScreen,
             onDeposit = {
                 showConfirmDialog = !showConfirmDialog
             }
@@ -145,6 +146,8 @@ fun DepositScreen(
     walletBalance: String,
     depositAmount: String,
     onChangeAmount: (amount: String) -> Unit,
+    phoneNumber: String,
+    onChangePhoneNumber: (phone: String) -> Unit,
     depositStatus: DepositStatus,
     buttonEnabled: Boolean,
     navigateToPreviousScreen: () -> Unit,
@@ -211,6 +214,21 @@ fun DepositScreen(
                 keyboardType = KeyboardType.NumberPassword
             ),
             onValueChange = onChangeAmount,
+            modifier = Modifier
+                .fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+        Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+        TextFieldComposable(
+            shape = RoundedCornerShape(screenWidth(x = 10.0)),
+            label = "Enter M-PESA phone number",
+            value = phoneNumber,
+            leadingIcon = R.drawable.phone,
+            keyboardOptions = KeyboardOptions.Default.copy(
+                imeAction = ImeAction.Done,
+                keyboardType = KeyboardType.NumberPassword
+            ),
+            onValueChange = onChangePhoneNumber,
             modifier = Modifier
                 .fillMaxWidth()
         )
@@ -350,7 +368,9 @@ fun DepositScreenPreview() {
         DepositScreen(
             walletBalance = "Ksh1,500",
             depositAmount = "500",
+            phoneNumber = "0794649026",
             onChangeAmount = {},
+            onChangePhoneNumber = {},
             depositStatus = DepositStatus.INITIAL,
             buttonEnabled = false,
             navigateToPreviousScreen = { /*TODO*/ },

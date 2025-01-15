@@ -24,6 +24,8 @@ import com.escrow.wazipay.ui.screens.dashboard.DashboardScreenComposable
 import com.escrow.wazipay.ui.screens.dashboard.DashboardScreenDestination
 import com.escrow.wazipay.ui.screens.users.common.business.businessDetails.BusinessDetailsScreenComposable
 import com.escrow.wazipay.ui.screens.users.common.business.businessDetails.BusinessDetailsScreenDestination
+import com.escrow.wazipay.ui.screens.users.common.business.businessList.BusinessesScreenComposable
+import com.escrow.wazipay.ui.screens.users.common.business.businessList.BusinessesScreenDestination
 import com.escrow.wazipay.ui.screens.users.common.invoice.invoiceDetails.InvoiceDetailsScreenComposable
 import com.escrow.wazipay.ui.screens.users.common.invoice.invoiceDetails.InvoiceDetailsScreenDestination
 import com.escrow.wazipay.ui.screens.users.common.invoice.invoicesList.InvoicesScreenComposable
@@ -190,6 +192,9 @@ fun NavigationGraph(
                 },
                 navigateToBusinessAdditionScreen = {
                     navController.navigate(BusinessAdditionScreenDestination.route)
+                },
+                navigateToBusinessScreenWithOwnerId = {
+                    navController.navigate("${BusinessesScreenDestination.route}/${it}")
                 }
             )
         }
@@ -258,6 +263,9 @@ fun NavigationGraph(
                 },
                 navigateToBusinessAdditionScreen = {
                     navController.navigate(BusinessAdditionScreenDestination.route)
+                },
+                navigateToBusinessScreenWithOwnerId = {
+                    navController.navigate("${BusinessesScreenDestination.route}/${it}")
                 }
             )
         }
@@ -266,6 +274,9 @@ fun NavigationGraph(
             DepositScreenComposable(
                 navigateToDashboardScreen = {
                     navController.navigate(DashboardScreenDestination.route)
+                },
+                navigateToPreviousScreen = {
+                    navController.navigateUp()
                 }
             )
         }
@@ -434,6 +445,9 @@ fun NavigationGraph(
                 },
                 navigateToBusinessAdditionScreen = {
                     navController.navigate(BusinessAdditionScreenDestination.route)
+                },
+                navigateToBusinessScreenWithOwnerId = {
+                    navController.navigate("${BusinessesScreenDestination.route}/${it}")
                 }
             )
         }
@@ -660,6 +674,26 @@ fun NavigationGraph(
                 navigateToBusinessDetailsScreen = {
                     navController.popBackStack()
                     navController.navigate("${BusinessDetailsScreenDestination.route}/${it}")
+                },
+                navigateToPreviousScreen = {
+                    navController.navigateUp()
+                }
+            )
+        }
+        composable(
+            BusinessesScreenDestination.routeWithOwnerId,
+            arguments = listOf(
+                navArgument(BusinessesScreenDestination.ownerId) {
+                    type = NavType.StringType
+                }
+            )
+        ) {
+            BusinessesScreenComposable(
+                navigateToBusinessDetailsScreen = {
+                    navController.navigate("${BusinessDetailsScreenDestination.route}/${it}")
+                },
+                navigateToBusinessAdditionScreen = {
+                    navController.navigate(BusinessAdditionScreenDestination.route)
                 },
                 navigateToPreviousScreen = {
                     navController.navigateUp()

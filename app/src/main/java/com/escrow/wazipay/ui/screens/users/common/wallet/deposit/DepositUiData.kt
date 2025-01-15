@@ -10,6 +10,7 @@ data class DepositUiData(
     val role: Role = Role.BUYER,
     val userWalletData: UserWalletData = UserWalletData(1, 0.0, userContactData),
     val amount: String = "",
+    val phoneNumber: String = "",
     val newBalance: Double = 0.0,
     val buttonEnabled: Boolean = false,
     val depositMessage: String = "",

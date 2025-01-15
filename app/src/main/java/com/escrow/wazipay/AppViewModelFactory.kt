@@ -112,7 +112,8 @@ object AppViewModelFactory {
         initializer {
             BusinessViewModel(
                 apiRepository = wazipayApplication().container.apiRepository,
-                dbRepository = wazipayApplication().container.dbRepository
+                dbRepository = wazipayApplication().container.dbRepository,
+                savedStateHandle = this.createSavedStateHandle()
             )
         }
 

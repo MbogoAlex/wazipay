@@ -1,6 +1,7 @@
 package com.escrow.wazipay.ui.screens.users.common.business.businessList
 
 import android.util.Log
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.escrow.wazipay.data.network.repository.ApiRepository
@@ -19,10 +20,13 @@ import kotlinx.coroutines.withContext
 
 class BusinessViewModel(
     private val apiRepository: ApiRepository,
-    private val dbRepository: DBRepository
+    private val dbRepository: DBRepository,
+    savedStateHandle: SavedStateHandle,
 ): ViewModel() {
     private val _uiState = MutableStateFlow(BusinessUiData())
     val uiState: StateFlow<BusinessUiData> = _uiState.asStateFlow()
+
+    private val ownerId: String? = savedStateHandle[BusinessesScreenDestination.ownerId]
 
     fun updateSearchQuery(query: String?) {
         _uiState.update {
@@ -39,7 +43,8 @@ class BusinessViewModel(
                val response = apiRepository.getBusinesses(
                    token = uiState.value.userDetails.token!!,
                    query = uiState.value.searchQuery,
-                   ownerId = if(uiState.value.userRole.role == Role.MERCHANT) uiState.value.userDetails.userId else null,
+                   ownerId = ownerId?.toInt()
+                       ?: if(uiState.value.userRole.role == Role.MERCHANT) uiState.value.userDetails.userId else null,
                    archived = null,
                    startDate = null,
                    endDate = null

@@ -12,6 +12,7 @@ import com.escrow.wazipay.data.network.models.common.SetPinResponseBody
 import com.escrow.wazipay.data.network.models.courier.CourierAssignmentRequestBody
 import com.escrow.wazipay.data.network.models.courier.CourierAssignmentResponseBody
 import com.escrow.wazipay.data.network.models.invoice.InvoiceCreationRequestBody
+import com.escrow.wazipay.data.network.models.invoice.InvoicePaymentRequestBody
 import com.escrow.wazipay.data.network.models.invoice.InvoiceResponseBody
 import com.escrow.wazipay.data.network.models.invoice.InvoicesResponseBody
 import com.escrow.wazipay.data.network.models.order.OrderCreationRequestBody
@@ -19,6 +20,7 @@ import com.escrow.wazipay.data.network.models.order.OrderCreationResponseBody
 import com.escrow.wazipay.data.network.models.order.OrderResponseBody
 import com.escrow.wazipay.data.network.models.order.OrdersResponseBody
 import com.escrow.wazipay.data.network.models.transaction.TransactionResponseBody
+import com.escrow.wazipay.data.network.models.transaction.TransactionStatusResponseBody
 import com.escrow.wazipay.data.network.models.transaction.TransactionsResponseBody
 import com.escrow.wazipay.data.network.models.user.UserDetailsResponseBody
 import com.escrow.wazipay.data.network.models.user.UsersDetailsResponseBody
@@ -171,7 +173,7 @@ interface ApiRepository {
     //    Pay invoice
     suspend fun payInvoice(
         token: String,
-        invoiceId: Int
+        invoicePaymentRequestBody: InvoicePaymentRequestBody
     ): Response<InvoiceResponseBody>
 
     //    Assign courier
@@ -191,4 +193,10 @@ interface ApiRepository {
         token: String,
         orderId: Int,
     ): Response<OrderResponseBody>
+
+    //    Get transactionStatus
+    suspend fun getTransactionStatus(
+        token: String,
+        transactionCode: String
+    ): Response<TransactionStatusResponseBody>
 }

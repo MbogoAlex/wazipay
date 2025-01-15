@@ -4,6 +4,8 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.escrow.wazipay.data.network.models.invoice.InvoicePaymentRequestBody
+import com.escrow.wazipay.data.network.models.transaction.TransactionMethod
 import com.escrow.wazipay.data.network.repository.ApiRepository
 import com.escrow.wazipay.data.room.repository.DBRepository
 import com.escrow.wazipay.ui.screens.users.specific.buyer.businessPayment.PaymentMethod
@@ -51,9 +53,15 @@ class InvoiceDetailsViewModel(
         }
         viewModelScope.launch {
             try {
+                val invoicePaymentRequestBody = InvoicePaymentRequestBody(
+                    invoiceId = invoiceId!!.toInt(),
+                    transactionMethod = TransactionMethod.valueOf(uiState.value.paymentMethod.name),
+                    phoneNumber = uiState.value.phoneNumber,
+
+                )
                 val response = apiRepository.payInvoice(
                     token = uiState.value.userDetails.token!!,
-                    invoiceId = invoiceId!!.toInt()
+                    invoicePaymentRequestBody = invoicePaymentRequestBody
                 )
 
                 if(response.isSuccessful) {

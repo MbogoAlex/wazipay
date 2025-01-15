@@ -21,6 +21,7 @@ val invoiceData = InvoiceData(
     rejectionReason = null,
     cancellationReason = null,
     transactionId = 1,
+    transactionCode = "abc",
     orderId = 1,
     paymentLink = "192.168.100.5:8000/api/user/invoice/1"
 )
@@ -41,6 +42,7 @@ val emptyInvoice = InvoiceData(
     cancellationReason = null,
     transactionId = 1,
     orderId = 1,
+    transactionCode = "abc",
     paymentLink = ""
 )
 
@@ -60,6 +62,7 @@ val invoices = List(10) { index ->
         rejectionReason = null,
         cancellationReason = null,
         transactionId = 1,
+        transactionCode = "abc",
         orderId = 1,
         paymentLink = "192.168.100.5:8000/api/user/invoice/1"
     )

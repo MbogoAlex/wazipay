@@ -4,6 +4,7 @@ import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -244,6 +245,7 @@ fun BusinessSelectionScreen(
                         }
                     }
                 )
+                Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
             }
         }
     }
@@ -255,87 +257,98 @@ fun SelectableBusinessCell(
     businessData: BusinessData,
     navigateToNextScreen: (businessId: String) -> Unit
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
+
+    Box(
         modifier = Modifier
-            .clickable {
-                navigateToNextScreen(businessData.id.toString())
-            }
+            .fillMaxWidth()
+            .border(
+                width = screenWidth(x = 1.0),
+                color = Color.LightGray,
+                shape = MaterialTheme.shapes.medium
+            )
     ) {
-        Column(
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .padding(screenWidth(x = 8.0))
-                .weight(1f)
+                .clickable {
+                    navigateToNextScreen(businessData.id.toString())
+                }
         ) {
-            if(businessData.owner?.id == userId) {
+            Column(
+                modifier = Modifier
+                    .padding(screenWidth(x = 8.0))
+                    .weight(1f)
+            ) {
+                if(businessData.owner?.id == userId) {
+                    Text(
+                        text = "My Business",
+                        fontSize = screenFontSize(x = 14.0).sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    Spacer(modifier = Modifier.height(screenWidth(x = 4.0)))
+                }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Icon(
+                        tint = MaterialTheme.colorScheme.onBackground,
+                        painter = painterResource(id = R.drawable.shop),
+                        contentDescription = null
+                    )
+                    Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
+                    Text(
+                        text = businessData.name,
+                        fontSize = screenFontSize(x = 14.0).sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                }
+                Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
                 Text(
-                    text = "My Business",
+                    text = businessData.description,
                     fontSize = screenFontSize(x = 14.0).sp,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
+                    maxLines = 2,
+                    color = MaterialTheme.colorScheme.onBackground
                 )
-                Spacer(modifier = Modifier.height(screenWidth(x = 4.0)))
+                Spacer(modifier = Modifier.height(screenHeight(x = 4.0)))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        tint = MaterialTheme.colorScheme.onBackground,
+                        painter = painterResource(id = R.drawable.person),
+                        contentDescription = null
+                    )
+                    Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
+                    Text(
+                        text = businessData.owner?.username ?: "",
+                        fontSize = screenFontSize(x = 14.0).sp,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                    Spacer(modifier = Modifier.width(screenWidth(x = 8.0)))
+                    Icon(
+                        tint = MaterialTheme.colorScheme.onBackground,
+                        painter = painterResource(id = R.drawable.phone),
+                        contentDescription = null
+                    )
+                    Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
+                    Text(
+                        text = businessData.owner?.phoneNumber ?: "",
+                        fontSize = screenFontSize(x = 14.0).sp,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                }
             }
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
+            IconButton(
+                onClick = { navigateToNextScreen(businessData.id.toString()) },
             ) {
                 Icon(
                     tint = MaterialTheme.colorScheme.onBackground,
-                    painter = painterResource(id = R.drawable.shop),
-                    contentDescription = null
-                )
-                Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
-                Text(
-                    text = businessData.name,
-                    fontSize = screenFontSize(x = 14.0).sp,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onBackground
+                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                    contentDescription = "Business details"
                 )
             }
-            Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
-            Text(
-                text = businessData.description,
-                fontSize = screenFontSize(x = 14.0).sp,
-                maxLines = 2,
-                color = MaterialTheme.colorScheme.onBackground
-            )
-            Spacer(modifier = Modifier.height(screenHeight(x = 4.0)))
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    tint = MaterialTheme.colorScheme.onBackground,
-                    painter = painterResource(id = R.drawable.person),
-                    contentDescription = null
-                )
-                Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
-                Text(
-                    text = businessData.owner?.username ?: "",
-                    fontSize = screenFontSize(x = 14.0).sp,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-                Spacer(modifier = Modifier.width(screenWidth(x = 8.0)))
-                Icon(
-                    tint = MaterialTheme.colorScheme.onBackground,
-                    painter = painterResource(id = R.drawable.phone),
-                    contentDescription = null
-                )
-                Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
-                Text(
-                    text = businessData.owner?.phoneNumber ?: "",
-                    fontSize = screenFontSize(x = 14.0).sp,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-            }
-        }
-        IconButton(
-            onClick = { navigateToNextScreen(businessData.id.toString()) },
-        ) {
-            Icon(
-                tint = MaterialTheme.colorScheme.onBackground,
-                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                contentDescription = "Business details"
-            )
         }
     }
 }

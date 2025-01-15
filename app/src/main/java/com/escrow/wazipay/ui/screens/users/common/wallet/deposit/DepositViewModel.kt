@@ -25,6 +25,14 @@ class DepositViewModel(
     private val _uiState = MutableStateFlow(DepositUiData())
     val uiState: StateFlow<DepositUiData> = _uiState.asStateFlow()
 
+    fun onChangePhoneNumber(phone: String) {
+        _uiState.update {
+            it.copy(
+                phoneNumber = phone
+            )
+        }
+    }
+
     fun updateAmount(amount: String) {
         _uiState.update {
             it.copy(
@@ -44,6 +52,7 @@ class DepositViewModel(
             try {
 
                val depositRequestBody = DepositRequestBody(
+                   phoneNumber = uiState.value.phoneNumber,
                    amount = uiState.value.amount.toDouble()
                )
 
@@ -53,6 +62,33 @@ class DepositViewModel(
                )
 
                if(response.isSuccessful) {
+                   val transactionCode = apiRepository.getTransactions(
+                       token = uiState.value.userDetails.token!!,
+                       userId = uiState.value.userDetails.userId,
+                       query = null,
+                       transactionCode = null,
+                       transactionType = "WALLET_DEPOSIT",
+                       startDate = null,
+                       endDate = null
+                   ).body()?.data!!
+                       .sortedBy { it.createdAt }
+                       .first().transactionCode
+
+                   Log.d("transactionCode", transactionCode)
+
+                   var paymentComplete = false
+
+                   while(!paymentComplete) {
+                       delay(5000)
+                       val paymentCompleteResponse = apiRepository.getTransactionStatus(
+                           token = uiState.value.userDetails.token!!,
+                           transactionCode = transactionCode
+                       )
+                       Log.d("paymentCompleteResponse", paymentCompleteResponse.toString())
+
+                       paymentComplete = paymentCompleteResponse.body()?.data?.status!!
+                   }
+
                    _uiState.update {
                        it.copy(
                            depositMessage = "Deposit successful",

@@ -86,6 +86,7 @@ fun MerchantDashboardScreenComposable(
     navigateToBusinessSelectionScreenWithArgs: (toBuyerSelectionScreen: Boolean) -> Unit,
     navigateToBusinessAdditionScreen: () -> Unit,
     navigateToTransactionsScreen: () -> Unit,
+    navigateToBusinessScreenWithOwnerId: (ownerId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -137,7 +138,8 @@ fun MerchantDashboardScreenComposable(
             navigateToBusinessSelectionScreen = navigateToBusinessSelectionScreen,
             navigateToBusinessSelectionScreenWithArgs = navigateToBusinessSelectionScreenWithArgs,
             navigateToBusinessAdditionScreen = navigateToBusinessAdditionScreen,
-            navigateToTransactionsScreen = navigateToTransactionsScreen
+            navigateToTransactionsScreen = navigateToTransactionsScreen,
+            navigateToBusinessScreenWithOwnerId = navigateToBusinessScreenWithOwnerId
         )
     }
 }
@@ -166,6 +168,7 @@ fun MerchantDashboardScreen(
     navigateToBusinessAdditionScreen: () -> Unit,
     navigateToBusinessSelectionScreenWithArgs: (toBuyerSelectionScreen: Boolean) -> Unit,
     navigateToTransactionsScreen: () -> Unit,
+    navigateToBusinessScreenWithOwnerId: (ownerId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -481,7 +484,9 @@ fun MerchantDashboardScreen(
             Spacer(modifier = Modifier.weight(1f))
             TextButton(
                 enabled = businesses.isNotEmpty(),
-                onClick = { /*TODO*/ }
+                onClick = {
+                    navigateToBusinessScreenWithOwnerId(userId.toString())
+                }
             ) {
                 Text(
                     text = "See all",
@@ -643,7 +648,8 @@ fun MerchantDashboardScreenPreview() {
             navigateToInvoicesScreen = {},
             navigateToBusinessSelectionScreenWithArgs = {},
             navigateToBusinessAdditionScreen = {},
-            navigateToTransactionsScreen = {}
+            navigateToTransactionsScreen = {},
+            navigateToBusinessScreenWithOwnerId = {}
         )
     }
 }

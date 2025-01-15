@@ -4,5 +4,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class DepositRequestBody(
+    val phoneNumber: String,
     val amount: Double,
 )

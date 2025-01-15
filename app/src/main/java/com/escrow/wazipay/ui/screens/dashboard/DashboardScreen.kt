@@ -112,6 +112,7 @@ fun DashboardScreenComposable(
     navigateToInvoiceDetailsScreen: (invoiceId: String) -> Unit,
     navigateToOrdersScreenWithStatus: (status: String) -> Unit,
     navigateToBusinessAdditionScreen: () -> Unit,
+    navigateToBusinessScreenWithOwnerId: (ownerId: String) -> Unit,
 ) {
     val context = LocalContext.current
 
@@ -296,7 +297,8 @@ fun DashboardScreenComposable(
             navigateToBusinessSelectionScreenWithArgs = navigateToBusinessSelectionScreenWithArgs,
             navigateToInvoiceDetailsScreen = navigateToInvoiceDetailsScreen,
             navigateToOrdersScreenWithStatus = navigateToOrdersScreenWithStatus,
-            navigateToBusinessAdditionScreen = navigateToBusinessAdditionScreen
+            navigateToBusinessAdditionScreen = navigateToBusinessAdditionScreen,
+            navigateToBusinessScreenWithOwnerId = navigateToBusinessScreenWithOwnerId
         )
     }
 }
@@ -336,6 +338,7 @@ fun DashboardScreen(
     navigateToInvoiceDetailsScreen: (invoiceId: String) -> Unit,
     navigateToOrdersScreenWithStatus: (status: String) -> Unit,
     navigateToBusinessAdditionScreen: () -> Unit,
+    navigateToBusinessScreenWithOwnerId: (ownerId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -498,6 +501,7 @@ fun DashboardScreen(
                     navigateToBusinessSelectionScreenWithArgs = navigateToBusinessSelectionScreenWithArgs,
                     navigateToBusinessAdditionScreen = navigateToBusinessAdditionScreen,
                     navigateToTransactionsScreen = navigateToTransactionsScreen,
+                    navigateToBusinessScreenWithOwnerId = navigateToBusinessScreenWithOwnerId,
                     modifier = Modifier
                             .weight(1f)
                 )
@@ -543,13 +547,16 @@ fun DashboardScreen(
             NavBarItem.PROFILE -> ProfileScreenComposable(
                 navigateToTransactionsScreen = navigateToTransactionsScreen,
                 onLogout = onLogout,
+                navigateToBusinessScreenWithOwnerId = navigateToBusinessScreenWithOwnerId,
                 modifier = Modifier
                     .weight(1f)
             )
 
             NavBarItem.BUSINESSES -> BusinessesScreenComposable(
+                showBackArrow = false,
                 navigateToBusinessDetailsScreen = navigateToBusinessDetailsScreen,
                 navigateToBusinessAdditionScreen = navigateToBusinessAdditionScreen,
+                navigateToPreviousScreen = navigateToPreviousScreen,
                 modifier = Modifier
                     .weight(1f)
             )
@@ -590,6 +597,7 @@ fun DashboardScreen(
             NavBarItem.ADD_BUSINESS -> BusinessesScreenComposable(
                 navigateToBusinessDetailsScreen = navigateToBusinessDetailsScreen,
                 navigateToBusinessAdditionScreen = navigateToBusinessAdditionScreen,
+                navigateToPreviousScreen = navigateToPreviousScreen,
                 modifier = Modifier
                     .weight(1f)
             )
@@ -798,7 +806,8 @@ fun DashboardScreenPreview() {
             navigateToInvoiceDetailsScreen = {},
             navigateToInvoicesScreenWithStatus = {},
             navigateToOrdersScreenWithStatus = {},
-            navigateToBusinessAdditionScreen = {}
+            navigateToBusinessAdditionScreen = {},
+            navigateToBusinessScreenWithOwnerId = {}
         )
     }
 }

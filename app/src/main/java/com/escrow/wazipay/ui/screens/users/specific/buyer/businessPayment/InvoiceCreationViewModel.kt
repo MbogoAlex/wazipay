@@ -5,6 +5,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.escrow.wazipay.data.network.models.invoice.InvoiceCreationRequestBody
+import com.escrow.wazipay.data.network.models.invoice.InvoicePaymentRequestBody
+import com.escrow.wazipay.data.network.models.transaction.TransactionMethod
 import com.escrow.wazipay.data.network.repository.ApiRepository
 import com.escrow.wazipay.data.room.models.UserDetails
 import com.escrow.wazipay.data.room.repository.DBRepository
@@ -127,20 +129,40 @@ class InvoiceCreationViewModel(
     }
 
     private fun payInvoice() {
+        var transactionComplete = false
+
         viewModelScope.launch {
             try {
+
+                val invoicePaymentRequestBody = InvoicePaymentRequestBody(
+                    invoiceId = uiState.value.invoiceId.toInt(),
+                    transactionMethod = TransactionMethod.valueOf(uiState.value.paymentMethod.name),
+                    phoneNumber = uiState.value.phoneNumber
+                )
+
                val response = apiRepository.payInvoice(
                    token = uiState.value.userDetails.token!!,
-                   invoiceId = uiState.value.invoiceId.toInt()
+                   invoicePaymentRequestBody = invoicePaymentRequestBody
                )
 
                if(response.isSuccessful) {
+
+                   while (!transactionComplete) {
+                       delay(2000)
+
+                       transactionComplete = apiRepository.getTransactionStatus(
+                           token = uiState.value.userDetails.token!!,
+                           transactionCode = response.body()?.data?.transactionCode!!
+                       ).body()?.data?.status!!
+                   }
+
                    _uiState.update {
                        it.copy(
                            orderId = response.body()?.data?.orderId!!.toString(),
                            invoiceCreationStatus = InvoiceCreationStatus.SUCCESS
                        )
                    }
+
                } else {
                    _uiState.update {
                        it.copy(
