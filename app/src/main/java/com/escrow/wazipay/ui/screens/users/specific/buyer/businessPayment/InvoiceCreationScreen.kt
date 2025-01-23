@@ -95,6 +95,9 @@ fun InvoiceCreationScreenComposable(
 
     if(uiSate.invoiceCreationStatus == InvoiceCreationStatus.SUCCESS) {
         showSuccessDialog = true
+    } else if(uiSate.invoiceCreationStatus == InvoiceCreationStatus.FAIL) {
+        Toast.makeText(context, uiSate.paymentMessage, Toast.LENGTH_LONG).show()
+        viewModel.resetStatus()
     }
 
     if(showConfirmDialog) {
@@ -138,6 +141,7 @@ fun InvoiceCreationScreenComposable(
             .background(MaterialTheme.colorScheme.background)
     ) {
         InvoiceCreationScreen(
+            paymentStage = uiSate.paymentStage,
             userId = uiSate.userDetails.userId,
             businessData = uiSate.businessData,
             title = uiSate.title,
@@ -179,6 +183,7 @@ fun InvoiceCreationScreenComposable(
 
 @Composable
 fun InvoiceCreationScreen(
+    paymentStage: String,
     userId: Int,
     businessData: BusinessData,
     title: String,
@@ -483,7 +488,7 @@ fun InvoiceCreationScreen(
         ) {
             if(invoiceCreationStatus == InvoiceCreationStatus.LOADING) {
                 Text(
-                    text = "Loading...",
+                    text = "$paymentStage...",
                     fontSize = screenFontSize(x = 14.0).sp
                 )
             } else {
@@ -577,6 +582,7 @@ fun InvoiceCreationSuccessDialog(
 fun InvoiceCreationScreenPreview() {
     WazipayTheme {
         InvoiceCreationScreen(
+            paymentStage = "",
             userId = 1,
             businessData = businessData,
             title = "",

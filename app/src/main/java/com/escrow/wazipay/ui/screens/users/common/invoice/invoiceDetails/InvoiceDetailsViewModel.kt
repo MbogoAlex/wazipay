@@ -6,8 +6,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.escrow.wazipay.data.network.models.invoice.InvoicePaymentRequestBody
 import com.escrow.wazipay.data.network.models.transaction.TransactionMethod
+import com.escrow.wazipay.data.network.models.transaction.TransactionStatusRequestBody
 import com.escrow.wazipay.data.network.repository.ApiRepository
 import com.escrow.wazipay.data.room.repository.DBRepository
+import com.escrow.wazipay.ui.screens.users.specific.buyer.businessPayment.InvoiceCreationStatus
 import com.escrow.wazipay.ui.screens.users.specific.buyer.businessPayment.PaymentMethod
 import com.escrow.wazipay.ui.screens.users.specific.merchant.courierAssignment.LoadingStatus
 import kotlinx.coroutines.Dispatchers
@@ -46,38 +48,74 @@ class InvoiceDetailsViewModel(
     }
 
     fun payInvoice() {
-        _uiState.update {
-            it.copy(
-                loadingStatus = LoadingStatus.INITIAL
-            )
-        }
+        var transactionPending = true
+
         viewModelScope.launch {
             try {
+
                 val invoicePaymentRequestBody = InvoicePaymentRequestBody(
                     invoiceId = invoiceId!!.toInt(),
                     transactionMethod = TransactionMethod.valueOf(uiState.value.paymentMethod.name),
                     phoneNumber = uiState.value.phoneNumber,
 
-                )
+                    )
+
                 val response = apiRepository.payInvoice(
                     token = uiState.value.userDetails.token!!,
                     invoicePaymentRequestBody = invoicePaymentRequestBody
                 )
 
+                val transactionStatusRequestBody = TransactionStatusRequestBody(
+                    referenceId = response.body()?.data?.partnerReferenceID!!,
+                    transactionId = response.body()?.data?.transactionID ?: "",
+                    token = response.body()?.data?.transactionToken!!
+                )
+
                 if(response.isSuccessful) {
-                    _uiState.update {
-                        it.copy(
-                            newOrderId = response.body()?.data?.orderId!!,
-                            loadingStatus = LoadingStatus.SUCCESS
+
+                    while (transactionPending) {
+                        delay(2000)
+
+                        val transactionStatusResponse = apiRepository.getTransactionStatus(
+                            token = uiState.value.userDetails.token!!,
+                            transactionStatusRequestBody = transactionStatusRequestBody
                         )
+
+                        _uiState.update {
+                            it.copy(
+                                paymentStage = transactionStatusResponse.body()?.data?.status ?: "",
+                                paymentMessage = transactionStatusResponse.body()?.data?.sovNarration ?: ""
+                            )
+                        }
+
+                        transactionPending  = transactionStatusResponse.body()?.data?.status == "PENDING"
+
                     }
+
+                    if(_uiState.value.paymentStage == "SUCCESSFUL") {
+                        _uiState.update {
+                            it.copy(
+                                newOrderId = response.body()?.data?.transactionDetails?.orderId!!,
+                                loadingStatus = LoadingStatus.SUCCESS
+                            )
+                        }
+                    } else {
+                        _uiState.update {
+                            it.copy(
+                                loadingStatus = LoadingStatus.FAIL
+
+                            )
+                        }
+                    }
+
+
                 } else {
                     _uiState.update {
                         it.copy(
                             loadingStatus = LoadingStatus.FAIL
                         )
                     }
-                    Log.e("payInvoiceResponse_err", response.toString())
+                    Log.e("invoicePaymentResponse_Err", response.toString())
                 }
 
             } catch (e: Exception) {
@@ -86,7 +124,8 @@ class InvoiceDetailsViewModel(
                         loadingStatus = LoadingStatus.FAIL
                     )
                 }
-                Log.e("payInvoiceException_err", e.toString())
+                Log.e("invoicePaymentException_Err", e.toString())
+
             }
         }
     }

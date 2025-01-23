@@ -14,6 +14,7 @@ import com.escrow.wazipay.data.network.models.courier.CourierAssignmentRequestBo
 import com.escrow.wazipay.data.network.models.courier.CourierAssignmentResponseBody
 import com.escrow.wazipay.data.network.models.invoice.InvoiceCreationRequestBody
 import com.escrow.wazipay.data.network.models.invoice.InvoicePaymentRequestBody
+import com.escrow.wazipay.data.network.models.invoice.InvoicePaymentResponseBody
 import com.escrow.wazipay.data.network.models.invoice.InvoiceResponseBody
 import com.escrow.wazipay.data.network.models.invoice.InvoicesResponseBody
 import com.escrow.wazipay.data.network.models.order.OrderCreationRequestBody
@@ -21,11 +22,13 @@ import com.escrow.wazipay.data.network.models.order.OrderCreationResponseBody
 import com.escrow.wazipay.data.network.models.order.OrderResponseBody
 import com.escrow.wazipay.data.network.models.order.OrdersResponseBody
 import com.escrow.wazipay.data.network.models.transaction.TransactionResponseBody
+import com.escrow.wazipay.data.network.models.transaction.TransactionStatusRequestBody
 import com.escrow.wazipay.data.network.models.transaction.TransactionStatusResponseBody
 import com.escrow.wazipay.data.network.models.transaction.TransactionsResponseBody
 import com.escrow.wazipay.data.network.models.user.UserDetailsResponseBody
 import com.escrow.wazipay.data.network.models.user.UsersDetailsResponseBody
 import com.escrow.wazipay.data.network.models.wallet.DepositRequestBody
+import com.escrow.wazipay.data.network.models.wallet.DepositResponseBody
 import com.escrow.wazipay.data.network.models.wallet.UserWalletResponseBody
 import com.escrow.wazipay.data.network.models.wallet.WithdrawalRequestBody
 import okhttp3.MultipartBody
@@ -124,7 +127,7 @@ interface ApiRepository {
     suspend fun deposit(
         token: String,
         depositRequestBody: DepositRequestBody,
-    ): Response<UserWalletResponseBody>
+    ): Response<DepositResponseBody>
 
     //    Withdraw from user wallet
     suspend fun withdraw(
@@ -178,7 +181,7 @@ interface ApiRepository {
     suspend fun payInvoice(
         token: String,
         invoicePaymentRequestBody: InvoicePaymentRequestBody
-    ): Response<InvoiceResponseBody>
+    ): Response<InvoicePaymentResponseBody>
 
     //    Assign courier
     suspend fun assignCourier(
@@ -201,7 +204,7 @@ interface ApiRepository {
     //    Get transactionStatus
     suspend fun getTransactionStatus(
         token: String,
-        transactionCode: String
+        transactionStatusRequestBody: TransactionStatusRequestBody
     ): Response<TransactionStatusResponseBody>
 
     //    Request user verification

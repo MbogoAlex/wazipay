@@ -14,5 +14,6 @@ data class DepositUiData(
     val newBalance: Double = 0.0,
     val buttonEnabled: Boolean = false,
     val depositMessage: String = "",
+    val depositStage: String = "STARTING",
     val depositStatus: DepositStatus = DepositStatus.INITIAL
 )

@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.escrow.wazipay.data.network.models.invoice.InvoiceCreationRequestBody
 import com.escrow.wazipay.data.network.models.invoice.InvoicePaymentRequestBody
 import com.escrow.wazipay.data.network.models.transaction.TransactionMethod
+import com.escrow.wazipay.data.network.models.transaction.TransactionStatusRequestBody
 import com.escrow.wazipay.data.network.repository.ApiRepository
 import com.escrow.wazipay.data.room.models.UserDetails
 import com.escrow.wazipay.data.room.repository.DBRepository
@@ -129,7 +130,7 @@ class InvoiceCreationViewModel(
     }
 
     private fun payInvoice() {
-        var transactionComplete = false
+        var transactionPending = true
 
         viewModelScope.launch {
             try {
@@ -145,23 +146,49 @@ class InvoiceCreationViewModel(
                    invoicePaymentRequestBody = invoicePaymentRequestBody
                )
 
+                val transactionStatusRequestBody = TransactionStatusRequestBody(
+                    referenceId = response.body()?.data?.partnerReferenceID!!,
+                    transactionId = response.body()?.data?.transactionID ?: "",
+                    token = response.body()?.data?.transactionToken!!
+                )
+
                if(response.isSuccessful) {
 
-                   while (!transactionComplete) {
+                   while (transactionPending) {
                        delay(2000)
 
-                       transactionComplete = apiRepository.getTransactionStatus(
+                       val transactionStatusResponse = apiRepository.getTransactionStatus(
                            token = uiState.value.userDetails.token!!,
-                           transactionCode = response.body()?.data?.transactionCode!!
-                       ).body()?.data?.status!!
+                           transactionStatusRequestBody = transactionStatusRequestBody
+                       )
+
+                       _uiState.update {
+                           it.copy(
+                               paymentStage = transactionStatusResponse.body()?.data?.status ?: "",
+                               paymentMessage = transactionStatusResponse.body()?.data?.sovNarration ?: ""
+                           )
+                       }
+
+                       transactionPending  = transactionStatusResponse.body()?.data?.status == "PENDING"
+
                    }
 
-                   _uiState.update {
-                       it.copy(
-                           orderId = response.body()?.data?.orderId!!.toString(),
-                           invoiceCreationStatus = InvoiceCreationStatus.SUCCESS
-                       )
+                   if(_uiState.value.paymentStage == "SUCCESSFUL") {
+                       _uiState.update {
+                           it.copy(
+                               orderId = response.body()?.data?.transactionDetails?.orderId!!.toString(),
+                               invoiceCreationStatus = InvoiceCreationStatus.SUCCESS
+                           )
+                       }
+                   } else {
+                       _uiState.update {
+                           it.copy(
+                               invoiceCreationStatus = InvoiceCreationStatus.FAIL
+
+                           )
+                       }
                    }
+
 
                } else {
                    _uiState.update {

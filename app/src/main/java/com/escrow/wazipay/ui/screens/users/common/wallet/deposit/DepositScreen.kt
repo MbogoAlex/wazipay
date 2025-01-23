@@ -1,6 +1,7 @@
 package com.escrow.wazipay.ui.screens.users.common.wallet.deposit
 
 import android.os.Build
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
@@ -69,7 +70,9 @@ fun DepositScreenComposable(
 
     BackHandler(onBack = {
         if(uiState.depositStatus != DepositStatus.LOADING) {
-            navigateToDashboardScreen()
+            navigateToPreviousScreen()
+        } else {
+            Toast.makeText(context, "Important transaction in progress", Toast.LENGTH_SHORT).show()
         }
     })
 
@@ -112,7 +115,7 @@ fun DepositScreenComposable(
                 viewModel.enableButton()
             },
             depositAmount = formatMoneyValue(uiState.amount.toDouble()),
-            newBalance = formatMoneyValue(uiState.newBalance)
+            newBalance = formatMoneyValue(uiState.userWalletData.balance)
         )
     }
 
@@ -122,6 +125,7 @@ fun DepositScreenComposable(
             .background(MaterialTheme.colorScheme.background)
     ) {
         DepositScreen(
+            depositStage = uiState.depositStage,
             walletBalance = formatMoneyValue(uiState.userWalletData.balance),
             depositAmount = uiState.amount,
             onChangeAmount = { value ->
@@ -143,6 +147,7 @@ fun DepositScreenComposable(
 
 @Composable
 fun DepositScreen(
+    depositStage: String,
     walletBalance: String,
     depositAmount: String,
     onChangeAmount: (amount: String) -> Unit,
@@ -256,7 +261,7 @@ fun DepositScreen(
         ) {
             if(depositStatus == DepositStatus.LOADING) {
                 Text(
-                    text = "Depositing...",
+                    text = "$depositStage...",
                     fontSize = screenFontSize(x = 14.0).sp,
                 )
             } else {
@@ -366,6 +371,7 @@ fun DepositSuccessDialog(
 fun DepositScreenPreview() {
     WazipayTheme {
         DepositScreen(
+            depositStage = "",
             walletBalance = "Ksh1,500",
             depositAmount = "500",
             phoneNumber = "0794649026",

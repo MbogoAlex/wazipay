@@ -22,6 +22,8 @@ data class InvoiceDetailsUiData(
     val buyer: UserContactData = emptyUserContactData,
     val merchant: UserContactData = emptyUserContactData,
     val newOrderId: Int = 0,
+    val paymentStage: String = "STARTING",
+    val paymentMessage: String = "",
     val paymentMethod: PaymentMethod = PaymentMethod.WAZIPAY,
     val buttonEnabled: Boolean = false,
     val unauthorized: Boolean = false,

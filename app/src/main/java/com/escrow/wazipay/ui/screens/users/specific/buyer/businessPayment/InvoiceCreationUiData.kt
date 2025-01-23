@@ -17,6 +17,8 @@ data class InvoiceCreationUiData(
     val orderId: String = "",
     val invoiceId: String = "",
     val businessData: BusinessData = emptyBusinessData,
+    val paymentStage: String = "STARTING",
+    val paymentMessage: String = "",
     val userWalletData: UserWalletData = UserWalletData(0, 0.0, userContactData),
     val paymentMethod: PaymentMethod = PaymentMethod.WAZIPAY,
     val unauthorized: Boolean = false,

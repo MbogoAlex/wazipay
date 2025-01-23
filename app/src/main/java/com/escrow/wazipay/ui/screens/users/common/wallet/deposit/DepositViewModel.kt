@@ -4,10 +4,12 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.escrow.wazipay.data.network.models.transaction.TransactionStatusRequestBody
 import com.escrow.wazipay.data.network.models.wallet.DepositRequestBody
 import com.escrow.wazipay.data.network.repository.ApiRepository
 import com.escrow.wazipay.data.room.models.UserDetails
 import com.escrow.wazipay.data.room.repository.DBRepository
+import com.escrow.wazipay.ui.screens.users.specific.buyer.businessPayment.InvoiceCreationStatus
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -42,6 +44,7 @@ class DepositViewModel(
     }
 
     fun deposit() {
+        var depositPending = true
         _uiState.update {
             it.copy(
                 depositStatus = DepositStatus.LOADING
@@ -62,41 +65,49 @@ class DepositViewModel(
                )
 
                if(response.isSuccessful) {
-                   val transactionCode = apiRepository.getTransactions(
-                       token = uiState.value.userDetails.token!!,
-                       userId = uiState.value.userDetails.userId,
-                       query = null,
-                       transactionCode = null,
-                       transactionType = "WALLET_DEPOSIT",
-                       startDate = null,
-                       endDate = null
-                   ).body()?.data!!
-                       .sortedBy { it.createdAt }
-                       .first().transactionCode
 
-                   Log.d("transactionCode", transactionCode)
+                   val transactionStatusRequestBody = TransactionStatusRequestBody(
+                       referenceId = response.body()?.data?.partnerReferenceID!!,
+                       transactionId = response.body()?.data?.transactionID ?: "",
+                       token = response.body()?.data?.transactionToken!!
+                   )
 
-                   var paymentComplete = false
+                   while(depositPending) {
 
-                   while(!paymentComplete) {
-                       delay(5000)
-                       val paymentCompleteResponse = apiRepository.getTransactionStatus(
+                       delay(2000)
+                       val transactionStatusResponse = apiRepository.getTransactionStatus(
                            token = uiState.value.userDetails.token!!,
-                           transactionCode = transactionCode
+                           transactionStatusRequestBody = transactionStatusRequestBody
                        )
-                       Log.d("paymentCompleteResponse", paymentCompleteResponse.toString())
 
-                       paymentComplete = paymentCompleteResponse.body()?.data?.status!!
+                       _uiState.update {
+                           it.copy(
+                               depositStage = transactionStatusResponse.body()?.data?.status ?: "",
+                               depositMessage = transactionStatusResponse.body()?.data?.sovNarration ?: ""
+                           )
+                       }
+
+                       depositPending  = transactionStatusResponse.body()?.data?.status == "PENDING"
                    }
 
-                   _uiState.update {
-                       it.copy(
-                           depositMessage = "Deposit successful",
-                           newBalance = response.body()?.data?.balance!!,
-                           userWalletData = response.body()?.data!!,
-                           depositStatus = DepositStatus.SUCCESS
-                       )
+                   if(_uiState.value.depositStage == "SUCCESSFUL") {
+                       getUserWallet()
+                       _uiState.update {
+                           it.copy(
+                               newBalance = response.body()?.data?.transactionDetails?.balance!!,
+                               userWalletData = response.body()?.data?.transactionDetails!!,
+                               depositStatus = DepositStatus.SUCCESS
+                           )
+                       }
+                   } else {
+                       _uiState.update {
+                           it.copy(
+                               depositStatus = DepositStatus.FAIL
+
+                           )
+                       }
                    }
+
                } else {
                    _uiState.update {
                        it.copy(

@@ -6,5 +6,5 @@ import kotlinx.serialization.Serializable
 data class TransactionStatusResponseBody (
     val statusCode: Int,
     val message: String,
-    val data: TransactionStatus
+    val data: TransactionStatusResponseData
 )

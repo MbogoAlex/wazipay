@@ -1,7 +1,5 @@
 package com.escrow.wazipay.data.network.models.invoice
 
-import com.escrow.wazipay.data.network.models.business.BusinessData
-import com.escrow.wazipay.data.network.models.transaction.TransactionData
 import com.escrow.wazipay.data.network.models.user.UserContactData
 import kotlinx.serialization.Serializable
 
