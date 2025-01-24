@@ -2,6 +2,7 @@ package com.escrow.wazipay.ui.screens.users.common.profile
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -188,6 +189,7 @@ fun UserAccountOverviewScreenComposable(
     Box(
         modifier = Modifier
             .safeDrawingPadding()
+            .background(MaterialTheme.colorScheme.onBackground)
     ) {
         UserAccountOverviewScreen(
             verificationStatus =  if(uiState.userDetailsData.verificationStatus.isNotEmpty()) VerificationStatus.valueOf(uiState.userDetailsData.verificationStatus) else VerificationStatus.UNVERIFIED,
@@ -242,7 +244,7 @@ fun UserAccountOverviewScreen(
             }
             Spacer(modifier = Modifier.width(screenWidth(x = 5.0)))
             Text(
-                text = "Previous screen",
+                text = "Account overview",
                 fontSize = screenFontSize(x = 14.0).sp
             )
         }
