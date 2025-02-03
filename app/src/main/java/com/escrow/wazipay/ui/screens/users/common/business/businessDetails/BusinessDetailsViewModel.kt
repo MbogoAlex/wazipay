@@ -24,7 +24,12 @@ class BusinessDetailsViewModel(
     private val _uiState = MutableStateFlow(BusinessDetailsUiData())
     val uiState: StateFlow<BusinessDetailsUiData> = _uiState.asStateFlow()
 
-    private fun getBusiness() {
+     fun getBusiness() {
+         _uiState.update {
+             it.copy(
+                 loadBusinessStatus = LoadBusinessStatus.LOADING
+             )
+         }
         viewModelScope.launch {
             try {
                 val response = apiRepository.getBusiness(

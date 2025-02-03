@@ -10,7 +10,7 @@ data class BusinessUiData(
     val userDetails: UserDetails = UserDetails(),
     val userRole: UserRole = UserRole(0, Role.BUYER),
     val searchQuery: String? = null,
-    val loadBusinessStatus: LoadBusinessStatus = LoadBusinessStatus.INITIAL,
+    val loadBusinessStatus: LoadBusinessStatus = LoadBusinessStatus.LOADING,
     val unauthorized: Boolean = false,
     val businesses: List<BusinessData> = emptyList()
 )

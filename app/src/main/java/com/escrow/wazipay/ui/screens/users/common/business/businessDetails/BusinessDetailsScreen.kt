@@ -20,8 +20,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.PullRefreshState
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -47,6 +51,8 @@ import com.escrow.wazipay.data.network.models.business.businessData
 import com.escrow.wazipay.data.network.models.user.UserContactData
 import com.escrow.wazipay.data.room.models.Role
 import com.escrow.wazipay.ui.nav.AppNavigation
+import com.escrow.wazipay.ui.screens.users.common.business.LoadBusinessStatus
+import com.escrow.wazipay.ui.screens.users.common.invoice.LoadInvoicesStatus
 import com.escrow.wazipay.ui.theme.WazipayTheme
 import com.escrow.wazipay.utils.screenFontSize
 import com.escrow.wazipay.utils.screenHeight
@@ -59,6 +65,7 @@ object BusinessDetailsScreenDestination: AppNavigation {
     val routeWithArgs: String = "$route/{$businessId}"
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun BusinessDetailsScreenComposable(
@@ -70,30 +77,43 @@ fun BusinessDetailsScreenComposable(
     val viewModel: BusinessDetailsViewModel = viewModel(factory = AppViewModelFactory.Factory)
     val uiState by viewModel.uiState.collectAsState()
 
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = uiState.loadBusinessStatus == LoadBusinessStatus.LOADING,
+        onRefresh = {
+            viewModel.getBusiness()
+
+        }
+    )
+
     Box(
         modifier = Modifier
             .safeDrawingPadding()
             .background(MaterialTheme.colorScheme.background)
     ) {
         BusinessDetailsScreen(
+            pullRefreshState = pullRefreshState,
             userId = uiState.userDetails.userId,
             role = uiState.role,
             businessData = uiState.businessData,
             navigateToOrdersScreenWithArgs = navigateToOrdersScreenWithArgs,
             navigateToCreateOrderScreenWithArgs = navigateToCreateOrderScreenWithArgs,
-            navigateToPreviousScreen = navigateToPreviousScreen
+            navigateToPreviousScreen = navigateToPreviousScreen,
+            loadBusinessStatus = uiState.loadBusinessStatus
         )
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun BusinessDetailsScreen(
+    pullRefreshState: PullRefreshState?,
     userId: Int,
     role: Role,
     businessData: BusinessData,
     navigateToOrdersScreenWithArgs: (businessId: String) -> Unit,
     navigateToCreateOrderScreenWithArgs: (businessId: String) -> Unit,
     navigateToPreviousScreen: () -> Unit,
+    loadBusinessStatus: LoadBusinessStatus,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -121,86 +141,69 @@ fun BusinessDetailsScreen(
             )
         }
         Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
-        Column(
-            modifier = Modifier
-                .verticalScroll(rememberScrollState())
-        ) {
-            Text(
-                text = businessData.name,
-                fontWeight = FontWeight.Bold,
-                fontSize = screenFontSize(x = 16.0).sp
-            )
-            Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
-            Text(
-                text = businessData.description,
-                fontSize = screenFontSize(x = 14.0).sp
-            )
-            Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
-            Text(
-                text = "Products",
-                fontWeight = FontWeight.Bold,
-                fontSize = screenFontSize(x = 14.0).sp
-            )
-            Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
-            businessData.products.forEach {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.circle),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(screenWidth(x = 8.0))
-                    )
-                    Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
-                    Text(
-                        text = it,
-                        fontSize = screenFontSize(x = 14.0).sp
-                    )
-                }
+        if(loadBusinessStatus == LoadBusinessStatus.LOADING) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
+                PullRefreshIndicator(
+                    refreshing = true,
+                    state = pullRefreshState!!
+                )
             }
-            Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
-            Text(
-                text = "About the merchant",
-                fontWeight = FontWeight.Bold,
-                fontSize = screenFontSize(x = 14.0).sp
-            )
-            Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
-            ActorCard(
-                role = Role.MERCHANT,
-                userContactData = businessData.owner ?: UserContactData(0, "", "", "")
-            )
+        } else {
+            Column(
+                modifier = Modifier
+                    .verticalScroll(rememberScrollState())
+            ) {
+                Text(
+                    text = businessData.name,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = screenFontSize(x = 16.0).sp
+                )
+                Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+                Text(
+                    text = businessData.description,
+                    fontSize = screenFontSize(x = 14.0).sp
+                )
+                Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+                Text(
+                    text = "Products",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = screenFontSize(x = 14.0).sp
+                )
+                Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+                businessData.products.forEach {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.circle),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(screenWidth(x = 8.0))
+                        )
+                        Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
+                        Text(
+                            text = it,
+                            fontSize = screenFontSize(x = 14.0).sp
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+                Text(
+                    text = "About the merchant",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = screenFontSize(x = 14.0).sp
+                )
+                Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+                ActorCard(
+                    role = Role.MERCHANT,
+                    userContactData = businessData.owner ?: UserContactData(0, "", "", "")
+                )
+            }
         }
-//        Spacer(modifier = Modifier.weight(1f))
-//        Row(
-//            verticalAlignment = Alignment.CenterVertically
-//        ) {
-//            OutlinedButton(onClick = {
-//                navigateToOrdersScreenWithArgs(businessData.id.toString())
-//            }) {
-//                Text(
-//                    text = "My Orders",
-//                    fontSize = screenFontSize(x = 14.0).sp
-//                )
-//            }
-//            Spacer(modifier = Modifier.weight(1f))
-//            Button(onClick = {
-//                navigateToCreateOrderScreenWithArgs(businessData.id.toString())
-//            }) {
-//                if(role == Role.BUYER) {
-//                    Text(
-//                        text = "Pay business",
-//                        fontSize = screenFontSize(x = 14.0).sp
-//                    )
-//                } else {
-//                    Text(
-//                        text = "Create order",
-//                        fontSize = screenFontSize(x = 14.0).sp
-//                    )
-//                }
-//
-//            }
-//        }
     }
 }
 
@@ -273,17 +276,20 @@ fun ActorCard(
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun BusinessDetailsScreenPreview() {
     WazipayTheme {
         BusinessDetailsScreen(
+            pullRefreshState = null,
             userId = 1,
             role = Role.BUYER,
             businessData = businessData,
             navigateToOrdersScreenWithArgs = {businessId ->  },
             navigateToCreateOrderScreenWithArgs = {businessId ->  },
-            navigateToPreviousScreen = { /*TODO*/ }
+            navigateToPreviousScreen = { /*TODO*/ },
+            loadBusinessStatus = LoadBusinessStatus.INITIAL
         )
     }
 }

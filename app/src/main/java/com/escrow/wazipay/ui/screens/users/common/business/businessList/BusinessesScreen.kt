@@ -20,10 +20,14 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.PullRefreshState
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -55,6 +59,7 @@ import com.escrow.wazipay.data.network.models.business.businesses
 import com.escrow.wazipay.data.room.models.Role
 import com.escrow.wazipay.ui.nav.AppNavigation
 import com.escrow.wazipay.ui.screens.users.common.business.BusinessCellComposable
+import com.escrow.wazipay.ui.screens.users.common.business.LoadBusinessStatus
 import com.escrow.wazipay.ui.theme.WazipayTheme
 import com.escrow.wazipay.utils.screenFontSize
 import com.escrow.wazipay.utils.screenHeight
@@ -67,6 +72,7 @@ object BusinessesScreenDestination: AppNavigation {
     val routeWithOwnerId: String = "$route/{$ownerId}"
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun BusinessesScreenComposable(
@@ -95,12 +101,21 @@ fun BusinessesScreenComposable(
         }
     }
 
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = uiState.loadBusinessStatus == LoadBusinessStatus.LOADING,
+        onRefresh = {
+            viewModel.getBusinessesScreenData()
+
+        }
+    )
+
     Box(
         modifier = modifier
             .safeDrawingPadding()
             .background(MaterialTheme.colorScheme.background)
     ) {
         BusinessesScreen(
+            pullRefreshState = pullRefreshState,
             homeScreen = homeScreen,
             showBackArrow = showBackArrow,
             role = uiState.userRole.role,
@@ -113,13 +128,16 @@ fun BusinessesScreenComposable(
             businesses = uiState.businesses,
             navigateToBusinessDetailsScreen = navigateToBusinessDetailsScreen,
             navigateToBusinessAdditionScreen = navigateToBusinessAdditionScreen,
-            navigateToPreviousScreen = navigateToPreviousScreen
+            navigateToPreviousScreen = navigateToPreviousScreen,
+            loadBusinessStatus = uiState.loadBusinessStatus
         )
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun BusinessesScreen(
+    pullRefreshState: PullRefreshState?,
     homeScreen: Boolean,
     showBackArrow: Boolean,
     role: Role,
@@ -131,6 +149,7 @@ fun BusinessesScreen(
     navigateToBusinessDetailsScreen: (businessId: String) -> Unit,
     navigateToBusinessAdditionScreen: () -> Unit,
     navigateToPreviousScreen: () -> Unit,
+    loadBusinessStatus: LoadBusinessStatus,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -229,28 +248,42 @@ fun BusinessesScreen(
 //                if(role != Role.MERCHANT) {
 //
 //                }
-                if(businesses.isNotEmpty()) {
-                    LazyColumn {
-                        items(businesses) { business ->
-                            BusinessCellComposable(
-                                homeScreen = homeScreen,
-                                userId = userId,
-                                businessData = business,
-                                navigateToBusinessDetailsScreen = navigateToBusinessDetailsScreen
-                            )
-                            Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
-                        }
-                    }
-                } else {
+
+                if(loadBusinessStatus == LoadBusinessStatus.LOADING) {
                     Box(
                         contentAlignment = Alignment.Center,
                         modifier = Modifier
                             .fillMaxSize()
                     ) {
-                        Text(
-                            text = "You have added no business yet",
-                            fontSize = screenFontSize(x = 14.0).sp
+                        PullRefreshIndicator(
+                            refreshing = true,
+                            state = pullRefreshState!!
                         )
+                    }
+                } else {
+                    if(businesses.isNotEmpty()) {
+                        LazyColumn {
+                            items(businesses) { business ->
+                                BusinessCellComposable(
+                                    homeScreen = homeScreen,
+                                    userId = userId,
+                                    businessData = business,
+                                    navigateToBusinessDetailsScreen = navigateToBusinessDetailsScreen
+                                )
+                                Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+                            }
+                        }
+                    } else {
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier
+                                .fillMaxSize()
+                        ) {
+                            Text(
+                                text = "You have added no business yet",
+                                fontSize = screenFontSize(x = 14.0).sp
+                            )
+                        }
                     }
                 }
             }
@@ -258,11 +291,13 @@ fun BusinessesScreen(
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun BusinessScreenPreview() {
     WazipayTheme {
         BusinessesScreen(
+            pullRefreshState = null,
             homeScreen = false,
             showBackArrow = true,
             role = Role.BUYER,
@@ -273,7 +308,8 @@ fun BusinessScreenPreview() {
             businesses = businesses,
             navigateToBusinessDetailsScreen = {},
             navigateToBusinessAdditionScreen = {},
-            navigateToPreviousScreen = {}
+            navigateToPreviousScreen = {},
+            loadBusinessStatus = LoadBusinessStatus.INITIAL
         )
     }
 }

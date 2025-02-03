@@ -12,5 +12,5 @@ data class BusinessDetailsUiData(
     val role: Role = Role.BUYER,
     val businessId: String? = null,
     val unauthorized: Boolean = false,
-    val loadBusinessStatus: LoadBusinessStatus = LoadBusinessStatus.INITIAL
+    val loadBusinessStatus: LoadBusinessStatus = LoadBusinessStatus.LOADING
 )
