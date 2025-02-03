@@ -25,10 +25,14 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.PullRefreshState
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -58,6 +62,8 @@ import com.escrow.wazipay.data.network.models.transaction.TransactionData
 import com.escrow.wazipay.data.network.models.transaction.transactions
 import com.escrow.wazipay.data.room.models.Role
 import com.escrow.wazipay.ui.nav.AppNavigation
+import com.escrow.wazipay.ui.screens.users.common.order.LoadOrdersStatus
+import com.escrow.wazipay.ui.screens.users.common.transaction.LoadTransactionsStatus
 import com.escrow.wazipay.ui.screens.users.common.transaction.TransactionCellComposable
 import com.escrow.wazipay.ui.theme.WazipayTheme
 import com.escrow.wazipay.utils.screenFontSize
@@ -73,6 +79,7 @@ object TransactionsScreenDestination: AppNavigation {
     override val route: String = "transactions-screen"
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun TransactionsScreenComposable(
@@ -85,12 +92,21 @@ fun TransactionsScreenComposable(
     val transactionsViewModel: TransactionsViewModel = viewModel(factory = AppViewModelFactory.Factory)
     val transactionsUiState by transactionsViewModel.uiState.collectAsState()
 
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = transactionsUiState.loadTransactionsStatus == LoadTransactionsStatus.LOADING,
+        onRefresh = {
+            transactionsViewModel.loadTransactionsScreenUiData()
+
+        }
+    )
+
     Box(
         modifier = modifier
             .safeDrawingPadding()
             .background(MaterialTheme.colorScheme.background)
     ) {
         TransactionsScreen(
+            pullRefreshState = pullRefreshState,
             userId = transactionsUiState.userDetails.userId,
             filtering = filtering,
             searchText = transactionsUiState.searchText,
@@ -104,14 +120,17 @@ fun TransactionsScreenComposable(
             },
             transactions = transactionsUiState.transactions,
             onFilter = onFilter,
-            navigateToPreviousScreen = navigateToPreviousScreen
+            navigateToPreviousScreen = navigateToPreviousScreen,
+            loadTransactionsStatus = transactionsUiState.loadTransactionsStatus
         )
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun TransactionsScreen(
+    pullRefreshState: PullRefreshState?,
     userId: Int,
     filtering: Boolean,
     searchText: String,
@@ -124,6 +143,7 @@ fun TransactionsScreen(
     onFilter: () -> Unit,
     onClearSearch: () -> Unit,
     navigateToPreviousScreen: () -> Unit,
+    loadTransactionsStatus: LoadTransactionsStatus,
     modifier: Modifier = Modifier
 ) {
     val dateFormatter = DateTimeFormatter.ofPattern("dd MMM, yyyy")
@@ -278,23 +298,36 @@ fun TransactionsScreen(
             }
         }
 
-        LazyColumn(
-            modifier = Modifier
-                .padding(
-                    horizontal = screenWidth(x = 16.0),
+        if(loadTransactionsStatus == LoadTransactionsStatus.LOADING) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
+                PullRefreshIndicator(
+                    refreshing = true,
+                    state = pullRefreshState!!
+                )
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .padding(
+                        horizontal = screenWidth(x = 16.0),
 
-                )
-        ) {
-            items(transactions) { item ->
-                TransactionCellComposable(
-                    userId = userId,
-                    role = null,
-                    transactionData = item,
-                    modifier = Modifier
-                        .padding(
-                            top = screenHeight(x = 8.0)
                         )
-                )
+            ) {
+                items(transactions) { item ->
+                    TransactionCellComposable(
+                        userId = userId,
+                        role = null,
+                        transactionData = item,
+                        modifier = Modifier
+                            .padding(
+                                top = screenHeight(x = 8.0)
+                            )
+                    )
+                }
             }
         }
     }
@@ -451,12 +484,14 @@ fun DateRangePicker(
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun TransactionsScreenPreview() {
     WazipayTheme {
         TransactionsScreen(
+            pullRefreshState = null,
             userId = 1,
             filtering = false,
             searchText = "",
@@ -468,7 +503,8 @@ fun TransactionsScreenPreview() {
             onClearSearch = {},
             transactions = transactions,
             onFilter = { /*TODO*/ },
-            navigateToPreviousScreen = {}
+            navigateToPreviousScreen = {},
+            loadTransactionsStatus = LoadTransactionsStatus.INITIAL
         )
     }
 }

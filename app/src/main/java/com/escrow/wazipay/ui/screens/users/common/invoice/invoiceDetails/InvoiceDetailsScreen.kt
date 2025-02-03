@@ -163,6 +163,7 @@ fun InvoiceDetailsScreenComposable(
     Box(
         modifier = Modifier
             .safeDrawingPadding()
+            .background(MaterialTheme.colorScheme.onBackground)
     ) {
         InvoiceDetailsScreen(
             pullRefreshState = pullRefreshState,

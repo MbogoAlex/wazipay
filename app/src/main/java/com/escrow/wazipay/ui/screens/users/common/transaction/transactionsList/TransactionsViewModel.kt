@@ -154,7 +154,7 @@ class TransactionsViewModel(
         }
     }
 
-    private fun loadTransactionsScreenUiData() {
+    fun loadTransactionsScreenUiData() {
         viewModelScope.launch {
             while(uiState.value.userDetails.userId == 0) {
                 delay(1000)

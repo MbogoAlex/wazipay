@@ -13,5 +13,5 @@ data class TransactionsUiData(
     val endDate: String = "",
     val searchText: String = "",
     val userAuthorized: Boolean = true,
-    val loadTransactionsStatus: LoadTransactionsStatus = LoadTransactionsStatus.INITIAL,
+    val loadTransactionsStatus: LoadTransactionsStatus = LoadTransactionsStatus.LOADING,
 )
