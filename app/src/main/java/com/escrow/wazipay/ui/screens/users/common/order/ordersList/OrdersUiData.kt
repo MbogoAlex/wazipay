@@ -16,6 +16,6 @@ data class OrdersUiData(
     val orderStage: OrderStage = OrderStage.All,
     val selectedStage: String = "All",
     val stages: List<String> = listOf("All", "Completed", "In Transit", "Pending pickup", "Cancelled", "Refunded"),
-    val loadOrdersStatus: LoadOrdersStatus = LoadOrdersStatus.INITIAL,
+    val loadOrdersStatus: LoadOrdersStatus = LoadOrdersStatus.LOADING,
     val unauthorized: Boolean = true
 )

@@ -36,8 +36,12 @@ class OrdersViewModel(
         getOrders()
     }
 
-    fun getOrders() {
-
+    private fun getOrders() {
+        _uiState.update {
+            it.copy(
+                loadOrdersStatus = LoadOrdersStatus.LOADING
+            )
+        }
         _uiState.update {
             it.copy(
                 loadOrdersStatus = LoadOrdersStatus.INITIAL

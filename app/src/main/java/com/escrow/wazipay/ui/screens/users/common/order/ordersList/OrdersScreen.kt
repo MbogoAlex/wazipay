@@ -23,11 +23,15 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.PullRefreshState
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.Button
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -74,6 +78,7 @@ object OrdersScreenDestination: AppNavigation {
     val routeWithStage: String = "$route/status/{$stage}"
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun OrdersScreenComposable(
@@ -102,6 +107,14 @@ fun OrdersScreenComposable(
         }
     }
 
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = uiState.loadOrdersStatus == LoadOrdersStatus.LOADING,
+        onRefresh = {
+            viewModel.getOrdersScreenData()
+
+        }
+    )
+
     if(uiState.unauthorized && uiState.loadOrdersStatus == LoadOrdersStatus.FAIL) {
         navigateToLoginScreenWithArgs(uiState.userDetails.phoneNumber!!, uiState.userDetails.pin!!)
         viewModel.resetStatus()
@@ -112,6 +125,7 @@ fun OrdersScreenComposable(
             .safeDrawingPadding()
     ) {
         OrdersScreen(
+            pullRefreshState = pullRefreshState,
             showBackArrow = showBackArrow,
             orders = uiState.orders,
             stages = uiState.stages,
@@ -132,14 +146,17 @@ fun OrdersScreenComposable(
             },
             role = uiState.role,
             navigateToOrderDetailsScreen = navigateToOrderDetailsScreen,
-            navigateToPreviousScreen = navigateToPreviousScreen
+            navigateToPreviousScreen = navigateToPreviousScreen,
+            loadOrdersStatus = uiState.loadOrdersStatus
         )
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun OrdersScreen(
+    pullRefreshState: PullRefreshState?,
     showBackArrow: Boolean,
     role: Role,
     orders: List<OrderData>,
@@ -151,6 +168,7 @@ fun OrdersScreen(
     onChangeOrderStage: (orderStage: String) -> Unit,
     navigateToOrderDetailsScreen: (orderId: String, fromPaymentScreen: Boolean) -> Unit,
     navigateToPreviousScreen: () -> Unit,
+    loadOrdersStatus: LoadOrdersStatus,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -270,18 +288,32 @@ fun OrdersScreen(
                     }
                 }
                 Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
-                LazyColumn {
-                    items(orders) { order ->
-                        OrderItemComposable(
-                            homeScreen = false,
-                            orderData = order,
-                            navigateToOrderDetailsScreen = navigateToOrderDetailsScreen,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(
-                                    screenWidth(x = 8.0)
-                                )
+
+                if(loadOrdersStatus == LoadOrdersStatus.LOADING) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .fillMaxSize()
+                    ) {
+                        PullRefreshIndicator(
+                            refreshing = true,
+                            state = pullRefreshState!!
                         )
+                    }
+                } else {
+                    LazyColumn {
+                        items(orders) { order ->
+                            OrderItemComposable(
+                                homeScreen = false,
+                                orderData = order,
+                                navigateToOrderDetailsScreen = navigateToOrderDetailsScreen,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(
+                                        screenWidth(x = 8.0)
+                                    )
+                            )
+                        }
                     }
                 }
 
@@ -292,6 +324,7 @@ fun OrdersScreen(
 
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
@@ -299,6 +332,7 @@ fun OrdersScreenPreview() {
     WazipayTheme {
         val stages = listOf("All", "Completed", "In Transit", "Pending pickup", "Cancelled", "Refunded")
         OrdersScreen(
+            pullRefreshState = null,
             showBackArrow = true,
             orders = orders,
             selectedStage = "All",
@@ -311,7 +345,8 @@ fun OrdersScreenPreview() {
             navigateToOrderDetailsScreen = {orderId, fromPaymentScreen ->
 
             },
-            navigateToPreviousScreen = {}
+            navigateToPreviousScreen = {},
+            loadOrdersStatus = LoadOrdersStatus.INITIAL
         )
     }
 }
