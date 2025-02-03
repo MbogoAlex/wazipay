@@ -1,6 +1,7 @@
 package com.escrow.wazipay.ui.screens.users.specific.buyer.dashboard
 
 import android.os.Build
+import androidx.activity.compose.BackHandler
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring

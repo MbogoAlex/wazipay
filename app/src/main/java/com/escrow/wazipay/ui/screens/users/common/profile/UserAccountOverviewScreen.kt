@@ -189,7 +189,7 @@ fun UserAccountOverviewScreenComposable(
     Box(
         modifier = Modifier
             .safeDrawingPadding()
-            .background(MaterialTheme.colorScheme.onBackground)
+            .background(MaterialTheme.colorScheme.background)
     ) {
         UserAccountOverviewScreen(
             verificationStatus =  if(uiState.userDetailsData.verificationStatus.isNotEmpty()) VerificationStatus.valueOf(uiState.userDetailsData.verificationStatus) else VerificationStatus.UNVERIFIED,

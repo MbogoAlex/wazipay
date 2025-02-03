@@ -122,7 +122,11 @@ fun DashboardScreenComposable(
     val uiState by viewModel.uiState.collectAsState()
 
     BackHandler(onBack = {
-        (context as? Activity)?.finish()
+        if(uiState.child == NavBarItem.HOME) {
+            (context as? Activity)?.finish()
+        } else {
+            viewModel.changeTab(NavBarItem.HOME)
+        }
     })
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -489,7 +493,6 @@ fun DashboardScreen(
                     navigateToInvoicesScreenWithStatus = navigateToInvoicesScreenWithStatus,
                     navigateToTransactionsScreen = navigateToTransactionsScreen,
                     navigateToInvoiceDetailsScreen = navigateToInvoiceDetailsScreen,
-
                     modifier = Modifier
                             .weight(1f)
                 )
