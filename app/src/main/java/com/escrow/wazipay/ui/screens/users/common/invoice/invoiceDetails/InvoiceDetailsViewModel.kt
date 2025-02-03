@@ -9,6 +9,7 @@ import com.escrow.wazipay.data.network.models.transaction.TransactionMethod
 import com.escrow.wazipay.data.network.models.transaction.TransactionStatusRequestBody
 import com.escrow.wazipay.data.network.repository.ApiRepository
 import com.escrow.wazipay.data.room.repository.DBRepository
+import com.escrow.wazipay.ui.screens.users.common.invoice.LoadInvoicesStatus
 import com.escrow.wazipay.ui.screens.users.specific.buyer.businessPayment.InvoiceCreationStatus
 import com.escrow.wazipay.ui.screens.users.specific.buyer.businessPayment.PaymentMethod
 import com.escrow.wazipay.ui.screens.users.specific.merchant.courierAssignment.LoadingStatus
@@ -131,6 +132,11 @@ class InvoiceDetailsViewModel(
     }
 
     fun getInvoiceDetails() {
+        _uiState.update {
+            it.copy(
+                loadInvoicesStatus = LoadInvoicesStatus.LOADING
+            )
+        }
         viewModelScope.launch {
             try {
                val response = apiRepository.getInvoice(
@@ -147,16 +153,29 @@ class InvoiceDetailsViewModel(
                     Log.d("invoiceDetails", uiState.value.invoiceData.toString())
                     if(uiState.value.invoiceData.orderId != null) {
                         getOrder()
+                    } else {
+                        getUserWallet()
+                    }
+                } else {
+                    _uiState.update {
+                        it.copy(
+                            loadInvoicesStatus = LoadInvoicesStatus.FAIL
+                        )
                     }
                 }
 
             } catch (e: Exception) {
-
+                _uiState.update {
+                    it.copy(
+                        loadInvoicesStatus = LoadInvoicesStatus.FAIL
+                    )
+                }
             }
         }
     }
 
     fun getUserWallet() {
+        Log.d("loadWallet", "LOADING")
         viewModelScope.launch {
             try {
                 while(uiState.value.userDetails.userId == 0) {
@@ -167,20 +186,25 @@ class InvoiceDetailsViewModel(
                 )
 
                 if(response.isSuccessful) {
+                    Log.d("loadWallet", response.body()?.data!!.toString())
                     _uiState.update {
                         it.copy(
+                            loadInvoicesStatus = LoadInvoicesStatus.SUCCESS,
                             userWalletData = response.body()?.data!!,
                         )
                     }
+                } else {
+                    Log.e("loadWallet", "response: $response")
                 }
 
             } catch (e: Exception) {
-                Log.e("getUserException_err", e.toString())
+                Log.e("loadWallet", "exception: $e")
             }
         }
     }
 
     private fun getOrder() {
+        Log.d("gettingOrder", "LOADING")
         viewModelScope.launch {
             try {
                 val response = apiRepository.getOrder(
@@ -189,6 +213,9 @@ class InvoiceDetailsViewModel(
                 )
 
                 if(response.isSuccessful) {
+                    Log.d("gettingOrder", response.body()?.data!!.toString())
+                    getUserWallet()
+                    Log.d("gettingOrder", "FETCH_WALLET_CALLED")
                     _uiState.update {
                         it.copy(
                             orderData = response.body()?.data!!,
@@ -202,11 +229,11 @@ class InvoiceDetailsViewModel(
                             )
                         }
                     }
-                    Log.e("getOrderResponse_err", response.toString())
+                    Log.e("gettingOrder", "response: $response")
                 }
 
             } catch (e: Exception) {
-                Log.e("getOrderException_err", e.toString())
+                Log.e("gettingOrder", "exception: $e")
 
             }
         }
@@ -241,13 +268,13 @@ class InvoiceDetailsViewModel(
         }
     }
 
-    private fun getInvoiceScreenData() {
+    fun getInvoiceScreenData() {
         viewModelScope.launch {
             while (uiState.value.userDetails.userId == 0) {
                 delay(1000)
             }
             getInvoiceDetails()
-            getUserWallet()
+//            getUserWallet()
         }
     }
 

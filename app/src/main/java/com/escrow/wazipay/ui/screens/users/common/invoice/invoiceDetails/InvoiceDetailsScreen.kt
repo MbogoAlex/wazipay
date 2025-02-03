@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -22,8 +23,13 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.PullRefreshState
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ElevatedCard
@@ -63,6 +69,7 @@ import com.escrow.wazipay.data.network.models.wallet.UserWalletData
 import com.escrow.wazipay.data.network.models.wallet.userWalletData
 import com.escrow.wazipay.data.room.models.Role
 import com.escrow.wazipay.ui.nav.AppNavigation
+import com.escrow.wazipay.ui.screens.users.common.invoice.LoadInvoicesStatus
 import com.escrow.wazipay.ui.screens.users.common.order.OrderItemComposable
 import com.escrow.wazipay.ui.screens.users.specific.buyer.businessPayment.PaymentMethod
 import com.escrow.wazipay.ui.screens.users.specific.merchant.courierAssignment.LoadingStatus
@@ -81,6 +88,7 @@ object InvoiceDetailsScreenDestination: AppNavigation {
 
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun InvoiceDetailsScreenComposable(
@@ -92,6 +100,14 @@ fun InvoiceDetailsScreenComposable(
 
     val viewModel: InvoiceDetailsViewModel = viewModel(factory = AppViewModelFactory.Factory)
     val uiState by viewModel.uiState.collectAsState()
+
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = uiState.loadInvoicesStatus == LoadInvoicesStatus.LOADING,
+        onRefresh = {
+            viewModel.getInvoiceScreenData()
+
+        }
+    )
 
     var showConfirmDialog by rememberSaveable {
         mutableStateOf(false)
@@ -149,6 +165,7 @@ fun InvoiceDetailsScreenComposable(
             .safeDrawingPadding()
     ) {
         InvoiceDetailsScreen(
+            pullRefreshState = pullRefreshState,
             invoiceData = uiState.invoiceData,
             role = uiState.role,
             userWalletData = uiState.userWalletData,
@@ -168,6 +185,7 @@ fun InvoiceDetailsScreenComposable(
             navigateToOrderDetailsScreen = navigateToOrderDetailsScreen,
             navigateToPreviousScreen = navigateToPreviousScreen,
             loadingStatus = uiState.loadingStatus,
+            loadInvoicesStatus = uiState.loadInvoicesStatus,
             onPayInvoice = {
                 showConfirmDialog = !showConfirmDialog
             },
@@ -178,9 +196,11 @@ fun InvoiceDetailsScreenComposable(
 
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun InvoiceDetailsScreen(
+    pullRefreshState: PullRefreshState?,
     invoiceData: InvoiceData,
     role: Role,
     userWalletData: UserWalletData,
@@ -194,10 +214,14 @@ fun InvoiceDetailsScreen(
     navigateToOrderDetailsScreen: (orderId: String, fromPaymentScreen: Boolean) -> Unit,
     navigateToPreviousScreen: () -> Unit,
     loadingStatus: LoadingStatus,
+    loadInvoicesStatus: LoadInvoicesStatus,
     onPayInvoice: () -> Unit,
     buttonEnabled: Boolean,
     modifier: Modifier = Modifier
 ) {
+
+
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -223,60 +247,77 @@ fun InvoiceDetailsScreen(
             )
         }
         Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
-        Column(
-            modifier = Modifier
-                .verticalScroll(rememberScrollState())
-        ) {
-            InvoiceDetailsCard(
-                role = role,
-                invoiceData = invoiceData,
-                userWalletData = userWalletData,
-                paymentMethod = paymentMethod,
-                onChangePaymentMethod = onChangePaymentMethod,
-                phoneNumber = phoneNumber,
-                onChangePhoneNumber = onChangePhoneNumber,
-                loadingStatus = loadingStatus,
-                buttonEnabled = buttonEnabled,
-                onPayInvoice = onPayInvoice
-            )
-            Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
-            Text(
-                text = "Issued to:",
-                fontSize = screenFontSize(x = 14.0).sp,
-                fontWeight = FontWeight.Bold
-            )
-            Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
-            ActorCard(
-                role = Role.BUYER,
-                userContactData = buyer
-            )
-            Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
-            Text(
-                text = "Issued by:",
-                fontSize = screenFontSize(x = 14.0).sp,
-                fontWeight = FontWeight.Bold
-            )
-            Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
-            ActorCard(
-                role = Role.MERCHANT,
-                userContactData = merchant
-            )
-            if(invoiceData.orderId != null) {
+        if(loadInvoicesStatus == LoadInvoicesStatus.LOADING) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
+                PullRefreshIndicator(
+                    refreshing = true,
+                    state = pullRefreshState!!
+                )
+            }
+        } else {
+            Column(
+                modifier = Modifier
+                    .verticalScroll(rememberScrollState())
+                    .pullRefresh(pullRefreshState!!)
+            ) {
+                InvoiceDetailsCard(
+                    role = role,
+                    invoiceData = invoiceData,
+                    userWalletData = userWalletData,
+                    paymentMethod = paymentMethod,
+                    onChangePaymentMethod = onChangePaymentMethod,
+                    phoneNumber = phoneNumber,
+                    onChangePhoneNumber = onChangePhoneNumber,
+                    loadingStatus = loadingStatus,
+                    buttonEnabled = buttonEnabled,
+                    onPayInvoice = onPayInvoice
+                )
                 Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
                 Text(
-                    text = "Order details",
+                    text = "Issued to:",
                     fontSize = screenFontSize(x = 14.0).sp,
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
-                OrderItemComposable(
-                    homeScreen = false,
-                    orderData = orderData!!,
-                    navigateToOrderDetailsScreen = navigateToOrderDetailsScreen
+                ActorCard(
+                    role = Role.BUYER,
+                    userContactData = buyer
                 )
+                Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+                Text(
+                    text = "Issued by:",
+                    fontSize = screenFontSize(x = 14.0).sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
+                ActorCard(
+                    role = Role.MERCHANT,
+                    userContactData = merchant
+                )
+                if(invoiceData.orderId != null) {
+                    Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+                    Text(
+                        text = "Order details",
+                        fontSize = screenFontSize(x = 14.0).sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
+                    OrderItemComposable(
+                        homeScreen = false,
+                        orderData = orderData!!,
+                        navigateToOrderDetailsScreen = navigateToOrderDetailsScreen
+                    )
+                }
             }
         }
+
     }
+
+
 }
 
 @Composable
@@ -627,6 +668,7 @@ fun InvoicePaymentSuccessDialog(
     )
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
@@ -635,6 +677,7 @@ fun InvoiceDetailsScreenPreview(
 ) {
     WazipayTheme {
         InvoiceDetailsScreen(
+            pullRefreshState = null,
             invoiceData = invoiceData,
             role = Role.BUYER,
             paymentMethod = PaymentMethod.WAZIPAY,
@@ -648,6 +691,7 @@ fun InvoiceDetailsScreenPreview(
             orderData = orderData,
             navigateToOrderDetailsScreen = {orderId: String, fromPaymentScreen: Boolean ->},
             loadingStatus = LoadingStatus.INITIAL,
+            loadInvoicesStatus = LoadInvoicesStatus.INITIAL,
             onPayInvoice = {},
             buttonEnabled = false
         )
