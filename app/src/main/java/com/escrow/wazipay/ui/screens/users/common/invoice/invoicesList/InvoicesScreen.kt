@@ -15,8 +15,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.PullRefreshState
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Button
 import androidx.compose.material3.FloatingActionButton
@@ -49,6 +53,8 @@ import com.escrow.wazipay.data.room.models.Role
 import com.escrow.wazipay.ui.nav.AppNavigation
 import com.escrow.wazipay.ui.screens.users.common.invoice.InvoiceItemComposable
 import com.escrow.wazipay.ui.screens.users.common.invoice.InvoiceStatus
+import com.escrow.wazipay.ui.screens.users.common.invoice.LoadInvoicesStatus
+import com.escrow.wazipay.ui.screens.users.common.order.LoadOrdersStatus
 import com.escrow.wazipay.ui.theme.WazipayTheme
 import com.escrow.wazipay.utils.screenFontSize
 import com.escrow.wazipay.utils.screenHeight
@@ -62,6 +68,7 @@ object InvoicesScreenDestination: AppNavigation {
     val routeWithStatus: String = "$route/{$status}"
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun InvoicesScreenComposable(
@@ -89,11 +96,20 @@ fun InvoicesScreenComposable(
         }
     }
 
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = invoicesUiState.loadInvoicesStatus == LoadInvoicesStatus.LOADING,
+        onRefresh = {
+            invoicesViewModel.getInvoicesScreenStartupData()
+
+        }
+    )
+
     Box(
         modifier = modifier
             .safeDrawingPadding()
     ) {
         InvoicesScreen(
+            pullRefreshState = pullRefreshState,
             role = invoicesUiState.userRole.role,
             invoices = invoicesUiState.invoices,
             statuses = invoicesUiState.statuses,
@@ -106,15 +122,18 @@ fun InvoicesScreenComposable(
                 navigateToBusinessSelectionScreenWithArgs(true)
             },
             navigateToInvoiceDetailsScreen = navigateToInvoiceDetailsScreen,
-            navigateToPreviousScreen = navigateToPreviousScreen
+            navigateToPreviousScreen = navigateToPreviousScreen,
+            loadInvoicesStatus = invoicesUiState.loadInvoicesStatus
         )
     }
 
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun InvoicesScreen(
+    pullRefreshState: PullRefreshState?,
     role: Role,
     invoices: List<InvoiceData>,
     statuses: List<String>,
@@ -123,6 +142,7 @@ fun InvoicesScreen(
     navigateToBusinessSelectionScreen: () -> Unit,
     navigateToPreviousScreen: () -> Unit,
     navigateToInvoiceDetailsScreen: (invoiceId: String) -> Unit,
+    loadInvoicesStatus: LoadInvoicesStatus,
     modifier: Modifier = Modifier
 ) {
 
@@ -186,12 +206,25 @@ fun InvoicesScreen(
                     }
                 }
                 Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
-                LazyColumn {
-                    items(invoices) { invoice ->
-                        InvoiceItemComposable(
-                            navigateToInvoiceDetailsScreen = navigateToInvoiceDetailsScreen,
-                            invoiceData = invoice
+                if(loadInvoicesStatus == LoadInvoicesStatus.LOADING) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .fillMaxSize()
+                    ) {
+                        PullRefreshIndicator(
+                            refreshing = true,
+                            state = pullRefreshState!!
                         )
+                    }
+                } else {
+                    LazyColumn {
+                        items(invoices) { invoice ->
+                            InvoiceItemComposable(
+                                navigateToInvoiceDetailsScreen = navigateToInvoiceDetailsScreen,
+                                invoiceData = invoice
+                            )
+                        }
                     }
                 }
             }
@@ -199,6 +232,7 @@ fun InvoicesScreen(
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
@@ -210,6 +244,7 @@ fun InvoicesScreenPreview() {
             mutableStateOf("All")
         }
         InvoicesScreen(
+            pullRefreshState = null,
             role = Role.BUYER,
             statuses = statuses,
             selectedStatus = selectedStatus,
@@ -219,7 +254,8 @@ fun InvoicesScreenPreview() {
             invoices = invoices,
             navigateToBusinessSelectionScreen = {},
             navigateToInvoiceDetailsScreen = {},
-            navigateToPreviousScreen = {}
+            navigateToPreviousScreen = {},
+            loadInvoicesStatus = LoadInvoicesStatus.INITIAL
         )
     }
 }

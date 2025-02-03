@@ -42,11 +42,6 @@ class OrdersViewModel(
                 loadOrdersStatus = LoadOrdersStatus.LOADING
             )
         }
-        _uiState.update {
-            it.copy(
-                loadOrdersStatus = LoadOrdersStatus.INITIAL
-            )
-        }
 
         Log.d("fetchingOrders", uiState.value.userDetails.toString())
         viewModelScope.launch {
