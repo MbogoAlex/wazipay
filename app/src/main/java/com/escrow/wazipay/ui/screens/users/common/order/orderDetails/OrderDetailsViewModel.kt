@@ -31,12 +31,6 @@ class OrderDetailsViewModel(
 
     fun getOrder() {
 
-        _uiState.update {
-            it.copy(
-                loadOrdersStatus = LoadOrdersStatus.INITIAL
-            )
-        }
-
         viewModelScope.launch {
             try {
                 val response = apiRepository.getOrder(
@@ -148,7 +142,7 @@ class OrderDetailsViewModel(
         }
     }
 
-    private fun loadOrderDetailScreenStartupUiData() {
+    fun loadOrderDetailScreenStartupUiData() {
         viewModelScope.launch {
             while (uiState.value.userDetails.userId == 0) {
                 delay(1000)

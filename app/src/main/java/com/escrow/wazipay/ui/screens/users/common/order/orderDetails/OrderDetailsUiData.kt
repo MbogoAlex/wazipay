@@ -13,6 +13,6 @@ data class OrderDetailsUiData(
     val orderData: OrderData = emptyOrderData,
     val unauthorized: Boolean = false,
     val fromPaymentScreen: Boolean = false,
-    val loadOrdersStatus: LoadOrdersStatus = LoadOrdersStatus.INITIAL,
+    val loadOrdersStatus: LoadOrdersStatus = LoadOrdersStatus.LOADING,
     val completeDeliveryStatus: CompleteDeliveryStatus = CompleteDeliveryStatus.INITIAL
 )

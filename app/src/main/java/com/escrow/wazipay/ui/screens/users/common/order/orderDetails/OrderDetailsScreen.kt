@@ -16,9 +16,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.Button
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.PullRefreshState
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -49,7 +53,9 @@ import com.escrow.wazipay.data.network.models.order.OrderData
 import com.escrow.wazipay.data.network.models.order.orderData
 import com.escrow.wazipay.data.room.models.Role
 import com.escrow.wazipay.ui.nav.AppNavigation
+import com.escrow.wazipay.ui.screens.users.common.invoice.LoadInvoicesStatus
 import com.escrow.wazipay.ui.screens.users.common.order.CompleteDeliveryStatus
+import com.escrow.wazipay.ui.screens.users.common.order.LoadOrdersStatus
 import com.escrow.wazipay.ui.theme.WazipayTheme
 import com.escrow.wazipay.utils.formatIsoDateTime
 import com.escrow.wazipay.utils.formatMoneyValue
@@ -66,6 +72,7 @@ object OrderDetailsScreenDestination: AppNavigation {
     val routeWithArgs: String = "$route/{$orderId}/{$fromPaymentScreen}"
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun OrderDetailsScreenComposable(
@@ -97,6 +104,14 @@ fun OrderDetailsScreenComposable(
             navigateToPreviousScreen()
         }
     })
+
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = uiState.loadOrdersStatus == LoadOrdersStatus.LOADING,
+        onRefresh = {
+            viewModel.loadOrderDetailScreenStartupUiData()
+
+        }
+    )
 
     if(showConfirmationDialog) {
         CompleteDeliveryConfirmationDialog(
@@ -133,6 +148,7 @@ fun OrderDetailsScreenComposable(
             .safeDrawingPadding()
     ) {
         OrderDetailsScreen(
+            pullRefreshState = pullRefreshState,
             fromPaymentScreen = uiState.fromPaymentScreen,
             userId = uiState.userDetails.userId,
             orderData = uiState.orderData,
@@ -142,14 +158,17 @@ fun OrderDetailsScreenComposable(
             navigateToCourierSelectionScreen = navigateToCourierSelectionScreen,
             onCompleteDelivery = {
                 showConfirmationDialog = !showConfirmationDialog
-            }
+            },
+            loadOrdersStatus = uiState.loadOrdersStatus
         )
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun OrderDetailsScreen(
+    pullRefreshState: PullRefreshState?,
     fromPaymentScreen: Boolean,
     userId: Int,
     role: Role,
@@ -158,6 +177,7 @@ fun OrderDetailsScreen(
     navigateToDashboardScreen: () -> Unit,
     navigateToCourierSelectionScreen: (orderId: String) -> Unit,
     onCompleteDelivery: () -> Unit,
+    loadOrdersStatus: LoadOrdersStatus,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -196,59 +216,28 @@ fun OrderDetailsScreen(
             )
         }
         Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            RadioButton(selected = orderData.orderStage == "PENDING_PICKUP", onClick = { /*TODO*/ })
-            Text(
-                text = "Pending pickup",
-                color = MaterialTheme.colorScheme.onBackground,
-                fontSize = screenFontSize(x = 14.0).sp,
-            )
-        }
-        VerticalDivider(
-            modifier = Modifier
-                .height(screenHeight(x = 32.0))
-                .padding(
-                    horizontal = screenWidth(x = 22.0)
+        if(loadOrdersStatus == LoadOrdersStatus.LOADING) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
+                PullRefreshIndicator(
+                    refreshing = true,
+                    state = pullRefreshState!!
                 )
-        )
-//        Spacer(modifier = Modifier.height(screenHeight(x = 32.0)))
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            RadioButton(selected = orderData.orderStage == "IN_TRANSIT", onClick = { /*TODO*/ })
-            Text(
-                text = "In transit",
-                color = MaterialTheme.colorScheme.onBackground,
-                fontSize = screenFontSize(x = 14.0).sp,
-            )
-            if(role == Role.MERCHANT && orderData.orderStage == "PENDING_PICKUP") {
-                Button(
-                    onClick = { navigateToCourierSelectionScreen(orderData.id.toString()) },
-                    modifier = Modifier
-                        .align(Alignment.CenterVertically)
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "Assign courier",
-                            fontSize = screenFontSize(x = 14.0).sp,
-//                            fontWeight = FontWeight.Bold
-                        )
-                        Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
-                        Icon(
-                            painter = painterResource(id = R.drawable.motorbike),
-                            contentDescription = null
-                        )
-                    }
-                }
             }
-        }
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+        } else {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                RadioButton(selected = orderData.orderStage == "PENDING_PICKUP", onClick = { /*TODO*/ })
+                Text(
+                    text = "Pending pickup",
+                    color = MaterialTheme.colorScheme.onBackground,
+                    fontSize = screenFontSize(x = 14.0).sp,
+                )
+            }
             VerticalDivider(
                 modifier = Modifier
                     .height(screenHeight(x = 32.0))
@@ -256,80 +245,17 @@ fun OrderDetailsScreen(
                         horizontal = screenWidth(x = 22.0)
                     )
             )
-            if(orderData.courier != null) {
-                Column {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            tint = MaterialTheme.colorScheme.onBackground,
-                            painter = painterResource(id = R.drawable.motorbike),
-                            contentDescription = null
-                        )
-                        Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
-                        Text(
-                            text = "Courier:",
-                            color = MaterialTheme.colorScheme.onBackground,
-                            fontSize = screenFontSize(x = 14.0).sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
-                        Text(
-                            text = orderData.courier.username,
-                            color = MaterialTheme.colorScheme.onBackground,
-                            fontSize = screenFontSize(x = 14.0).sp
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            tint = MaterialTheme.colorScheme.onBackground,
-                            painter = painterResource(id = R.drawable.phone),
-                            contentDescription = null
-                        )
-                        Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
-                        Text(
-                            text = orderData.courier.phoneNumber,
-                            color = MaterialTheme.colorScheme.onBackground,
-                            fontSize = screenFontSize(x = 14.0).sp,
-//                            fontWeight = FontWeight.Bold
-                        )
-                        Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
-                        Icon(
-                            tint = MaterialTheme.colorScheme.onBackground,
-                            painter = painterResource(id = R.drawable.email),
-                            contentDescription = null
-                        )
-                        Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
-                        Text(
-                            text = orderData.courier.email,
-                            color = MaterialTheme.colorScheme.onBackground,
-                            fontSize = screenFontSize(x = 14.0).sp,
-                        )
-                    }
-                    if(role == Role.COURIER && orderData.orderStage == "IN_TRANSIT") {
-                        Button(onClick = onCompleteDelivery) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(
-                                    text = "Complete delivery",
-                                    fontSize = screenFontSize(x = 14.0).sp,
-//                            fontWeight = FontWeight.Bold
-                                )
-                                Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
-                                Icon(
-                                    painter = painterResource(id = R.drawable.motorbike),
-                                    contentDescription = null
-                                )
-                            }
-                        }
-                    }
-                }
-            } else {
-                if(role == Role.MERCHANT) {
+//        Spacer(modifier = Modifier.height(screenHeight(x = 32.0)))
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                RadioButton(selected = orderData.orderStage == "IN_TRANSIT", onClick = { /*TODO*/ })
+                Text(
+                    text = "In transit",
+                    color = MaterialTheme.colorScheme.onBackground,
+                    fontSize = screenFontSize(x = 14.0).sp,
+                )
+                if(role == Role.MERCHANT && orderData.orderStage == "PENDING_PICKUP") {
                     Button(
                         onClick = { navigateToCourierSelectionScreen(orderData.id.toString()) },
                         modifier = Modifier
@@ -352,173 +278,281 @@ fun OrderDetailsScreen(
                     }
                 }
             }
-        }
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                VerticalDivider(
+                    modifier = Modifier
+                        .height(screenHeight(x = 32.0))
+                        .padding(
+                            horizontal = screenWidth(x = 22.0)
+                        )
+                )
+                if(orderData.courier != null) {
+                    Column {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                tint = MaterialTheme.colorScheme.onBackground,
+                                painter = painterResource(id = R.drawable.motorbike),
+                                contentDescription = null
+                            )
+                            Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
+                            Text(
+                                text = "Courier:",
+                                color = MaterialTheme.colorScheme.onBackground,
+                                fontSize = screenFontSize(x = 14.0).sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
+                            Text(
+                                text = orderData.courier.username,
+                                color = MaterialTheme.colorScheme.onBackground,
+                                fontSize = screenFontSize(x = 14.0).sp
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                tint = MaterialTheme.colorScheme.onBackground,
+                                painter = painterResource(id = R.drawable.phone),
+                                contentDescription = null
+                            )
+                            Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
+                            Text(
+                                text = orderData.courier.phoneNumber,
+                                color = MaterialTheme.colorScheme.onBackground,
+                                fontSize = screenFontSize(x = 14.0).sp,
+//                            fontWeight = FontWeight.Bold
+                            )
+                            Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
+                            Icon(
+                                tint = MaterialTheme.colorScheme.onBackground,
+                                painter = painterResource(id = R.drawable.email),
+                                contentDescription = null
+                            )
+                            Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
+                            Text(
+                                text = orderData.courier.email,
+                                color = MaterialTheme.colorScheme.onBackground,
+                                fontSize = screenFontSize(x = 14.0).sp,
+                            )
+                        }
+                        if(role == Role.COURIER && orderData.orderStage == "IN_TRANSIT") {
+                            Button(onClick = onCompleteDelivery) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = "Complete delivery",
+                                        fontSize = screenFontSize(x = 14.0).sp,
+//                            fontWeight = FontWeight.Bold
+                                    )
+                                    Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.motorbike),
+                                        contentDescription = null
+                                    )
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    if(role == Role.MERCHANT) {
+                        Button(
+                            onClick = { navigateToCourierSelectionScreen(orderData.id.toString()) },
+                            modifier = Modifier
+                                .align(Alignment.CenterVertically)
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = "Assign courier",
+                                    fontSize = screenFontSize(x = 14.0).sp,
+//                            fontWeight = FontWeight.Bold
+                                )
+                                Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
+                                Icon(
+                                    painter = painterResource(id = R.drawable.motorbike),
+                                    contentDescription = null
+                                )
+                            }
+                        }
+                    }
+                }
+            }
 //        Spacer(modifier = Modifier.height(screenHeight(x = 32.0)))
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            RadioButton(selected = orderData.orderStage == "COMPLETE", onClick = { /*TODO*/ })
-            Text(
-                text = "Complete",
-                color = MaterialTheme.colorScheme.onBackground,
-                fontSize = screenFontSize(x = 14.0).sp,
-            )
-        }
-        Spacer(modifier = Modifier.height(screenHeight(x = 32.0)))
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .border(
-                    width = screenWidth(x = 1.0),
-                    color = Color.LightGray,
-                    shape = RoundedCornerShape(screenWidth(x = 10.0))
-                )
-                .padding(screenWidth(x = 16.0))
-        ) {
-            Column {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Order code: ",
-                        color = MaterialTheme.colorScheme.onBackground,
-                        fontSize = screenFontSize(x = 14.0).sp,
-                        fontWeight = FontWeight.W300
-                    )
-                    Text(
-                        text = orderData.orderCode,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        fontSize = screenFontSize(x = 14.0).sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Business: ",
-                        color = MaterialTheme.colorScheme.onBackground,
-                        fontSize = screenFontSize(x = 14.0).sp,
-                        fontWeight = FontWeight.W300
-                    )
-                    Text(
-                        text = orderData.business?.name ?: "",
-                        color = MaterialTheme.colorScheme.onBackground,
-                        fontSize = screenFontSize(x = 14.0).sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-                Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                RadioButton(selected = orderData.orderStage == "COMPLETE", onClick = { /*TODO*/ })
                 Text(
-                    text = orderData.name,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    fontSize = screenFontSize(x = 14.0).sp,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = orderData.description,
+                    text = "Complete",
                     color = MaterialTheme.colorScheme.onBackground,
                     fontSize = screenFontSize(x = 14.0).sp,
                 )
-                Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
-                Text(
-                    text = formatIsoDateTime(LocalDateTime.parse(orderData.createdAt)),
-                    color = MaterialTheme.colorScheme.onBackground,
-                    fontStyle = FontStyle.Italic
-                )
-                Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = if(role == Role.MERCHANT) "Paid amount: " else "Cost: ",
-                        fontSize = screenFontSize(x = 14.0).sp,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        fontWeight = FontWeight.W300
+            }
+            Spacer(modifier = Modifier.height(screenHeight(x = 32.0)))
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(
+                        width = screenWidth(x = 1.0),
+                        color = Color.LightGray,
+                        shape = RoundedCornerShape(screenWidth(x = 10.0))
                     )
-                    Text(
-                        text = formatMoneyValue(orderData.productCost),
-                        fontSize = screenFontSize(x = 14.0).sp,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-                Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
-                if(orderData.business?.owner?.id == userId) {
+                    .padding(screenWidth(x = 16.0))
+            ) {
+                Column {
                     Row(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "Delivery cost: ",
+                            text = "Order code: ",
+                            color = MaterialTheme.colorScheme.onBackground,
+                            fontSize = screenFontSize(x = 14.0).sp,
+                            fontWeight = FontWeight.W300
+                        )
+                        Text(
+                            text = orderData.orderCode,
+                            color = MaterialTheme.colorScheme.onBackground,
+                            fontSize = screenFontSize(x = 14.0).sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Business: ",
+                            color = MaterialTheme.colorScheme.onBackground,
+                            fontSize = screenFontSize(x = 14.0).sp,
+                            fontWeight = FontWeight.W300
+                        )
+                        Text(
+                            text = orderData.business?.name ?: "",
+                            color = MaterialTheme.colorScheme.onBackground,
+                            fontSize = screenFontSize(x = 14.0).sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
+                    Text(
+                        text = orderData.name,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        fontSize = screenFontSize(x = 14.0).sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = orderData.description,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        fontSize = screenFontSize(x = 14.0).sp,
+                    )
+                    Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
+                    Text(
+                        text = formatIsoDateTime(LocalDateTime.parse(orderData.createdAt)),
+                        color = MaterialTheme.colorScheme.onBackground,
+                        fontStyle = FontStyle.Italic
+                    )
+                    Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = if(role == Role.MERCHANT) "Paid amount: " else "Cost: ",
                             fontSize = screenFontSize(x = 14.0).sp,
                             color = MaterialTheme.colorScheme.onBackground,
                             fontWeight = FontWeight.W300
                         )
                         Text(
-                            text = if(orderData.deliveryCost != null) formatMoneyValue(orderData.deliveryCost) else "N/A",
+                            text = formatMoneyValue(orderData.productCost),
                             fontSize = screenFontSize(x = 14.0).sp,
                             color = MaterialTheme.colorScheme.onBackground,
                             fontWeight = FontWeight.Bold
                         )
                     }
-                }
+                    Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
+                    if(orderData.business?.owner?.id == userId) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Delivery cost: ",
+                                fontSize = screenFontSize(x = 14.0).sp,
+                                color = MaterialTheme.colorScheme.onBackground,
+                                fontWeight = FontWeight.W300
+                            )
+                            Text(
+                                text = if(orderData.deliveryCost != null) formatMoneyValue(orderData.deliveryCost) else "N/A",
+                                fontSize = screenFontSize(x = 14.0).sp,
+                                color = MaterialTheme.colorScheme.onBackground,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
 
-                if(orderData.buyer?.id != userId) {
-                    Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            tint = MaterialTheme.colorScheme.onBackground,
-                            painter = painterResource(id = R.drawable.buyer),
-                            contentDescription = null
-                        )
-                        Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
-                        Text(
-                            text = "Buyer:",
-                            color = MaterialTheme.colorScheme.onBackground,
-                            fontSize = screenFontSize(x = 14.0).sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
-                        Text(
-                            text = orderData.buyer?.username ?: "",
-                            color = MaterialTheme.colorScheme.onBackground,
-                            fontSize = screenFontSize(x = 14.0).sp
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            tint = MaterialTheme.colorScheme.onBackground,
-                            painter = painterResource(id = R.drawable.phone),
-                            contentDescription = null
-                        )
-                        Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
-                        Text(
-                            text = orderData.buyer?.phoneNumber ?: "",
-                            color = MaterialTheme.colorScheme.onBackground,
-                            fontSize = screenFontSize(x = 14.0).sp,
+                    if(orderData.buyer?.id != userId) {
+                        Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                tint = MaterialTheme.colorScheme.onBackground,
+                                painter = painterResource(id = R.drawable.buyer),
+                                contentDescription = null
+                            )
+                            Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
+                            Text(
+                                text = "Buyer:",
+                                color = MaterialTheme.colorScheme.onBackground,
+                                fontSize = screenFontSize(x = 14.0).sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
+                            Text(
+                                text = orderData.buyer?.username ?: "",
+                                color = MaterialTheme.colorScheme.onBackground,
+                                fontSize = screenFontSize(x = 14.0).sp
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                tint = MaterialTheme.colorScheme.onBackground,
+                                painter = painterResource(id = R.drawable.phone),
+                                contentDescription = null
+                            )
+                            Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
+                            Text(
+                                text = orderData.buyer?.phoneNumber ?: "",
+                                color = MaterialTheme.colorScheme.onBackground,
+                                fontSize = screenFontSize(x = 14.0).sp,
 //                            fontWeight = FontWeight.Bold
-                        )
-                        Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
-                        Icon(
-                            tint = MaterialTheme.colorScheme.onBackground,
-                            painter = painterResource(id = R.drawable.email),
-                            contentDescription = null
-                        )
-                        Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
-                        Text(
-                            text = orderData.buyer?.email ?: "",
-                            color = MaterialTheme.colorScheme.onBackground,
-                            fontSize = screenFontSize(x = 14.0).sp,
-                        )
+                            )
+                            Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
+                            Icon(
+                                tint = MaterialTheme.colorScheme.onBackground,
+                                painter = painterResource(id = R.drawable.email),
+                                contentDescription = null
+                            )
+                            Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
+                            Text(
+                                text = orderData.buyer?.email ?: "",
+                                color = MaterialTheme.colorScheme.onBackground,
+                                fontSize = screenFontSize(x = 14.0).sp,
+                            )
+                        }
                     }
                 }
             }
         }
+
     }
 }
 
@@ -598,12 +632,14 @@ fun CompleteDeliverySuccessDialog(
     )
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun OrderDetailsScreenPreview() {
     WazipayTheme {
         OrderDetailsScreen(
+            pullRefreshState = null,
             fromPaymentScreen = false,
             userId = 1,
             orderData = orderData,
@@ -611,7 +647,8 @@ fun OrderDetailsScreenPreview() {
             navigateToPreviousScreen = {},
             navigateToDashboardScreen = {},
             navigateToCourierSelectionScreen = {},
-            onCompleteDelivery = {}
+            onCompleteDelivery = {},
+            loadOrdersStatus = LoadOrdersStatus.INITIAL
         )
     }
 }
