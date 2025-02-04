@@ -80,6 +80,7 @@ fun BuyerDashboardScreenComposable(
     navigateToInvoicesScreenWithStatus: (status: String) -> Unit,
     navigateToTransactionsScreen: () -> Unit,
     navigateToInvoiceDetailsScreen: (invoiceId: String) -> Unit,
+    navigateToTransactionDetailsScreen: (transactionId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -127,7 +128,8 @@ fun BuyerDashboardScreenComposable(
             navigateToInvoicesScreen = navigateToInvoicesScreen,
             navigateToInvoicesScreenWithStatus = navigateToInvoicesScreenWithStatus,
             navigateToTransactionsScreen = navigateToTransactionsScreen,
-            navigateToInvoiceDetailsScreen = navigateToInvoiceDetailsScreen
+            navigateToInvoiceDetailsScreen = navigateToInvoiceDetailsScreen,
+            navigateToTransactionDetailsScreen = navigateToTransactionDetailsScreen
         )
     }
 }
@@ -152,6 +154,7 @@ fun BuyerDashboardScreen(
     navigateToInvoicesScreenWithStatus: (status: String) -> Unit,
     navigateToTransactionsScreen: () -> Unit,
     navigateToInvoiceDetailsScreen: (invoiceId: String) -> Unit,
+    navigateToTransactionDetailsScreen: (transactionId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -223,17 +226,73 @@ fun BuyerDashboardScreen(
                 }
             }
             Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
-            pendingInvoices.take(5).forEach {
-                InvoiceItemComposable(
-                    invoiceData = it,
-                    navigateToInvoiceDetailsScreen = navigateToInvoiceDetailsScreen,
-                    modifier = Modifier
-                        .padding(
-                            top = screenHeight(x = 8.0)
-                        )
-                )
+            Row(
+                modifier = Modifier
+                    .horizontalScroll(rememberScrollState())
+            ) {
+                pendingInvoices.take(5).forEach {
+                    InvoiceItemComposable(
+                        invoiceData = it,
+                        dashboardScreen = true,
+                        navigateToInvoiceDetailsScreen = navigateToInvoiceDetailsScreen,
+                        modifier = Modifier
+                            .padding(
+                                top = screenHeight(x = 8.0),
+                                end = screenWidth(x = 16.0)
+                            )
+                            .fillMaxWidth(0.7f)
+                    )
+                }
             }
         }
+        Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "All invoices",
+                color = MaterialTheme.colorScheme.onBackground,
+                fontSize = screenFontSize(x = 16.0).sp,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            TextButton(
+                enabled = invoices.isNotEmpty(),
+                onClick = navigateToInvoicesScreen
+            ) {
+                Text(text = "See all")
+            }
+        }
+        Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
+        if(invoices.isNotEmpty()) {
+            Row(
+                modifier = Modifier
+                    .horizontalScroll(rememberScrollState())
+            ) {
+                pendingInvoices.take(5).forEach {
+                    InvoiceItemComposable(
+                        invoiceData = it,
+                        dashboardScreen = true,
+                        navigateToInvoiceDetailsScreen = navigateToInvoiceDetailsScreen,
+                        modifier = Modifier
+                            .padding(
+                                top = screenHeight(x = 8.0),
+                                end = screenWidth(x = 16.0)
+                            )
+                            .fillMaxWidth(0.7f)
+                    )
+                }
+            }
+        } else {
+            Text(
+                text = "No payments (invoices) found",
+                fontSize = screenFontSize(x = 14.0).sp,
+                color = MaterialTheme.colorScheme.onBackground,
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+            )
+        }
+        Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -251,7 +310,7 @@ fun BuyerDashboardScreen(
                 Text(text = "See all")
             }
         }
-        Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
+        Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
         if(orders.isNotEmpty()) {
             Row(
                 modifier = Modifier
@@ -265,7 +324,7 @@ fun BuyerDashboardScreen(
                         modifier = Modifier
                             .fillMaxWidth(0.7f)
                             .padding(
-                                screenWidth(x = 8.0)
+                                end = screenWidth(x = 16.0)
                             )
                     )
                 }
@@ -279,46 +338,7 @@ fun BuyerDashboardScreen(
                     .align(Alignment.CenterHorizontally)
             )
         }
-        Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "Payments (invoices)",
-                color = MaterialTheme.colorScheme.onBackground,
-                fontSize = screenFontSize(x = 16.0).sp,
-                fontWeight = FontWeight.Bold
-            )
-            Spacer(modifier = Modifier.weight(1f))
-            TextButton(
-                enabled = invoices.isNotEmpty(),
-                onClick = navigateToInvoicesScreen
-            ) {
-                Text(text = "See all")
-            }
-        }
-        Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
-        if(invoices.isNotEmpty()) {
-            invoices.take(5).forEach {
-                InvoiceItemComposable(
-                    invoiceData = it,
-                    navigateToInvoiceDetailsScreen = navigateToInvoiceDetailsScreen,
-                    modifier = Modifier
-                        .padding(
-                            top = screenHeight(x = 8.0)
-                        )
-                )
-            }
-        } else {
-            Text(
-                text = "No payments (invoices) found",
-                fontSize = screenFontSize(x = 14.0).sp,
-                color = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-            )
-        }
-        Spacer(modifier = Modifier.height(screenHeight(x = 24.0)))
+//        Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -333,7 +353,10 @@ fun BuyerDashboardScreen(
                 enabled = transactions.isNotEmpty(),
                 onClick = navigateToTransactionsScreen
             ) {
-                Text(text = "See all")
+                Text(
+                    text = "See all",
+                    fontSize = screenFontSize(x = 14.0).sp
+                )
             }
         }
         Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
@@ -343,9 +366,10 @@ fun BuyerDashboardScreen(
                     userId = userId,
                     role = Role.BUYER,
                     transactionData = it,
+                    navigateToTransactionDetailsScreen = navigateToTransactionDetailsScreen,
                     modifier = Modifier
                         .padding(
-                            top = screenHeight(x = 8.0)
+//                            top = screenHeight(x = 8.0)
                         )
                 )
             }
@@ -383,7 +407,8 @@ fun BuyerDashboardScreenPreview() {
             navigateToInvoicesScreen = {},
             navigateToInvoicesScreenWithStatus = {},
             navigateToTransactionsScreen = {},
-            navigateToInvoiceDetailsScreen = {}
+            navigateToInvoiceDetailsScreen = {},
+            navigateToTransactionDetailsScreen = {}
         )
     }
 }

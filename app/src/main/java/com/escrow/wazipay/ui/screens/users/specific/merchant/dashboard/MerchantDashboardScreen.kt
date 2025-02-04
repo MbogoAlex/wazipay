@@ -87,6 +87,7 @@ fun MerchantDashboardScreenComposable(
     navigateToBusinessAdditionScreen: () -> Unit,
     navigateToTransactionsScreen: () -> Unit,
     navigateToBusinessScreenWithOwnerId: (ownerId: String) -> Unit,
+    navigateToTransactionDetailsScreen: (transactionId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -139,7 +140,8 @@ fun MerchantDashboardScreenComposable(
             navigateToBusinessSelectionScreenWithArgs = navigateToBusinessSelectionScreenWithArgs,
             navigateToBusinessAdditionScreen = navigateToBusinessAdditionScreen,
             navigateToTransactionsScreen = navigateToTransactionsScreen,
-            navigateToBusinessScreenWithOwnerId = navigateToBusinessScreenWithOwnerId
+            navigateToBusinessScreenWithOwnerId = navigateToBusinessScreenWithOwnerId,
+            navigateToTransactionDetailsScreen = navigateToTransactionDetailsScreen
         )
     }
 }
@@ -169,6 +171,7 @@ fun MerchantDashboardScreen(
     navigateToBusinessSelectionScreenWithArgs: (toBuyerSelectionScreen: Boolean) -> Unit,
     navigateToTransactionsScreen: () -> Unit,
     navigateToBusinessScreenWithOwnerId: (ownerId: String) -> Unit,
+    navigateToTransactionDetailsScreen: (transactionId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -198,7 +201,7 @@ fun MerchantDashboardScreen(
                 walletExpanded = !walletExpanded
             }
         )
-        Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+        Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
         Row(
             modifier = Modifier
                 .horizontalScroll(rememberScrollState())
@@ -261,7 +264,7 @@ fun MerchantDashboardScreen(
                 }
             }
         }
-        Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+        Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -408,17 +411,25 @@ fun MerchantDashboardScreen(
         }
         Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
         if(invoices.isNotEmpty()) {
-            invoices.take(5).forEach {
-                InvoiceItemComposable(
-                    invoiceData = it,
-                    navigateToInvoiceDetailsScreen = navigateToInvoiceDetailsScreen,
-                    modifier = Modifier
-                        .padding(
-                            top = screenHeight(x = 8.0)
-                        )
-                )
+            Row(
+                modifier = Modifier
+                    .horizontalScroll(rememberScrollState())
+            ) {
+                invoices.take(5).forEach {
+                    InvoiceItemComposable(
+                        invoiceData = it,
+                        dashboardScreen = true,
+                        navigateToInvoiceDetailsScreen = navigateToInvoiceDetailsScreen,
+                        modifier = Modifier
+                            .padding(
+                                top = screenHeight(x = 8.0),
+                                end = screenWidth(x = 16.0)
+                            )
+                            .fillMaxWidth(0.7f)
+                    )
+                }
             }
-            Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
+            Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
             Button(
                 onClick = {
                     navigateToBusinessSelectionScreenWithArgs(true)
@@ -575,7 +586,7 @@ fun MerchantDashboardScreen(
                 }
             }
         }
-        Spacer(modifier = Modifier.height(screenHeight(x = 24.0)))
+        Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -603,6 +614,7 @@ fun MerchantDashboardScreen(
                     userId = userId,
                     role = Role.MERCHANT,
                     transactionData = it,
+                    navigateToTransactionDetailsScreen = navigateToTransactionDetailsScreen,
                     modifier = Modifier
                         .padding(
                             top = screenHeight(x = 8.0)
@@ -649,7 +661,8 @@ fun MerchantDashboardScreenPreview() {
             navigateToBusinessSelectionScreenWithArgs = {},
             navigateToBusinessAdditionScreen = {},
             navigateToTransactionsScreen = {},
-            navigateToBusinessScreenWithOwnerId = {}
+            navigateToBusinessScreenWithOwnerId = {},
+            navigateToTransactionDetailsScreen = {}
         )
     }
 }

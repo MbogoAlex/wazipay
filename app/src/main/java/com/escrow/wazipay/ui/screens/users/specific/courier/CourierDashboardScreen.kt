@@ -63,6 +63,7 @@ fun CourierScreenDashboardScreenComposable(
     navigateToOrdersScreenWithStatus: (childScreen: String) -> Unit,
     navigateToOrderScreen: () -> Unit,
     navigateToTransactionsScreen: () -> Unit,
+    navigateToTransactionDetailsScreen: (transactionId: String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val viewModel: CourierDashboardViewModel = viewModel(factory = AppViewModelFactory.Factory)
@@ -105,7 +106,8 @@ fun CourierScreenDashboardScreenComposable(
             navigateToOrdersScreenWithStatus = navigateToOrdersScreenWithStatus,
             navigateToOrderDetailsScreen = navigateToOrderDetailsScreen,
             navigateToTransactionsScreen = navigateToTransactionsScreen,
-            navigateToOrderScreen = navigateToOrderScreen
+            navigateToOrderScreen = navigateToOrderScreen,
+            navigateToTransactionDetailsScreen = navigateToTransactionDetailsScreen
         )
     }
 
@@ -127,6 +129,7 @@ fun CourierScreenDashboardScreen(
     navigateToOrderDetailsScreen: (orderId: String, fromPaymentScreen: Boolean) -> Unit,
     navigateToOrderScreen: () -> Unit,
     navigateToTransactionsScreen: () -> Unit,
+    navigateToTransactionDetailsScreen: (transactionId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -304,6 +307,7 @@ fun CourierScreenDashboardScreen(
                     userId = userId,
                     role = Role.COURIER,
                     transactionData = it,
+                    navigateToTransactionDetailsScreen = navigateToTransactionDetailsScreen,
                     modifier = Modifier
                         .padding(
                             top = screenHeight(x = 8.0)
@@ -341,7 +345,8 @@ fun CourierScreenDashboardScreenPreview() {
             navigateToOrdersScreenWithStatus = {},
             navigateToOrderDetailsScreen = {_, _ ->},
             navigateToTransactionsScreen = {},
-            navigateToOrderScreen = {}
+            navigateToOrderScreen = {},
+            navigateToTransactionDetailsScreen = {}
         )
     }
 }

@@ -34,6 +34,7 @@ import java.time.LocalDateTime
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun InvoiceItemComposable(
+    dashboardScreen: Boolean = false,
     invoiceData: InvoiceData,
     navigateToInvoiceDetailsScreen: (invoiceId: String) -> Unit,
     modifier: Modifier = Modifier
@@ -50,61 +51,119 @@ fun InvoiceItemComposable(
     ElevatedCard(
         modifier = modifier
             .fillMaxWidth()
-            .padding(
-                top = screenHeight(x = 8.0)
-            )
+//            .padding(
+//                top = screenHeight(x = 8.0)
+//            )
     ) {
-        Column(
-            modifier = Modifier
-                .padding(
-                    screenWidth(x = 16.0)
-                )
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
+        if(dashboardScreen) {
+            Column(
+                modifier = Modifier
+                    .padding(
+                        screenWidth(x = 16.0)
+                    )
+                    .fillMaxWidth()
             ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.invoice),
-                    contentDescription = null
-                )
-                Spacer(modifier = Modifier.width(screenWidth(x = 8.0)))
-                Column(
-                    verticalArrangement = Arrangement.Center
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.invoice),
+                        contentDescription = null
+                    )
+                    Spacer(modifier = Modifier.width(screenWidth(x = 8.0)))
                     Text(
                         text = if(invoiceData.title.length > 25) invoiceData.title.take(25) + "..." else invoiceData.title,
                         fontSize = screenFontSize(x = 14.0).sp,
                         fontWeight = FontWeight.Bold
                     )
-                    Text(
-                        text = formatIsoDateTime(LocalDateTime.parse(invoiceData.createdAt)),
-                        fontSize = screenFontSize(x = 12.0).sp
-                    )
+
                 }
-                Spacer(modifier = Modifier.weight(1f))
-                Column {
+                Text(
+                    text = formatIsoDateTime(LocalDateTime.parse(invoiceData.createdAt)),
+                    fontSize = screenFontSize(x = 12.0).sp
+                )
+                Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
+                Text(
+                    text = formatMoneyValue(invoiceData.amount),
+                    fontSize = screenFontSize(x = 14.0).sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
+                Text(
+                    text = invoiceStatus,
+                    color = if(invoiceStatus.lowercase() == "paid") Color.Green else if(invoiceStatus.lowercase() == "Rejected" || invoiceStatus.lowercase() == "Cancelled") MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
+                    fontSize = screenFontSize(x = 12.0).sp
+                )
+//
+                Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
+                OutlinedButton(
+                    onClick = {
+                        navigateToInvoiceDetailsScreen(invoiceData.id.toString())
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
                     Text(
-                        text = formatMoneyValue(invoiceData.amount),
-                        fontSize = screenFontSize(x = 14.0).sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        text = invoiceStatus,
-                        color = if(invoiceStatus.lowercase() == "paid") Color.Green else if(invoiceStatus.lowercase() == "Rejected" || invoiceStatus.lowercase() == "Cancelled") MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
-                        fontSize = screenFontSize(x = 12.0).sp
+                        text = "See invoice",
+                        fontSize = screenFontSize(x = 14.0).sp
                     )
                 }
             }
-            Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
-            OutlinedButton(
-                onClick = {
-                    navigateToInvoiceDetailsScreen(invoiceData.id.toString())
-                },
+
+        } else {
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .padding(
+                        screenWidth(x = 16.0)
+                    )
             ) {
-                Text(text = "See invoice")
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.invoice),
+                        contentDescription = null
+                    )
+                    Spacer(modifier = Modifier.width(screenWidth(x = 8.0)))
+                    Column(
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = if(invoiceData.title.length > 25) invoiceData.title.take(25) + "..." else invoiceData.title,
+                            fontSize = screenFontSize(x = 14.0).sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = formatIsoDateTime(LocalDateTime.parse(invoiceData.createdAt)),
+                            fontSize = screenFontSize(x = 12.0).sp
+                        )
+                    }
+                    Spacer(modifier = Modifier.weight(1f))
+                    Column {
+                        Text(
+                            text = formatMoneyValue(invoiceData.amount),
+                            fontSize = screenFontSize(x = 14.0).sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = invoiceStatus,
+                            color = if(invoiceStatus.lowercase() == "paid") Color.Green else if(invoiceStatus.lowercase() == "Rejected" || invoiceStatus.lowercase() == "Cancelled") MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
+                            fontSize = screenFontSize(x = 12.0).sp
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
+                OutlinedButton(
+                    onClick = {
+                        navigateToInvoiceDetailsScreen(invoiceData.id.toString())
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    Text(text = "See invoice")
+                }
             }
         }
+
     }
 }

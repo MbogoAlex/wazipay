@@ -2,6 +2,7 @@ package com.escrow.wazipay.ui.screens.users.common.transaction
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,6 +28,7 @@ fun TransactionCellComposable(
     userId: Int,
     role: Role?,
     transactionData: TransactionData,
+    navigateToTransactionDetailsScreen: (transactionId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -113,13 +115,17 @@ fun TransactionCellComposable(
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
-            .padding(screenWidth(x = 8.0))
+//            .padding(screenWidth(x = 8.0))
+            .clickable {
+                navigateToTransactionDetailsScreen(transactionData.id.toString())
+            }
     ) {
         Column(
             modifier = Modifier
                 .weight(1f)
+                .padding(screenWidth(x = 8.0))
         ) {
             Text(
                 text = if(transactionData.order != null)  if(transactionData.order.name.length > 25) transactionData.order.name.take(25) + "..." else transactionData.order.name else transactionType,

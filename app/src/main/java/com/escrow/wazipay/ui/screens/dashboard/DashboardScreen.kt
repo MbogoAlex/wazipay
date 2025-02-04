@@ -115,6 +115,7 @@ fun DashboardScreenComposable(
     navigateToBusinessScreenWithOwnerId: (ownerId: String) -> Unit,
     navigateToUserVerificationScreen: () -> Unit,
     navigateToUserAccountOverviewScreen: () -> Unit,
+    navigateToTransactionDetailsScreen: (transactionId: String) -> Unit,
 ) {
     val context = LocalContext.current
 
@@ -306,7 +307,8 @@ fun DashboardScreenComposable(
             navigateToBusinessAdditionScreen = navigateToBusinessAdditionScreen,
             navigateToBusinessScreenWithOwnerId = navigateToBusinessScreenWithOwnerId,
             navigateToUserVerificationScreen = navigateToUserVerificationScreen,
-            navigateToUserAccountOverviewScreen = navigateToUserAccountOverviewScreen
+            navigateToUserAccountOverviewScreen = navigateToUserAccountOverviewScreen,
+            navigateToTransactionDetailsScreen = navigateToTransactionDetailsScreen
         )
     }
 }
@@ -349,6 +351,7 @@ fun DashboardScreen(
     navigateToBusinessScreenWithOwnerId: (ownerId: String) -> Unit,
     navigateToUserVerificationScreen: () -> Unit,
     navigateToUserAccountOverviewScreen: () -> Unit,
+    navigateToTransactionDetailsScreen: (transactionId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -493,6 +496,7 @@ fun DashboardScreen(
                     navigateToInvoicesScreenWithStatus = navigateToInvoicesScreenWithStatus,
                     navigateToTransactionsScreen = navigateToTransactionsScreen,
                     navigateToInvoiceDetailsScreen = navigateToInvoiceDetailsScreen,
+                    navigateToTransactionDetailsScreen = navigateToTransactionDetailsScreen,
                     modifier = Modifier
                             .weight(1f)
                 )
@@ -511,6 +515,7 @@ fun DashboardScreen(
                     navigateToBusinessAdditionScreen = navigateToBusinessAdditionScreen,
                     navigateToTransactionsScreen = navigateToTransactionsScreen,
                     navigateToBusinessScreenWithOwnerId = navigateToBusinessScreenWithOwnerId,
+                    navigateToTransactionDetailsScreen = navigateToTransactionDetailsScreen,
                     modifier = Modifier
                             .weight(1f)
                 )
@@ -523,6 +528,7 @@ fun DashboardScreen(
                     navigateToTransactionsScreen = navigateToTransactionsScreen,
                     navigateToOrderScreen = navigateToOrderScreen,
                     navigateToOrdersScreenWithStatus = navigateToOrdersScreenWithStatus,
+                    navigateToTransactionDetailsScreen = navigateToTransactionDetailsScreen,
                     modifier = Modifier
                         .weight(1f)
                 )
@@ -531,6 +537,7 @@ fun DashboardScreen(
                 onFilter = onFilter,
                 filtering = filtering,
                 navigateToPreviousScreen = navigateToPreviousScreen,
+                navigateToTransactionDetailsScreen = navigateToInvoiceDetailsScreen,
                 modifier = Modifier
                         .weight(1f)
             )
@@ -820,7 +827,8 @@ fun DashboardScreenPreview() {
             navigateToBusinessAdditionScreen = {},
             navigateToBusinessScreenWithOwnerId = {},
             navigateToUserVerificationScreen = {},
-            navigateToUserAccountOverviewScreen = {}
+            navigateToUserAccountOverviewScreen = {},
+            navigateToTransactionDetailsScreen = {}
         )
     }
 }

@@ -40,6 +40,8 @@ import com.escrow.wazipay.ui.screens.users.common.profile.UserAccountOverviewScr
 import com.escrow.wazipay.ui.screens.users.common.profile.UserAccountOverviewScreenDestination
 import com.escrow.wazipay.ui.screens.users.common.profile.verification.UserVerificationScreenComposable
 import com.escrow.wazipay.ui.screens.users.common.profile.verification.UserVerificationScreenDestination
+import com.escrow.wazipay.ui.screens.users.common.transaction.transactionDetails.TransactionDetailsScreenComposable
+import com.escrow.wazipay.ui.screens.users.common.transaction.transactionDetails.TransactionDetailsScreenDestination
 import com.escrow.wazipay.ui.screens.users.common.transaction.transactionsList.TransactionsScreenComposable
 import com.escrow.wazipay.ui.screens.users.common.transaction.transactionsList.TransactionsScreenDestination
 import com.escrow.wazipay.ui.screens.users.common.wallet.deposit.DepositScreenComposable
@@ -205,6 +207,9 @@ fun NavigationGraph(
                 },
                 navigateToUserAccountOverviewScreen = {
                     navController.navigate(UserAccountOverviewScreenDestination.route)
+                },
+                navigateToTransactionDetailsScreen = {
+                    navController.navigate("${TransactionDetailsScreenDestination.route}/${it}")
                 }
             )
         }
@@ -282,6 +287,9 @@ fun NavigationGraph(
                 },
                 navigateToUserAccountOverviewScreen = {
                     navController.navigate(UserAccountOverviewScreenDestination.route)
+                },
+                navigateToTransactionDetailsScreen = {
+                    navController.navigate("${TransactionDetailsScreenDestination.route}/${it}")
                 }
             )
         }
@@ -470,6 +478,9 @@ fun NavigationGraph(
                 },
                 navigateToUserAccountOverviewScreen = {
                     navController.navigate(UserAccountOverviewScreenDestination.route)
+                },
+                navigateToTransactionDetailsScreen = {
+                    navController.navigate("${TransactionDetailsScreenDestination.route}/${it}")
                 }
             )
         }
@@ -634,6 +645,9 @@ fun NavigationGraph(
                 },
                 navigateToPreviousScreen = {
                     navController.navigateUp()
+                },
+                navigateToTransactionDetailsScreen = {
+                    navController.navigate("${TransactionDetailsScreenDestination.route}/${it}")
                 }
             )
         }
@@ -737,6 +751,20 @@ fun NavigationGraph(
                 navigateToUserVerificationScreen = {
                     navController.navigate(UserVerificationScreenDestination.route)
                 },
+                navigateToPreviousScreen = {
+                    navController.navigateUp()
+                }
+            )
+        }
+        composable(
+            TransactionDetailsScreenDestination.routeWithTransactionId,
+            arguments = listOf(
+                navArgument(TransactionDetailsScreenDestination.transactionId) {
+                    type = NavType.StringType
+                }
+            )
+        ) {
+            TransactionDetailsScreenComposable(
                 navigateToPreviousScreen = {
                     navController.navigateUp()
                 }

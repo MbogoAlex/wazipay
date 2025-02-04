@@ -86,6 +86,7 @@ fun TransactionsScreenComposable(
     filtering: Boolean,
     onFilter: () -> Unit = {},
     navigateToPreviousScreen: () -> Unit,
+    navigateToTransactionDetailsScreen: (transactionId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -121,7 +122,8 @@ fun TransactionsScreenComposable(
             transactions = transactionsUiState.transactions,
             onFilter = onFilter,
             navigateToPreviousScreen = navigateToPreviousScreen,
-            loadTransactionsStatus = transactionsUiState.loadTransactionsStatus
+            loadTransactionsStatus = transactionsUiState.loadTransactionsStatus,
+            navigateToTransactionDetailsScreen = navigateToTransactionDetailsScreen
         )
     }
 }
@@ -144,6 +146,7 @@ fun TransactionsScreen(
     onClearSearch: () -> Unit,
     navigateToPreviousScreen: () -> Unit,
     loadTransactionsStatus: LoadTransactionsStatus,
+    navigateToTransactionDetailsScreen: (transactionId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val dateFormatter = DateTimeFormatter.ofPattern("dd MMM, yyyy")
@@ -322,6 +325,7 @@ fun TransactionsScreen(
                         userId = userId,
                         role = null,
                         transactionData = item,
+                        navigateToTransactionDetailsScreen = navigateToTransactionDetailsScreen,
                         modifier = Modifier
                             .padding(
                                 top = screenHeight(x = 8.0)
@@ -504,7 +508,8 @@ fun TransactionsScreenPreview() {
             transactions = transactions,
             onFilter = { /*TODO*/ },
             navigateToPreviousScreen = {},
-            loadTransactionsStatus = LoadTransactionsStatus.INITIAL
+            loadTransactionsStatus = LoadTransactionsStatus.INITIAL,
+            navigateToTransactionDetailsScreen = {}
         )
     }
 }
