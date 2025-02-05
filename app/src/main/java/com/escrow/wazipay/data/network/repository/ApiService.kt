@@ -20,10 +20,12 @@ import com.escrow.wazipay.data.network.models.invoice.InvoiceCreationRequestBody
 import com.escrow.wazipay.data.network.models.invoice.InvoicePaymentRequestBody
 import com.escrow.wazipay.data.network.models.invoice.InvoicePaymentResponseBody
 import com.escrow.wazipay.data.network.models.invoice.InvoiceResponseBody
+import com.escrow.wazipay.data.network.models.invoice.InvoiceStatusChangeRequestBody
 import com.escrow.wazipay.data.network.models.invoice.InvoicesResponseBody
 import com.escrow.wazipay.data.network.models.order.OrderCreationRequestBody
 import com.escrow.wazipay.data.network.models.order.OrderCreationResponseBody
 import com.escrow.wazipay.data.network.models.order.OrderResponseBody
+import com.escrow.wazipay.data.network.models.order.OrderStageChangeRequestBody
 import com.escrow.wazipay.data.network.models.order.OrdersResponseBody
 import com.escrow.wazipay.data.network.models.transaction.TransactionResponseBody
 import com.escrow.wazipay.data.network.models.transaction.TransactionStatusRequestBody
@@ -279,4 +281,18 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Path("productId") productId: Int
     ): Response<DeletionResponseBody>
+
+//    Change invoice stage
+    @PUT("buyer/invoice-status/update")
+    suspend fun changeInvoiceState(
+        @Header("Authorization") token: String,
+        @Body invoiceStatusChangeRequestBody: InvoiceStatusChangeRequestBody
+    ): Response<InvoiceResponseBody>
+
+//    Change order stage
+    @PUT("merchant/order-stage/update")
+    suspend fun changeOrderStage(
+        @Header("Authorization") token: String,
+        @Body orderStageChangeRequestBody: OrderStageChangeRequestBody
+    ): Response<OrderResponseBody>
 }

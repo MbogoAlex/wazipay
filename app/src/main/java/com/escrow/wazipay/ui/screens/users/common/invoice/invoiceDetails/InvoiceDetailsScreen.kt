@@ -69,6 +69,8 @@ import com.escrow.wazipay.data.network.models.wallet.UserWalletData
 import com.escrow.wazipay.data.network.models.wallet.userWalletData
 import com.escrow.wazipay.data.room.models.Role
 import com.escrow.wazipay.ui.nav.AppNavigation
+import com.escrow.wazipay.ui.screens.users.common.invoice.InvoiceStatus
+import com.escrow.wazipay.ui.screens.users.common.invoice.InvoiceUpdateStatus
 import com.escrow.wazipay.ui.screens.users.common.invoice.LoadInvoicesStatus
 import com.escrow.wazipay.ui.screens.users.common.order.OrderItemComposable
 import com.escrow.wazipay.ui.screens.users.specific.buyer.businessPayment.PaymentMethod
@@ -117,8 +119,20 @@ fun InvoiceDetailsScreenComposable(
         mutableStateOf(false)
     }
 
+    var showInvoiceStatusChangeDialog by rememberSaveable {
+        mutableStateOf(false)
+    }
+
     if(uiState.loadingStatus == LoadingStatus.SUCCESS) {
         showSuccessDialog = true
+    }
+
+    if(uiState.invoiceUpdateStatus == InvoiceUpdateStatus.SUCCESS) {
+        if(showInvoiceStatusChangeDialog) {
+            Toast.makeText(context, "Invoice rejected", Toast.LENGTH_SHORT).show()
+            showInvoiceStatusChangeDialog = !showInvoiceStatusChangeDialog
+        }
+        viewModel.resetStatus()
     }
 
     if(showConfirmDialog) {
@@ -160,12 +174,26 @@ fun InvoiceDetailsScreenComposable(
         )
     }
 
+    if(showInvoiceStatusChangeDialog) {
+        InvoiceUpdateDialog(
+            title = "Reject invoice",
+            invoiceUpdateStatus = uiState.invoiceUpdateStatus,
+            onDismiss = {
+                if(uiState.invoiceUpdateStatus != InvoiceUpdateStatus.LOADING) {
+                    showInvoiceStatusChangeDialog = !showInvoiceStatusChangeDialog
+                } else {}
+            },
+            onConfirm = viewModel::changeInvoiceStatus
+        )
+    }
+
     Box(
         modifier = Modifier
             .safeDrawingPadding()
             .background(MaterialTheme.colorScheme.background)
     ) {
         InvoiceDetailsScreen(
+            invoiceStatus = InvoiceStatus.valueOf(uiState.invoiceData.invoiceStatus),
             pullRefreshState = pullRefreshState,
             invoiceData = uiState.invoiceData,
             role = uiState.role,
@@ -191,6 +219,9 @@ fun InvoiceDetailsScreenComposable(
             onPayInvoice = {
                 showConfirmDialog = !showConfirmDialog
             },
+            onChangeInvoiceStage = {
+                showInvoiceStatusChangeDialog = !showInvoiceStatusChangeDialog
+            },
             buttonEnabled = uiState.buttonEnabled,
         )
     }
@@ -202,6 +233,7 @@ fun InvoiceDetailsScreenComposable(
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun InvoiceDetailsScreen(
+    invoiceStatus: InvoiceStatus,
     pullRefreshState: PullRefreshState?,
     invoiceData: InvoiceData,
     role: Role,
@@ -218,13 +250,11 @@ fun InvoiceDetailsScreen(
     navigateToPreviousScreen: () -> Unit,
     loadInvoicesStatus: LoadInvoicesStatus,
     onPayInvoice: () -> Unit,
+    onChangeInvoiceStage: () -> Unit,
     buttonEnabled: Boolean,
     loadingStatus: LoadingStatus,
     modifier: Modifier = Modifier
 ) {
-
-
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -250,75 +280,88 @@ fun InvoiceDetailsScreen(
             )
         }
         Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
-        if(loadInvoicesStatus == LoadInvoicesStatus.LOADING) {
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    .fillMaxSize()
-            ) {
-                PullRefreshIndicator(
-                    refreshing = true,
-                    state = pullRefreshState!!
-                )
-            }
-        } else {
-            Column(
-                modifier = Modifier
-                    .verticalScroll(rememberScrollState())
-                    .pullRefresh(pullRefreshState!!)
-            ) {
-                InvoiceDetailsCard(
-                    role = role,
-                    invoiceData = invoiceData,
-                    userWalletData = userWalletData,
-                    paymentMethod = paymentMethod,
-                    onChangePaymentMethod = onChangePaymentMethod,
-                    phoneNumber = phoneNumber,
-                    onChangePhoneNumber = onChangePhoneNumber,
-                    loadingStatus = loadingStatus,
-                    buttonEnabled = buttonEnabled,
-                    paymentStage = paymentStage,
-                    onPayInvoice = onPayInvoice
-                )
-                Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
-                Text(
-                    text = "Issued to:",
-                    fontSize = screenFontSize(x = 14.0).sp,
-                    fontWeight = FontWeight.Bold
-                )
-                Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
-                ActorCard(
-                    role = Role.BUYER,
-                    userContactData = buyer
-                )
-                Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
-                Text(
-                    text = "Issued by:",
-                    fontSize = screenFontSize(x = 14.0).sp,
-                    fontWeight = FontWeight.Bold
-                )
-                Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
-                ActorCard(
-                    role = Role.MERCHANT,
-                    userContactData = merchant
-                )
-                if(invoiceData.orderId != null) {
+        Column(
+            modifier = Modifier
+//                .verticalScroll(rememberScrollState())
+        ) {
+            if(loadInvoicesStatus == LoadInvoicesStatus.LOADING) {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .fillMaxSize()
+                ) {
+                    PullRefreshIndicator(
+                        refreshing = true,
+                        state = pullRefreshState!!
+                    )
+                }
+            } else {
+                Column(
+                    modifier = Modifier
+                        .verticalScroll(rememberScrollState())
+                        .pullRefresh(pullRefreshState!!)
+                ) {
+                    InvoiceDetailsCard(
+                        role = role,
+                        invoiceData = invoiceData,
+                        userWalletData = userWalletData,
+                        paymentMethod = paymentMethod,
+                        onChangePaymentMethod = onChangePaymentMethod,
+                        phoneNumber = phoneNumber,
+                        onChangePhoneNumber = onChangePhoneNumber,
+                        loadingStatus = loadingStatus,
+                        buttonEnabled = buttonEnabled,
+                        paymentStage = paymentStage,
+                        onPayInvoice = onPayInvoice
+                    )
                     Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
                     Text(
-                        text = "Order details",
+                        text = "Issued to:",
                         fontSize = screenFontSize(x = 14.0).sp,
                         fontWeight = FontWeight.Bold
                     )
                     Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
-                    OrderItemComposable(
-                        homeScreen = false,
-                        orderData = orderData!!,
-                        navigateToOrderDetailsScreen = navigateToOrderDetailsScreen
+                    ActorCard(
+                        role = Role.BUYER,
+                        userContactData = buyer
+                    )
+                    Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+                    Text(
+                        text = "Issued by:",
+                        fontSize = screenFontSize(x = 14.0).sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
+                    ActorCard(
+                        role = Role.MERCHANT,
+                        userContactData = merchant
+                    )
+                    if(invoiceData.orderId != null) {
+                        Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+                        Text(
+                            text = "Order details",
+                            fontSize = screenFontSize(x = 14.0).sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
+                        OrderItemComposable(
+                            homeScreen = false,
+                            orderData = orderData!!,
+                            navigateToOrderDetailsScreen = navigateToOrderDetailsScreen
+                        )
+                    }
+                }
+            }
+            if(invoiceStatus == InvoiceStatus.PENDING) {
+                Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+                Button(onClick = onChangeInvoiceStage) {
+                    Text(
+                        text = "Reject invoice",
+                        fontSize = screenFontSize(x = 14.0).sp
                     )
                 }
             }
         }
-
     }
 
 
@@ -687,6 +730,56 @@ fun InvoicePaymentSuccessDialog(
     )
 }
 
+@Composable
+fun InvoiceUpdateDialog(
+    title: String,
+    invoiceUpdateStatus: InvoiceUpdateStatus,
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit,
+) {
+    AlertDialog(
+        title = {
+            Text(
+                text = "Update invoice",
+                fontSize = screenFontSize(x = 14.0).sp
+            )
+        },
+        text = {
+            Text(
+                text = "Are you sure you want to update $title?",
+                fontSize = screenFontSize(x = 14.0).sp
+            )
+        },
+        onDismissRequest = onDismiss,
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(
+                    text = "Cancel",
+                    fontSize = screenFontSize(x = 14.0).sp
+                )
+            }
+        },
+        confirmButton = {
+            Button(
+                enabled = invoiceUpdateStatus != InvoiceUpdateStatus.LOADING,
+                onClick = onConfirm
+            ) {
+                if(invoiceUpdateStatus == InvoiceUpdateStatus.LOADING) {
+                    Text(
+                        text = "Loading...",
+                        fontSize = screenFontSize(x = 14.0).sp
+                    )
+                } else {
+                    Text(
+                        text = "Confirm",
+                        fontSize = screenFontSize(x = 14.0).sp
+                    )
+                }
+            }
+        }
+    )
+}
+
 @OptIn(ExperimentalMaterialApi::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true, showSystemUi = true)
@@ -696,6 +789,7 @@ fun InvoiceDetailsScreenPreview(
 ) {
     WazipayTheme {
         InvoiceDetailsScreen(
+            invoiceStatus = InvoiceStatus.PENDING,
             pullRefreshState = null,
             invoiceData = invoiceData,
             role = Role.BUYER,
@@ -713,6 +807,7 @@ fun InvoiceDetailsScreenPreview(
             loadingStatus = LoadingStatus.INITIAL,
             loadInvoicesStatus = LoadInvoicesStatus.INITIAL,
             onPayInvoice = {},
+            onChangeInvoiceStage = {},
             buttonEnabled = false
         )
     }

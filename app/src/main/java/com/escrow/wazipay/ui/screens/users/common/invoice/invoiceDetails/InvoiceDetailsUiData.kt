@@ -9,6 +9,7 @@ import com.escrow.wazipay.data.network.models.user.emptyUserContactData
 import com.escrow.wazipay.data.network.models.wallet.UserWalletData
 import com.escrow.wazipay.data.room.models.Role
 import com.escrow.wazipay.data.room.models.UserDetails
+import com.escrow.wazipay.ui.screens.users.common.invoice.InvoiceUpdateStatus
 import com.escrow.wazipay.ui.screens.users.common.invoice.LoadInvoicesStatus
 import com.escrow.wazipay.ui.screens.users.specific.buyer.businessPayment.PaymentMethod
 import com.escrow.wazipay.ui.screens.users.specific.merchant.courierAssignment.LoadingStatus
@@ -29,5 +30,6 @@ data class InvoiceDetailsUiData(
     val buttonEnabled: Boolean = false,
     val unauthorized: Boolean = false,
     val loadingStatus: LoadingStatus = LoadingStatus.INITIAL,
-    val loadInvoicesStatus: LoadInvoicesStatus = LoadInvoicesStatus.LOADING
+    val loadInvoicesStatus: LoadInvoicesStatus = LoadInvoicesStatus.LOADING,
+    val invoiceUpdateStatus: InvoiceUpdateStatus = InvoiceUpdateStatus.INITIAL
 )

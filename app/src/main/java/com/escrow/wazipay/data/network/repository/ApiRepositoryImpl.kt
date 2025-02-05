@@ -20,10 +20,12 @@ import com.escrow.wazipay.data.network.models.invoice.InvoiceCreationRequestBody
 import com.escrow.wazipay.data.network.models.invoice.InvoicePaymentRequestBody
 import com.escrow.wazipay.data.network.models.invoice.InvoicePaymentResponseBody
 import com.escrow.wazipay.data.network.models.invoice.InvoiceResponseBody
+import com.escrow.wazipay.data.network.models.invoice.InvoiceStatusChangeRequestBody
 import com.escrow.wazipay.data.network.models.invoice.InvoicesResponseBody
 import com.escrow.wazipay.data.network.models.order.OrderCreationRequestBody
 import com.escrow.wazipay.data.network.models.order.OrderCreationResponseBody
 import com.escrow.wazipay.data.network.models.order.OrderResponseBody
+import com.escrow.wazipay.data.network.models.order.OrderStageChangeRequestBody
 import com.escrow.wazipay.data.network.models.order.OrdersResponseBody
 import com.escrow.wazipay.data.network.models.transaction.TransactionResponseBody
 import com.escrow.wazipay.data.network.models.transaction.TransactionStatusRequestBody
@@ -326,5 +328,23 @@ class ApiRepositoryImpl(private val apiService: ApiService): ApiRepository {
         apiService.deleteProduct(
             token = "Bearer $token",
             productId = productId
+        )
+
+    override suspend fun changeInvoiceState(
+        token: String,
+        invoiceStatusChangeRequestBody: InvoiceStatusChangeRequestBody
+    ): Response<InvoiceResponseBody> =
+        apiService.changeInvoiceState(
+            token = "Bearer $token",
+            invoiceStatusChangeRequestBody = invoiceStatusChangeRequestBody
+        )
+
+    override suspend fun changeOrderStage(
+        token: String,
+        orderStageChangeRequestBody: OrderStageChangeRequestBody
+    ): Response<OrderResponseBody> =
+        apiService.changeOrderStage(
+            token = "Bearer $token",
+            orderStageChangeRequestBody = orderStageChangeRequestBody
         )
 }

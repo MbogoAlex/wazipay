@@ -5,10 +5,13 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.escrow.wazipay.data.network.models.invoice.InvoicePaymentRequestBody
+import com.escrow.wazipay.data.network.models.invoice.InvoiceStatusChangeRequestBody
 import com.escrow.wazipay.data.network.models.transaction.TransactionMethod
 import com.escrow.wazipay.data.network.models.transaction.TransactionStatusRequestBody
 import com.escrow.wazipay.data.network.repository.ApiRepository
 import com.escrow.wazipay.data.room.repository.DBRepository
+import com.escrow.wazipay.ui.screens.users.common.invoice.InvoiceStatus
+import com.escrow.wazipay.ui.screens.users.common.invoice.InvoiceUpdateStatus
 import com.escrow.wazipay.ui.screens.users.common.invoice.LoadInvoicesStatus
 import com.escrow.wazipay.ui.screens.users.specific.buyer.businessPayment.InvoiceCreationStatus
 import com.escrow.wazipay.ui.screens.users.specific.buyer.businessPayment.PaymentMethod
@@ -215,6 +218,52 @@ class InvoiceDetailsViewModel(
         }
     }
 
+    fun changeInvoiceStatus() {
+        _uiState.update {
+            it.copy(
+                invoiceUpdateStatus = InvoiceUpdateStatus.LOADING
+            )
+        }
+
+        viewModelScope.launch {
+            try {
+                val invoiceStatusChangeRequestBody = InvoiceStatusChangeRequestBody(
+                    invoiceStatus = InvoiceStatus.REJECTED.name,
+                    invoiceId = uiState.value.invoiceData.id
+                )
+
+                val response = apiRepository.changeInvoiceState(
+                    token = uiState.value.userDetails.token!!,
+                    invoiceStatusChangeRequestBody = invoiceStatusChangeRequestBody
+                )
+
+                if(response.isSuccessful) {
+                    getInvoiceDetails()
+                    _uiState.update {
+                        it.copy(
+                            invoiceUpdateStatus = InvoiceUpdateStatus.SUCCESS
+                        )
+                    }
+                    Log.d("invoiceStatusChange", "response: $response")
+                } else {
+                    _uiState.update {
+                        it.copy(
+                            invoiceUpdateStatus = InvoiceUpdateStatus.FAIL
+                        )
+                    }
+                    Log.e("invoiceStatusChange", "response: $response")
+                }
+            } catch (e: Exception) {
+                _uiState.update {
+                    it.copy(
+                        invoiceUpdateStatus = InvoiceUpdateStatus.FAIL
+                    )
+                }
+                Log.e("invoiceStatusChange", "exception: $e")
+            }
+        }
+    }
+
     private fun getOrder() {
         Log.d("gettingOrder", "LOADING")
         viewModelScope.launch {
@@ -293,7 +342,8 @@ class InvoiceDetailsViewModel(
     fun resetStatus() {
         _uiState.update {
             it.copy(
-                loadingStatus = LoadingStatus.INITIAL
+                loadingStatus = LoadingStatus.INITIAL,
+                invoiceUpdateStatus = InvoiceUpdateStatus.INITIAL
             )
         }
     }
