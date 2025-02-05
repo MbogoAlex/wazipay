@@ -8,7 +8,7 @@ data class BusinessData(
     val id: Int,
     val name: String,
     val description: String,
-    val products: List<String>,
+    val products: List<ProductData>,
     val createdAt: String,
     val archived: Boolean,
     val archivedAt: String?,

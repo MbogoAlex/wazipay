@@ -2,13 +2,9 @@ package com.escrow.wazipay.ui.screens.users.specific.merchant.dashboard
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,18 +15,16 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -519,6 +513,7 @@ fun MerchantDashboardScreen(
                         navigateToBusinessDetailsScreen = navigateToBusinessDetailsScreen,
                         modifier = Modifier
                             .fillMaxWidth(0.7f)
+                            .widthIn(max = screenWidth(x = 300.0))
                             .padding(
                                 screenWidth(x = 8.0)
                             )
@@ -548,23 +543,13 @@ fun MerchantDashboardScreen(
                 }
             }
         } else {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "My businesses",
-                    color = MaterialTheme.colorScheme.onBackground,
-                    fontSize = screenFontSize(x = 16.0).sp,
-                    fontWeight = FontWeight.Bold
-                )
-                Spacer(modifier = Modifier.weight(1f))
-                TextButton(onClick = { /*TODO*/ }) {
-                    Text(
-                        text = "See all",
-                        fontSize = screenFontSize(x = 14.0).sp
-                    )
-                }
-            }
+            Text(
+                text = "No businesses found",
+                fontSize = screenFontSize(x = 14.0).sp,
+                color = MaterialTheme.colorScheme.onBackground,
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+            )
             Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
             OutlinedButton(
                 onClick = navigateToBusinessAdditionScreen,

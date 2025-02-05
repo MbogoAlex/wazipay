@@ -39,7 +39,7 @@ fun BusinessCellComposable(
 ) {
     Box(
         modifier = modifier
-            .fillMaxWidth()
+//            .fillMaxWidth()
             .border(
                 width = screenWidth(x = 1.0),
                 color = Color.LightGray,
@@ -58,7 +58,8 @@ fun BusinessCellComposable(
         ) {
             Column(
                 modifier = if (homeScreen) Modifier
-                    .padding(screenWidth(x = 16.0)) else Modifier
+                    .padding(screenWidth(x = 16.0))
+                    .fillMaxWidth() else Modifier
                     .padding(screenWidth(x = 8.0))
                     .weight(1f)
             ) {
@@ -110,34 +111,6 @@ fun BusinessCellComposable(
                         Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
                         Text(text = businessData.owner?.phoneNumber ?: "")
                     }
-                } else {
-//                Column(
-////                    verticalAlignment = Alignment.CenterVertically
-//                ) {
-//                    Row(
-//                        verticalAlignment = Alignment.CenterVertically
-//                    ) {
-//                        Icon(
-//                            painter = painterResource(id = R.drawable.person),
-//                            contentDescription = null
-//                        )
-//                        Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
-//                        Text(text = businessData.owner?.username ?: "")
-//                    }
-//
-//                    Spacer(modifier = Modifier.height(screenWidth(x = 8.0)))
-//
-//                    Row(
-//                        verticalAlignment = Alignment.CenterVertically
-//                    ) {
-//                        Icon(
-//                            painter = painterResource(id = R.drawable.phone),
-//                            contentDescription = null
-//                        )
-//                        Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
-//                        Text(text = businessData.owner?.phoneNumber ?: "")
-//                    }
-//                }
                 }
             }
             if(!homeScreen) {

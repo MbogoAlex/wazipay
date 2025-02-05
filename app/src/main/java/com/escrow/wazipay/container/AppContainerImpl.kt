@@ -18,7 +18,8 @@ class AppContainerImpl(context: Context): AppContainer {
         ignoreUnknownKeys = true
         coerceInputValues = true
     }
-    private val baseUrl = "http://172.105.90.112:8080/wazipay-api/api/"
+    private val baseUrl = "http://192.168.100.5:8000/wazipay/api/"
+//    private val baseUrl = "http://172.105.90.112:8080/wazipay-api/api/"
 
     private val retrofit = Retrofit.Builder()
         .baseUrl(baseUrl)
