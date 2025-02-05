@@ -29,6 +29,8 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.DropdownMenu
@@ -39,6 +41,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -122,6 +125,8 @@ fun DashboardScreenComposable(
     val viewModel: DashboardViewModel = viewModel(factory = AppViewModelFactory.Factory)
     val uiState by viewModel.uiState.collectAsState()
 
+    val scope = rememberCoroutineScope()
+
     BackHandler(onBack = {
         if(uiState.child == NavBarItem.HOME) {
             (context as? Activity)?.finish()
@@ -132,7 +137,6 @@ fun DashboardScreenComposable(
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
-    val scope = rememberCoroutineScope()
 
     var filtering by rememberSaveable {
         mutableStateOf(false)
@@ -284,15 +288,6 @@ fun DashboardScreenComposable(
             navigateToWithdrawalScreen = navigateToWithdrawalScreen,
             navigateToBusinessDetailsScreen = navigateToBusinessDetailsScreen,
             navigateToBusinessSelectionScreen = navigateToBusinessSelectionScreen,
-            onLogout = {
-                scope.launch {
-                    val phoneNumber = uiState.userDetails.phoneNumber
-                    val pin = uiState.userDetails.pin
-                    viewModel.deleteUsers()
-                    delay(2000)
-                    navigateToLoginScreenWithArgs(phoneNumber ?: "", pin ?: "")
-                }
-            },
             navigateToOrderDetailsScreen = navigateToOrderDetailsScreen,
             navigateToInvoiceCreationScreen = navigateToInvoiceCreationScreen,
             navigateToBuyerSelectionScreen = navigateToBuyerSelectionScreen,
@@ -335,7 +330,6 @@ fun DashboardScreen(
     navigateToWithdrawalScreen: () -> Unit,
     navigateToBusinessDetailsScreen: (businessId: String) -> Unit,
     navigateToBusinessSelectionScreen: () -> Unit,
-    onLogout: () -> Unit,
     navigateToOrderDetailsScreen: (orderId: String, fromPaymentScreen: Boolean) -> Unit,
     navigateToInvoiceCreationScreen: (businessId: String) -> Unit,
     navigateToBuyerSelectionScreen: (businessId: String) -> Unit,
@@ -562,10 +556,10 @@ fun DashboardScreen(
             }
             NavBarItem.PROFILE -> ProfileScreenComposable(
                 navigateToTransactionsScreen = navigateToTransactionsScreen,
-                onLogout = onLogout,
                 navigateToBusinessScreenWithOwnerId = navigateToBusinessScreenWithOwnerId,
                 navigateToUserVerificationScreen = navigateToUserVerificationScreen,
                 navigateToUserAccountOverviewScreen = navigateToUserAccountOverviewScreen,
+                navigateToLoginScreenWithArgs = navigateToLoginScreenWithArgs,
                 modifier = Modifier
                     .weight(1f)
             )
@@ -739,6 +733,7 @@ fun ThemeSwitcher(
     }
 }
 
+
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
@@ -812,7 +807,6 @@ fun DashboardScreenPreview() {
             navigateToWithdrawalScreen = {},
             navigateToBusinessDetailsScreen = {},
             navigateToBusinessSelectionScreen = {},
-            onLogout = {},
             navigateToOrderDetailsScreen = {orderId, fromPaymentScreen ->  },
             navigateToInvoiceCreationScreen = {},
             navigateToPreviousScreen = {},

@@ -73,6 +73,14 @@ class UserAccountOverviewViewModel(
         }
     }
 
+    fun deleteUsers() {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                dbRepository.deleteUsers()
+            }
+        }
+    }
+
     fun loadVerificationScreenUiData() {
         viewModelScope.launch {
             while (uiState.value.userDetails.userId == 0) {

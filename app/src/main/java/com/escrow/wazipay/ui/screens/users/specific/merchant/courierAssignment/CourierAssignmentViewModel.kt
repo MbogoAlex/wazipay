@@ -217,7 +217,7 @@ class CourierAssignmentViewModel(
     fun enableButton() {
         _uiState.update {
             it.copy(
-                buttonEnabled = if(uiState.value.paymentMethod == PaymentMethod.WAZIPAY) uiState.value.amount.isNotEmpty() else uiState.value.phoneNumber.isNotEmpty() && uiState.value.amount.isNotEmpty()
+                buttonEnabled = if(uiState.value.paymentMethod == PaymentMethod.WAZIPAY_ESCROW) uiState.value.amount.isNotEmpty() else uiState.value.phoneNumber.isNotEmpty() && uiState.value.amount.isNotEmpty()
             )
         }
     }

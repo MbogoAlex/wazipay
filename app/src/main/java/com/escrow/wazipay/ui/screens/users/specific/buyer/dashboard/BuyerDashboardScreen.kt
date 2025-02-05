@@ -269,7 +269,7 @@ fun BuyerDashboardScreen(
                 modifier = Modifier
                     .horizontalScroll(rememberScrollState())
             ) {
-                pendingInvoices.take(5).forEach {
+                invoices.take(5).forEach {
                     InvoiceItemComposable(
                         invoiceData = it,
                         dashboardScreen = true,
@@ -338,7 +338,7 @@ fun BuyerDashboardScreen(
                     .align(Alignment.CenterHorizontally)
             )
         }
-//        Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
+        Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {

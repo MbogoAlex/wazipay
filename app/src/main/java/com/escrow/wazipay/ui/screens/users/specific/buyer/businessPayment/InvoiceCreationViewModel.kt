@@ -146,49 +146,57 @@ class InvoiceCreationViewModel(
                    invoicePaymentRequestBody = invoicePaymentRequestBody
                )
 
-                val transactionStatusRequestBody = TransactionStatusRequestBody(
-                    referenceId = response.body()?.data?.partnerReferenceID!!,
-                    transactionId = response.body()?.data?.transactionID ?: "",
-                    token = response.body()?.data?.transactionToken!!
-                )
-
                if(response.isSuccessful) {
 
-                   while (transactionPending) {
-                       delay(2000)
-
-                       val transactionStatusResponse = apiRepository.getTransactionStatus(
-                           token = uiState.value.userDetails.token!!,
-                           transactionStatusRequestBody = transactionStatusRequestBody
+                   if(uiState.value.paymentMethod == PaymentMethod.MPESA) {
+                       val transactionStatusRequestBody = TransactionStatusRequestBody(
+                           referenceId = response.body()?.data?.partnerReferenceID!!,
+                           transactionId = response.body()?.data?.transactionID ?: "",
+                           token = response.body()?.data?.transactionToken!!
                        )
 
-                       _uiState.update {
-                           it.copy(
-                               paymentStage = transactionStatusResponse.body()?.data?.status ?: "",
-                               paymentMessage = transactionStatusResponse.body()?.data?.sovNarration ?: ""
+                       while (transactionPending) {
+                           delay(2000)
+
+                           val transactionStatusResponse = apiRepository.getTransactionStatus(
+                               token = uiState.value.userDetails.token!!,
+                               transactionStatusRequestBody = transactionStatusRequestBody
                            )
+
+                           _uiState.update {
+                               it.copy(
+                                   paymentStage = transactionStatusResponse.body()?.data?.status ?: "",
+                                   paymentMessage = transactionStatusResponse.body()?.data?.sovNarration ?: ""
+                               )
+                           }
+
+                           transactionPending  = transactionStatusResponse.body()?.data?.status == "PENDING"
+
                        }
 
-                       transactionPending  = transactionStatusResponse.body()?.data?.status == "PENDING"
+                       if(_uiState.value.paymentStage == "SUCCESSFUL") {
+                           _uiState.update {
+                               it.copy(
+                                   orderId = response.body()?.data?.transactionDetails?.orderId!!.toString(),
+                                   invoiceCreationStatus = InvoiceCreationStatus.SUCCESS
+                               )
+                           }
+                       } else {
+                           _uiState.update {
+                               it.copy(
+                                   invoiceCreationStatus = InvoiceCreationStatus.FAIL
 
-                   }
-
-                   if(_uiState.value.paymentStage == "SUCCESSFUL") {
+                               )
+                           }
+                       }
+                   } else {
                        _uiState.update {
                            it.copy(
                                orderId = response.body()?.data?.transactionDetails?.orderId!!.toString(),
                                invoiceCreationStatus = InvoiceCreationStatus.SUCCESS
                            )
                        }
-                   } else {
-                       _uiState.update {
-                           it.copy(
-                               invoiceCreationStatus = InvoiceCreationStatus.FAIL
-
-                           )
-                       }
                    }
-
 
                } else {
                    _uiState.update {

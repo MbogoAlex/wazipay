@@ -179,6 +179,7 @@ fun InvoiceDetailsScreenComposable(
                 viewModel.enableButton()
             },
             paymentMethod = uiState.paymentMethod,
+            paymentStage = uiState.paymentStage,
             onChangePaymentMethod = {
                 viewModel.changePaymentMethod(it)
                 viewModel.enableButton()
@@ -190,7 +191,7 @@ fun InvoiceDetailsScreenComposable(
             onPayInvoice = {
                 showConfirmDialog = !showConfirmDialog
             },
-            buttonEnabled = uiState.buttonEnabled
+            buttonEnabled = uiState.buttonEnabled,
         )
     }
 
@@ -211,13 +212,14 @@ fun InvoiceDetailsScreen(
     phoneNumber: String,
     onChangePhoneNumber: (phone: String) -> Unit,
     paymentMethod: PaymentMethod,
+    paymentStage: String,
     onChangePaymentMethod: (paymentMethod: PaymentMethod) -> Unit,
     navigateToOrderDetailsScreen: (orderId: String, fromPaymentScreen: Boolean) -> Unit,
     navigateToPreviousScreen: () -> Unit,
-    loadingStatus: LoadingStatus,
     loadInvoicesStatus: LoadInvoicesStatus,
     onPayInvoice: () -> Unit,
     buttonEnabled: Boolean,
+    loadingStatus: LoadingStatus,
     modifier: Modifier = Modifier
 ) {
 
@@ -275,6 +277,7 @@ fun InvoiceDetailsScreen(
                     onChangePhoneNumber = onChangePhoneNumber,
                     loadingStatus = loadingStatus,
                     buttonEnabled = buttonEnabled,
+                    paymentStage = paymentStage,
                     onPayInvoice = onPayInvoice
                 )
                 Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
@@ -330,9 +333,10 @@ fun InvoiceDetailsCard(
     onChangePaymentMethod: (paymentMethod: PaymentMethod) -> Unit,
     phoneNumber: String,
     onChangePhoneNumber: (phone: String) -> Unit,
-    loadingStatus: LoadingStatus,
+    paymentStage: String,
     onPayInvoice: () -> Unit,
     buttonEnabled: Boolean,
+    loadingStatus: LoadingStatus,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -403,8 +407,8 @@ fun InvoiceDetailsCard(
                     modifier = Modifier.padding(horizontal = screenWidth(x = 16.0))
                 ) {
                     RadioButton(
-                        selected = paymentMethod == PaymentMethod.WAZIPAY,
-                        onClick = { onChangePaymentMethod(PaymentMethod.WAZIPAY) }
+                        selected = paymentMethod == PaymentMethod.WAZIPAY_ESCROW,
+                        onClick = { onChangePaymentMethod(PaymentMethod.WAZIPAY_ESCROW) }
                     )
                     Text(
                         text = "Wazipay",
@@ -427,7 +431,7 @@ fun InvoiceDetailsCard(
                     )
                 }
                 Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
-                if(paymentMethod == PaymentMethod.WAZIPAY) {
+                if(paymentMethod == PaymentMethod.WAZIPAY_ESCROW) {
                     ElevatedCard(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -462,8 +466,14 @@ fun InvoiceDetailsCard(
                             Row(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Text(text = "Pay: ")
-                                Text(text = formatMoneyValue(invoiceData.amount))
+                                Text(
+                                    text = "Pay: ",
+                                    fontSize = screenFontSize(x = 14.0).sp
+                                )
+                                Text(
+                                    text = formatMoneyValue(invoiceData.amount),
+                                    fontSize = screenFontSize(x = 14.0).sp
+                                )
                             }
 
                         }
@@ -517,7 +527,15 @@ fun InvoiceDetailsCard(
                     modifier = Modifier
                         .fillMaxWidth()
                 ) {
-                    Text(text = "Pay ${formatMoneyValue(invoiceData.amount)}")
+                    if(loadingStatus == LoadingStatus.LOADING) {
+                        if(paymentMethod == PaymentMethod.MPESA) {
+                            Text(text = "$paymentStage...")
+                        } else {
+                            Text(text = "Loading...")
+                        }
+                    } else {
+                        Text(text = "Pay ${formatMoneyValue(invoiceData.amount)}")
+                    }
                 }
             }
         }
@@ -681,10 +699,11 @@ fun InvoiceDetailsScreenPreview(
             pullRefreshState = null,
             invoiceData = invoiceData,
             role = Role.BUYER,
-            paymentMethod = PaymentMethod.WAZIPAY,
+            paymentMethod = PaymentMethod.WAZIPAY_ESCROW,
             buyer = userContactData,
             merchant = userContactData,
             phoneNumber = "0794649026",
+            paymentStage = "STARTING",
             onChangePaymentMethod = {},
             userWalletData = userWalletData,
             onChangePhoneNumber = {},

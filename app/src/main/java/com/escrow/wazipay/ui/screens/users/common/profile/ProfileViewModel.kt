@@ -95,6 +95,14 @@ class ProfileViewModel(
         }
     }
 
+    fun deleteUsers() {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                dbRepository.deleteUsers()
+            }
+        }
+    }
+
     init {
         getUserRole()
         loadUserDetails()

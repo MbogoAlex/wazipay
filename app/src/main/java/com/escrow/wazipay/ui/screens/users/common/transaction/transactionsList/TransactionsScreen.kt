@@ -313,26 +313,40 @@ fun TransactionsScreen(
                 )
             }
         } else {
-            LazyColumn(
-                modifier = Modifier
-                    .padding(
-                        horizontal = screenWidth(x = 16.0),
+            if(transactions.isNotEmpty()) {
+                LazyColumn(
+                    modifier = Modifier
+                        .padding(
+                            horizontal = screenWidth(x = 16.0),
 
-                        )
-            ) {
-                items(transactions) { item ->
-                    TransactionCellComposable(
-                        userId = userId,
-                        role = null,
-                        transactionData = item,
-                        navigateToTransactionDetailsScreen = navigateToTransactionDetailsScreen,
-                        modifier = Modifier
-                            .padding(
-                                top = screenHeight(x = 8.0)
                             )
+                ) {
+                    items(transactions) { item ->
+                        TransactionCellComposable(
+                            userId = userId,
+                            role = null,
+                            transactionData = item,
+                            navigateToTransactionDetailsScreen = navigateToTransactionDetailsScreen,
+                            modifier = Modifier
+                                .padding(
+                                    top = screenHeight(x = 8.0)
+                                )
+                        )
+                    }
+                }
+            } else {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .fillMaxSize()
+                ) {
+                    Text(
+                        text = "No transactions for this period",
+                        fontSize = screenFontSize(x = 14.0).sp
                     )
                 }
             }
+
         }
     }
 }

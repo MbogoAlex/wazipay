@@ -19,6 +19,6 @@ data class CourierAssignmentUiData(
     val amount: String = "",
     val phoneNumber: String = "",
     val buttonEnabled: Boolean = false,
-    val paymentMethod: PaymentMethod = PaymentMethod.WAZIPAY,
+    val paymentMethod: PaymentMethod = PaymentMethod.WAZIPAY_ESCROW,
     val loadingStatus: LoadingStatus = LoadingStatus.INITIAL
 )

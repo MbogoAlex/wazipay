@@ -256,8 +256,8 @@ fun CourierAssignmentScreen(
                 modifier = Modifier.padding(horizontal = screenWidth(x = 16.0))
             ) {
                 RadioButton(
-                    selected = paymentMethod == PaymentMethod.WAZIPAY,
-                    onClick = { onChangePaymentMethod(PaymentMethod.WAZIPAY) }
+                    selected = paymentMethod == PaymentMethod.WAZIPAY_ESCROW,
+                    onClick = { onChangePaymentMethod(PaymentMethod.WAZIPAY_ESCROW) }
                 )
                 Text(
                     text = "Wazipay",
@@ -278,7 +278,7 @@ fun CourierAssignmentScreen(
                 )
             }
             Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
-            if(paymentMethod == PaymentMethod.WAZIPAY) {
+            if(paymentMethod == PaymentMethod.WAZIPAY_ESCROW) {
                 ElevatedCard(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -609,7 +609,7 @@ fun CourierAssignmentScreenPreview() {
             onChangeAmount = {},
             userDetailData = users[0],
             orderData = orders[0],
-            paymentMethod = PaymentMethod.WAZIPAY,
+            paymentMethod = PaymentMethod.WAZIPAY_ESCROW,
             currentBalance = formatMoneyValue(2500.0),
             phoneNumber = "",
             onChangePhoneNumber = {},

@@ -56,6 +56,8 @@ import com.escrow.wazipay.ui.theme.WazipayTheme
 import com.escrow.wazipay.utils.screenFontSize
 import com.escrow.wazipay.utils.screenHeight
 import com.escrow.wazipay.utils.screenWidth
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 object UserAccountOverviewScreenDestination : AppNavigation {
     override val title: String = "User account overview"
@@ -161,27 +163,31 @@ fun UserAccountOverviewScreenComposable(
 //        )
     }
 
+    var loginOut by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+
     if(showLogoutDialog) {
         LogoutDialog(
+            loginOut = loginOut,
             onConfirm = {
-//                logoutLoading = true
-//                val phoneNumber = uiState.userDetails.phoneNumber
-//                val password = uiState.userDetails.password
-//                showLogoutDialog = !showLogoutDialog
-//                scope.launch {
-//                    viewModel.logout()
-//                    delay(2000)
-//                    logoutLoading = !logoutLoading
-//                    Toast.makeText(context, "Logging out", Toast.LENGTH_SHORT).show()
-//                    try {
-//                        navigateToLoginScreenWithArgs(phoneNumber, password)
-//                    } catch (e: Exception) {
-//                        Log.e("failedToLogout", e.toString())
-//                    }
-//                }
+                loginOut = true
+                scope.launch {
+                    val phoneNumber = uiState.userDetails.phoneNumber
+                    val pin = uiState.userDetails.pin
+                    viewModel.deleteUsers()
+                    delay(2000)
+                    loginOut = false
+                    navigateToLoginScreenWithArgs(phoneNumber ?: "", pin ?: "")
+                }
             },
             onDismiss = {
-                showLogoutDialog = !showLogoutDialog
+                if (!loginOut) {
+                    showLogoutDialog = !showLogoutDialog
+                } else {
+                }
+
             }
         )
     }
@@ -459,47 +465,6 @@ fun EditDialog(
     )
 }
 
-@Composable
-fun LogoutDialog(
-    onConfirm: () -> Unit,
-    onDismiss: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    AlertDialog(
-        title = {
-            Text(
-                text = "Logout",
-                fontWeight = FontWeight.Bold,
-                fontSize = screenFontSize(x = 14.0).sp
-            )
-        },
-        text = {
-            Text(
-                text = "Are you sure you want to log out?",
-                fontWeight = FontWeight.Bold,
-                fontSize = screenFontSize(x = 14.0).sp
-            )
-        },
-        onDismissRequest = onDismiss,
-        dismissButton = {
-            TextButton(
-                onClick = onDismiss
-            ) {
-                Text(
-                    text = "Dismiss",
-                    fontSize = screenFontSize(x = 14.0).sp
-                )
-            }
-        },
-        confirmButton = {
-            Button(
-                onClick = onConfirm
-            ) {
-                Text(text = "Log out")
-            }
-        }
-    )
-}
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable

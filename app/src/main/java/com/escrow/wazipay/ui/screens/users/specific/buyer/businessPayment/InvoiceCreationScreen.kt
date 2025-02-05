@@ -155,8 +155,8 @@ fun InvoiceCreationScreenComposable(
             paymentMethod = uiSate.paymentMethod,
             currentBalance = formatMoneyValue(uiSate.userWalletData.balance),
             onChangePaymentMethod = {
-                viewModel.changePaymentMethod(it)
                 viewModel.enableButton()
+                viewModel.changePaymentMethod(it)
             },
             onChangeTitle = {
                 viewModel.changeTitle(it)
@@ -372,8 +372,8 @@ fun InvoiceCreationScreen(
             modifier = Modifier.padding(horizontal = screenWidth(x = 16.0))
         ) {
             RadioButton(
-                selected = paymentMethod == PaymentMethod.WAZIPAY,
-                onClick = { onChangePaymentMethod(PaymentMethod.WAZIPAY) }
+                selected = paymentMethod == PaymentMethod.WAZIPAY_ESCROW,
+                onClick = { onChangePaymentMethod(PaymentMethod.WAZIPAY_ESCROW) }
             )
             Text(
                 text = "Wazipay",
@@ -396,7 +396,7 @@ fun InvoiceCreationScreen(
             )
         }
         Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
-        if(paymentMethod == PaymentMethod.WAZIPAY) {
+        if(paymentMethod == PaymentMethod.WAZIPAY_ESCROW) {
             ElevatedCard(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -594,7 +594,7 @@ fun InvoiceCreationScreenPreview() {
             onChangeTitle = {},
             onChangeDescription = {},
             onChangeAmount = {},
-            paymentMethod = PaymentMethod.WAZIPAY,
+            paymentMethod = PaymentMethod.WAZIPAY_ESCROW,
             onChangePaymentMethod = {},
             invoiceCreationStatus = InvoiceCreationStatus.INITIAL,
             navigateToPreviousScreen = { /*TODO*/ },

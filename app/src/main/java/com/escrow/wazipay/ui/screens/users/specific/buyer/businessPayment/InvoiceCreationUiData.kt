@@ -20,7 +20,7 @@ data class InvoiceCreationUiData(
     val paymentStage: String = "STARTING",
     val paymentMessage: String = "",
     val userWalletData: UserWalletData = UserWalletData(0, 0.0, userContactData),
-    val paymentMethod: PaymentMethod = PaymentMethod.WAZIPAY,
+    val paymentMethod: PaymentMethod = PaymentMethod.WAZIPAY_ESCROW,
     val unauthorized: Boolean = false,
     val buttonEnabled: Boolean = false,
     val invoiceCreationStatus: InvoiceCreationStatus = InvoiceCreationStatus.INITIAL

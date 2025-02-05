@@ -49,8 +49,12 @@ class InvoiceDetailsViewModel(
     }
 
     fun payInvoice() {
+        _uiState.update {
+            it.copy(
+                loadingStatus = LoadingStatus.LOADING
+            )
+        }
         var transactionPending = true
-
         viewModelScope.launch {
             try {
 
@@ -58,7 +62,6 @@ class InvoiceDetailsViewModel(
                     invoiceId = invoiceId!!.toInt(),
                     transactionMethod = TransactionMethod.valueOf(uiState.value.paymentMethod.name),
                     phoneNumber = uiState.value.phoneNumber,
-
                     )
 
                 val response = apiRepository.payInvoice(
@@ -66,48 +69,57 @@ class InvoiceDetailsViewModel(
                     invoicePaymentRequestBody = invoicePaymentRequestBody
                 )
 
-                val transactionStatusRequestBody = TransactionStatusRequestBody(
-                    referenceId = response.body()?.data?.partnerReferenceID!!,
-                    transactionId = response.body()?.data?.transactionID ?: "",
-                    token = response.body()?.data?.transactionToken!!
-                )
 
                 if(response.isSuccessful) {
 
-                    while (transactionPending) {
-                        delay(2000)
-
-                        val transactionStatusResponse = apiRepository.getTransactionStatus(
-                            token = uiState.value.userDetails.token!!,
-                            transactionStatusRequestBody = transactionStatusRequestBody
+                    if(uiState.value.paymentMethod == PaymentMethod.MPESA) {
+                        val transactionStatusRequestBody = TransactionStatusRequestBody(
+                            referenceId = response.body()?.data?.partnerReferenceID!!,
+                            transactionId = response.body()?.data?.transactionID ?: "",
+                            token = response.body()?.data?.transactionToken!!
                         )
+                        while (transactionPending) {
+                            delay(2000)
 
-                        _uiState.update {
-                            it.copy(
-                                paymentStage = transactionStatusResponse.body()?.data?.status ?: "",
-                                paymentMessage = transactionStatusResponse.body()?.data?.sovNarration ?: ""
+                            val transactionStatusResponse = apiRepository.getTransactionStatus(
+                                token = uiState.value.userDetails.token!!,
+                                transactionStatusRequestBody = transactionStatusRequestBody
                             )
+
+                            _uiState.update {
+                                it.copy(
+                                    paymentStage = transactionStatusResponse.body()?.data?.status ?: "",
+                                    paymentMessage = transactionStatusResponse.body()?.data?.sovNarration ?: ""
+                                )
+                            }
+
+                            transactionPending  = transactionStatusResponse.body()?.data?.status == "PENDING"
+
                         }
 
-                        transactionPending  = transactionStatusResponse.body()?.data?.status == "PENDING"
+                        if(_uiState.value.paymentStage == "SUCCESSFUL") {
+                            _uiState.update {
+                                it.copy(
+                                    newOrderId = response.body()?.data?.transactionDetails?.orderId!!,
+                                    loadingStatus = LoadingStatus.SUCCESS
+                                )
+                            }
+                        } else {
+                            _uiState.update {
+                                it.copy(
+                                    loadingStatus = LoadingStatus.FAIL
 
-                    }
-
-                    if(_uiState.value.paymentStage == "SUCCESSFUL") {
-                        _uiState.update {
-                            it.copy(
-                                newOrderId = response.body()?.data?.transactionDetails?.orderId!!,
-                                loadingStatus = LoadingStatus.SUCCESS
-                            )
+                                )
+                            }
                         }
                     } else {
                         _uiState.update {
                             it.copy(
-                                loadingStatus = LoadingStatus.FAIL
-
+                                loadingStatus = LoadingStatus.SUCCESS
                             )
                         }
                     }
+
 
 
                 } else {
@@ -209,7 +221,7 @@ class InvoiceDetailsViewModel(
             try {
                 val response = apiRepository.getOrder(
                     token = uiState.value.userDetails.token!!,
-                    orderId = uiState.value.orderData.id
+                    orderId = uiState.value.invoiceData.orderId!!
                 )
 
                 if(response.isSuccessful) {

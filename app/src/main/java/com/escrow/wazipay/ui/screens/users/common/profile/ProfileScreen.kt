@@ -22,6 +22,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -33,6 +34,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -51,6 +56,8 @@ import com.escrow.wazipay.ui.theme.WazipayTheme
 import com.escrow.wazipay.utils.screenFontSize
 import com.escrow.wazipay.utils.screenHeight
 import com.escrow.wazipay.utils.screenWidth
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -59,7 +66,7 @@ fun ProfileScreenComposable(
     navigateToBusinessScreenWithOwnerId: (ownerId: String) -> Unit,
     navigateToUserVerificationScreen: () -> Unit,
     navigateToUserAccountOverviewScreen: () -> Unit,
-    onLogout: () -> Unit,
+    navigateToLoginScreenWithArgs: (phoneNumber: String, pin: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -68,6 +75,41 @@ fun ProfileScreenComposable(
 
     val lifecycleOwner = LocalLifecycleOwner.current
     val lifecycleState by lifecycleOwner.lifecycle.currentStateFlow.collectAsState()
+
+    var showLogoutDialog by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+
+    var loginOut by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+    val scope = rememberCoroutineScope()
+
+    if(showLogoutDialog) {
+        LogoutDialog(
+            loginOut = loginOut,
+            onConfirm = {
+                loginOut = true
+                scope.launch {
+                    val phoneNumber = uiState.userDetails.phoneNumber
+                    val pin = uiState.userDetails.pin
+                    viewModel.deleteUsers()
+                    delay(2000)
+                    loginOut = false
+                    navigateToLoginScreenWithArgs(phoneNumber ?: "", pin ?: "")
+                }
+            },
+            onDismiss = {
+                if (!loginOut) {
+                    showLogoutDialog = !showLogoutDialog
+                } else {
+                }
+
+            }
+        )
+    }
 
     LaunchedEffect(lifecycleState) {
         when(lifecycleState) {
@@ -81,6 +123,7 @@ fun ProfileScreenComposable(
         }
     }
 
+
     Box(
         modifier = modifier
             .safeDrawingPadding()
@@ -93,7 +136,9 @@ fun ProfileScreenComposable(
             navigateToBusinessScreenWithOwnerId = navigateToBusinessScreenWithOwnerId,
             navigateToUserVerificationScreen = navigateToUserVerificationScreen,
             navigateToUserAccountOverviewScreen = navigateToUserAccountOverviewScreen,
-            onLogout = onLogout
+            onLogout = {
+                showLogoutDialog = !showLogoutDialog
+            }
         )
     }
 }
@@ -411,6 +456,67 @@ fun ProfileCard(
             }
         }
     }
+}
+
+@Composable
+fun LogoutDialog(
+    loginOut: Boolean,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        title = {
+            Text(
+                text = "Log out",
+                fontSize = screenFontSize(x = 14.0).sp
+            )
+        },
+        text = {
+            Text(
+                text = "Are you sure you want to log out?",
+                fontSize = screenFontSize(x = 14.0).sp
+            )
+        },
+        onDismissRequest = onDismiss,
+        dismissButton = {
+            TextButton(
+                enabled = !loginOut,
+                onClick = onDismiss
+            ) {
+                Text(
+                    text = "Cancel",
+                    fontSize = screenFontSize(x = 14.0).sp
+                )
+            }
+        },
+        confirmButton = {
+            Button(
+                enabled = !loginOut,
+                onClick = onConfirm
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    if(loginOut) {
+                        Text(
+                            text = "Loading...",
+                            fontSize = screenFontSize(x = 14.0).sp
+                        )
+                    } else {
+                        Text(
+                            text = "Log out",
+                            fontSize = screenFontSize(x = 14.0).sp
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
+                    Icon(
+                        painter = painterResource(id = R.drawable.logout),
+                        contentDescription = "Log out"
+                    )
+                }
+            }
+        }
+    )
 }
 
 @Preview(showBackground = true, showSystemUi = true)

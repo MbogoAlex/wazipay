@@ -224,6 +224,7 @@ fun InvoicesScreen(
                                 navigateToInvoiceDetailsScreen = navigateToInvoiceDetailsScreen,
                                 invoiceData = invoice
                             )
+                            Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
                         }
                     }
                 }

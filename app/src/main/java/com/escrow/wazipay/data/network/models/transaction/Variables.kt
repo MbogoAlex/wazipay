@@ -10,6 +10,7 @@ val transactionData = TransactionData(
     createdAt = "2024-12-26T09:31:55.283796",
     amount = 1000.00,
     order = orderData,
+    transactionMethod = "WAZIPAY_ESCROW",
     invoice = null
 )
 
@@ -21,6 +22,7 @@ val transactions = List(10) { index ->
         createdAt = "2024-12-26T09:31:55.283796",
         amount = 1000.00,
         order = orderData,
+        transactionMethod = "WAZIPAY_ESCROW",
         invoice = invoiceData
     )
 }
