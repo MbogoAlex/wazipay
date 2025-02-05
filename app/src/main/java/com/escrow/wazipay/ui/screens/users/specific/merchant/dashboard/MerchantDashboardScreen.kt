@@ -195,7 +195,7 @@ fun MerchantDashboardScreen(
                 walletExpanded = !walletExpanded
             }
         )
-        Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
+        Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
         Row(
             modifier = Modifier
                 .horizontalScroll(rememberScrollState())

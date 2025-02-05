@@ -1,6 +1,7 @@
 package com.escrow.wazipay.ui.screens.users.common.order.orderDetails
 
 import android.os.Build
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
@@ -53,9 +54,12 @@ import com.escrow.wazipay.data.network.models.order.OrderData
 import com.escrow.wazipay.data.network.models.order.orderData
 import com.escrow.wazipay.data.room.models.Role
 import com.escrow.wazipay.ui.nav.AppNavigation
+import com.escrow.wazipay.ui.screens.users.common.invoice.InvoiceUpdateStatus
 import com.escrow.wazipay.ui.screens.users.common.invoice.LoadInvoicesStatus
 import com.escrow.wazipay.ui.screens.users.common.order.CompleteDeliveryStatus
 import com.escrow.wazipay.ui.screens.users.common.order.LoadOrdersStatus
+import com.escrow.wazipay.ui.screens.users.common.order.OrderStage
+import com.escrow.wazipay.ui.screens.users.common.order.OrderUpdateStatus
 import com.escrow.wazipay.ui.theme.WazipayTheme
 import com.escrow.wazipay.utils.formatIsoDateTime
 import com.escrow.wazipay.utils.formatMoneyValue
@@ -93,8 +97,21 @@ fun OrderDetailsScreenComposable(
         mutableStateOf(false)
     }
 
+    var showCancelOrderDialog by rememberSaveable {
+        mutableStateOf(false)
+    }
+
     if(uiState.completeDeliveryStatus == CompleteDeliveryStatus.SUCCESS) {
         showSuccessDialog = true
+    }
+
+    if(uiState.orderUpdateStatus == OrderUpdateStatus.SUCCESS) {
+         if(showCancelOrderDialog) {
+             Toast.makeText(context, "Order cancelled", Toast.LENGTH_SHORT).show()
+             showCancelOrderDialog = !showCancelOrderDialog
+         } else {
+         }
+        viewModel.resetStatus()
     }
 
     BackHandler(onBack = {
@@ -112,6 +129,22 @@ fun OrderDetailsScreenComposable(
 
         }
     )
+
+    if(showCancelOrderDialog) {
+        OrderUpdateDialog(
+            title = "Cancel order",
+            orderUpdateStatus = uiState.orderUpdateStatus,
+            onDismiss = {
+                if(uiState.orderUpdateStatus != OrderUpdateStatus.LOADING) {
+                    showCancelOrderDialog = !showCancelOrderDialog
+                } else {}
+            },
+            onConfirm = {
+                viewModel.changeOrderStage()
+                showCancelOrderDialog = !showCancelOrderDialog
+            }
+        )
+    }
 
     if(showConfirmationDialog) {
         CompleteDeliveryConfirmationDialog(
@@ -159,6 +192,10 @@ fun OrderDetailsScreenComposable(
             onCompleteDelivery = {
                 showConfirmationDialog = !showConfirmationDialog
             },
+            onCancelOrder = {
+                showCancelOrderDialog = !showCancelOrderDialog
+            },
+            orderStage = OrderStage.valueOf(uiState.orderData.orderStage),
             loadOrdersStatus = uiState.loadOrdersStatus
         )
     }
@@ -178,6 +215,8 @@ fun OrderDetailsScreen(
     navigateToCourierSelectionScreen: (orderId: String) -> Unit,
     onCompleteDelivery: () -> Unit,
     loadOrdersStatus: LoadOrdersStatus,
+    orderStage: OrderStage,
+    onCancelOrder: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -238,28 +277,21 @@ fun OrderDetailsScreen(
                     fontSize = screenFontSize(x = 14.0).sp,
                 )
             }
-            VerticalDivider(
-                modifier = Modifier
-                    .height(screenHeight(x = 32.0))
-                    .padding(
-                        horizontal = screenWidth(x = 22.0)
-                    )
-            )
-//        Spacer(modifier = Modifier.height(screenHeight(x = 32.0)))
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                RadioButton(selected = orderData.orderStage == "IN_TRANSIT", onClick = { /*TODO*/ })
-                Text(
-                    text = "In transit",
-                    color = MaterialTheme.colorScheme.onBackground,
-                    fontSize = screenFontSize(x = 14.0).sp,
+                VerticalDivider(
+                    modifier = Modifier
+                        .height(screenHeight(x = 32.0))
+                        .padding(
+                            horizontal = screenWidth(x = 22.0)
+                        )
                 )
                 if(role == Role.MERCHANT && orderData.orderStage == "PENDING_PICKUP") {
                     Button(
                         onClick = { navigateToCourierSelectionScreen(orderData.id.toString()) },
                         modifier = Modifier
-                            .align(Alignment.CenterVertically)
+//                        .align(Alignment.CenterVertically)
                     ) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically
@@ -277,6 +309,19 @@ fun OrderDetailsScreen(
                         }
                     }
                 }
+            }
+
+
+//        Spacer(modifier = Modifier.height(screenHeight(x = 32.0)))
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                RadioButton(selected = orderData.orderStage == "IN_TRANSIT", onClick = { /*TODO*/ })
+                Text(
+                    text = "In transit",
+                    color = MaterialTheme.colorScheme.onBackground,
+                    fontSize = screenFontSize(x = 14.0).sp,
+                )
             }
             Row(
                 verticalAlignment = Alignment.CenterVertically
@@ -341,48 +386,10 @@ fun OrderDetailsScreen(
                                 fontSize = screenFontSize(x = 14.0).sp,
                             )
                         }
-                        if(role == Role.COURIER && orderData.orderStage == "IN_TRANSIT") {
-                            Button(onClick = onCompleteDelivery) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Text(
-                                        text = "Complete delivery",
-                                        fontSize = screenFontSize(x = 14.0).sp,
-//                            fontWeight = FontWeight.Bold
-                                    )
-                                    Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
-                                    Icon(
-                                        painter = painterResource(id = R.drawable.motorbike),
-                                        contentDescription = null
-                                    )
-                                }
-                            }
-                        }
+
                     }
                 } else {
-                    if(role == Role.MERCHANT) {
-                        Button(
-                            onClick = { navigateToCourierSelectionScreen(orderData.id.toString()) },
-                            modifier = Modifier
-                                .align(Alignment.CenterVertically)
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(
-                                    text = "Assign courier",
-                                    fontSize = screenFontSize(x = 14.0).sp,
-//                            fontWeight = FontWeight.Bold
-                                )
-                                Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
-                                Icon(
-                                    painter = painterResource(id = R.drawable.motorbike),
-                                    contentDescription = null
-                                )
-                            }
-                        }
-                    }
+                    
                 }
             }
 //        Spacer(modifier = Modifier.height(screenHeight(x = 32.0)))
@@ -552,7 +559,19 @@ fun OrderDetailsScreen(
                 }
             }
         }
-
+        Spacer(modifier = Modifier.weight(1f))
+        Button(
+            enabled = orderStage != OrderStage.COMPLETE && orderStage != OrderStage.REFUNDED && orderStage != OrderStage.CANCELLED,
+            onClick = onCancelOrder,
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            Text(
+                text = "Cancel order",
+                fontSize = screenFontSize(x = 14.0).sp
+            )
+        }
+        
     }
 }
 
@@ -632,6 +651,56 @@ fun CompleteDeliverySuccessDialog(
     )
 }
 
+@Composable
+fun OrderUpdateDialog(
+    title: String,
+    orderUpdateStatus: OrderUpdateStatus,
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit,
+) {
+    AlertDialog(
+        title = {
+            Text(
+                text = title,
+                fontSize = screenFontSize(x = 14.0).sp
+            )
+        },
+        text = {
+            Text(
+                text = "Are you sure you want to cancel this order?",
+                fontSize = screenFontSize(x = 14.0).sp
+            )
+        },
+        onDismissRequest = onDismiss,
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(
+                    text = "Cancel",
+                    fontSize = screenFontSize(x = 14.0).sp
+                )
+            }
+        },
+        confirmButton = {
+            Button(
+                enabled = orderUpdateStatus != OrderUpdateStatus.LOADING,
+                onClick = onConfirm
+            ) {
+                if(orderUpdateStatus == OrderUpdateStatus.LOADING) {
+                    Text(
+                        text = "Loading...",
+                        fontSize = screenFontSize(x = 14.0).sp
+                    )
+                } else {
+                    Text(
+                        text = "Confirm",
+                        fontSize = screenFontSize(x = 14.0).sp
+                    )
+                }
+            }
+        }
+    )
+}
+
 @OptIn(ExperimentalMaterialApi::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true, showSystemUi = true)
@@ -648,6 +717,8 @@ fun OrderDetailsScreenPreview() {
             navigateToDashboardScreen = {},
             navigateToCourierSelectionScreen = {},
             onCompleteDelivery = {},
+            orderStage = OrderStage.PENDING_PICKUP,
+            onCancelOrder = {},
             loadOrdersStatus = LoadOrdersStatus.INITIAL
         )
     }

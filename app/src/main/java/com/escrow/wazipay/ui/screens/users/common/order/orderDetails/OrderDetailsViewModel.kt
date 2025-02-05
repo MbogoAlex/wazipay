@@ -4,11 +4,14 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.escrow.wazipay.data.network.models.order.OrderStageChangeRequestBody
 import com.escrow.wazipay.data.network.repository.ApiRepository
 import com.escrow.wazipay.data.room.models.UserDetails
 import com.escrow.wazipay.data.room.repository.DBRepository
 import com.escrow.wazipay.ui.screens.users.common.order.CompleteDeliveryStatus
 import com.escrow.wazipay.ui.screens.users.common.order.LoadOrdersStatus
+import com.escrow.wazipay.ui.screens.users.common.order.OrderStage
+import com.escrow.wazipay.ui.screens.users.common.order.OrderUpdateStatus
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -69,6 +72,52 @@ class OrderDetailsViewModel(
                     )
                 }
                 Log.e("getOrderException_err", e.toString())
+
+            }
+        }
+    }
+
+    fun changeOrderStage() {
+        _uiState.update {
+            it.copy(
+                orderUpdateStatus = OrderUpdateStatus.LOADING
+            )
+        }
+
+        viewModelScope.launch {
+            try {
+                val orderStageChangeRequestBody = OrderStageChangeRequestBody(
+                    orderStage = OrderStage.CANCELLED.name,
+                    orderId = uiState.value.orderData.id
+                )
+               val response = apiRepository.changeOrderStage(
+                   token = uiState.value.userDetails.token!!,
+                   orderStageChangeRequestBody = orderStageChangeRequestBody
+               )
+
+                if(response.isSuccessful) {
+                    _uiState.update {
+                        it.copy(
+                            orderUpdateStatus = OrderUpdateStatus.SUCCESS
+                        )
+                    }
+                    Log.d("orderStageChange", "SUCCESS")
+                } else {
+                    _uiState.update {
+                        it.copy(
+                            orderUpdateStatus = OrderUpdateStatus.FAIL
+                        )
+                    }
+                    Log.e("orderStageChange", "response: $response")
+                }
+
+            } catch (e: Exception) {
+                _uiState.update {
+                    it.copy(
+                        orderUpdateStatus = OrderUpdateStatus.FAIL
+                    )
+                }
+                Log.e("orderStageChange", "exception: $e")
 
             }
         }
@@ -155,7 +204,8 @@ class OrderDetailsViewModel(
         _uiState.update {
             it.copy(
                 loadOrdersStatus = LoadOrdersStatus.INITIAL,
-                completeDeliveryStatus = CompleteDeliveryStatus.INITIAL
+                completeDeliveryStatus = CompleteDeliveryStatus.INITIAL,
+                orderUpdateStatus = OrderUpdateStatus.INITIAL
 
             )
         }
