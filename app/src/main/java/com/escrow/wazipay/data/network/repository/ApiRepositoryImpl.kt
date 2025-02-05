@@ -2,7 +2,11 @@ package com.escrow.wazipay.data.network.repository
 
 import com.escrow.wazipay.data.network.models.business.BusinessAdditionRequestBody
 import com.escrow.wazipay.data.network.models.business.BusinessResponseBody
+import com.escrow.wazipay.data.network.models.business.BusinessUpdateRequestBody
 import com.escrow.wazipay.data.network.models.business.BusinessesResponseBody
+import com.escrow.wazipay.data.network.models.business.ProductResponseBody
+import com.escrow.wazipay.data.network.models.business.ProductUpdateRequestBody
+import com.escrow.wazipay.data.network.models.common.DeletionResponseBody
 import com.escrow.wazipay.data.network.models.common.LoginRequestBody
 import com.escrow.wazipay.data.network.models.common.LoginResponseBody
 import com.escrow.wazipay.data.network.models.common.RegistrationRequestBody
@@ -286,5 +290,41 @@ class ApiRepositoryImpl(private val apiService: ApiService): ApiRepository {
         apiService.requestUserVerification(
             token = "Bearer $token",
             files = files
+        )
+
+    override suspend fun updateBusiness(
+        token: String,
+        businessUpdateRequestBody: BusinessUpdateRequestBody
+    ): Response<BusinessResponseBody> =
+        apiService.updateBusiness(
+            token = "Bearer $token",
+            businessUpdateRequestBody = businessUpdateRequestBody
+        )
+
+    override suspend fun archiveBusiness(
+        token: String,
+        businessId: Int
+    ): Response<DeletionResponseBody> =
+        apiService.archiveBusiness(
+            token = "Bearer $token",
+            businessId = businessId
+        )
+
+    override suspend fun updateProduct(
+        token: String,
+        productUpdateRequestBody: ProductUpdateRequestBody
+    ): Response<ProductResponseBody> =
+        apiService.updateProduct(
+            token = "Bearer $token",
+            productUpdateRequestBody = productUpdateRequestBody
+        )
+
+    override suspend fun deleteProduct(
+        token: String,
+        productId: Int
+    ): Response<DeletionResponseBody> =
+        apiService.deleteProduct(
+            token = "Bearer $token",
+            productId = productId
         )
 }

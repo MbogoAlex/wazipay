@@ -45,7 +45,7 @@ class BusinessViewModel(
                    query = uiState.value.searchQuery,
                    ownerId = ownerId?.toInt()
                        ?: if(uiState.value.userRole.role == Role.MERCHANT) uiState.value.userDetails.userId else null,
-                   archived = null,
+                   archived = false,
                    startDate = null,
                    endDate = null
                )

@@ -2,7 +2,11 @@ package com.escrow.wazipay.data.network.repository
 
 import com.escrow.wazipay.data.network.models.business.BusinessAdditionRequestBody
 import com.escrow.wazipay.data.network.models.business.BusinessResponseBody
+import com.escrow.wazipay.data.network.models.business.BusinessUpdateRequestBody
 import com.escrow.wazipay.data.network.models.business.BusinessesResponseBody
+import com.escrow.wazipay.data.network.models.business.ProductResponseBody
+import com.escrow.wazipay.data.network.models.business.ProductUpdateRequestBody
+import com.escrow.wazipay.data.network.models.common.DeletionResponseBody
 import com.escrow.wazipay.data.network.models.common.LoginRequestBody
 import com.escrow.wazipay.data.network.models.common.LoginResponseBody
 import com.escrow.wazipay.data.network.models.common.RegistrationRequestBody
@@ -33,8 +37,12 @@ import com.escrow.wazipay.data.network.models.wallet.UserWalletResponseBody
 import com.escrow.wazipay.data.network.models.wallet.WithdrawalRequestBody
 import okhttp3.MultipartBody
 import retrofit2.Response
+import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Part
+import retrofit2.http.Path
 
 interface ApiRepository {
     suspend fun registerUser(
@@ -210,6 +218,30 @@ interface ApiRepository {
     //    Request user verification
     suspend fun requestUserVerification(
         token: String,
-        @Part("data") files: List<MultipartBody.Part>
+        files: List<MultipartBody.Part>
     ): Response<UserVerificationResponseBody>
+
+    //    Update business
+    suspend fun updateBusiness(
+        token: String,
+        businessUpdateRequestBody: BusinessUpdateRequestBody
+    ): Response<BusinessResponseBody>
+
+    //    Archive business
+    suspend fun archiveBusiness(
+        token: String,
+        businessId: Int
+    ): Response<DeletionResponseBody>
+
+    //    Update product
+    suspend fun updateProduct(
+        token: String,
+        productUpdateRequestBody: ProductUpdateRequestBody
+    ): Response<ProductResponseBody>
+
+    //    Delete product
+    suspend fun deleteProduct(
+        token: String,
+        productId: Int
+    ): Response<DeletionResponseBody>
 }

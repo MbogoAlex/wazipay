@@ -2,7 +2,11 @@ package com.escrow.wazipay.data.network.repository
 
 import com.escrow.wazipay.data.network.models.business.BusinessAdditionRequestBody
 import com.escrow.wazipay.data.network.models.business.BusinessResponseBody
+import com.escrow.wazipay.data.network.models.business.BusinessUpdateRequestBody
 import com.escrow.wazipay.data.network.models.business.BusinessesResponseBody
+import com.escrow.wazipay.data.network.models.business.ProductResponseBody
+import com.escrow.wazipay.data.network.models.business.ProductUpdateRequestBody
+import com.escrow.wazipay.data.network.models.common.DeletionResponseBody
 import com.escrow.wazipay.data.network.models.common.LoginRequestBody
 import com.escrow.wazipay.data.network.models.common.LoginResponseBody
 import com.escrow.wazipay.data.network.models.common.RegistrationRequestBody
@@ -34,6 +38,7 @@ import com.escrow.wazipay.data.network.models.wallet.WithdrawalRequestBody
 import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Multipart
@@ -246,4 +251,32 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Part files: List<MultipartBody.Part>
     ): Response<UserVerificationResponseBody>
+
+//    Update business
+    @PUT("merchant/business/update")
+    suspend fun updateBusiness(
+        @Header("Authorization") token: String,
+        @Body businessUpdateRequestBody: BusinessUpdateRequestBody
+    ): Response<BusinessResponseBody>
+
+//    Archive business
+    @PUT("merchant/business/archive/{businessId}")
+    suspend fun archiveBusiness(
+        @Header("Authorization") token: String,
+        @Path("businessId") businessId: Int
+    ): Response<DeletionResponseBody>
+
+//    Update product
+    @PUT("merchant/product/update")
+    suspend fun updateProduct(
+        @Header("Authorization") token: String,
+        @Body productUpdateRequestBody: ProductUpdateRequestBody
+    ): Response<ProductResponseBody>
+
+//    Delete product
+    @DELETE("merchant/product/delete/{productId}")
+    suspend fun deleteProduct(
+        @Header("Authorization") token: String,
+        @Path("productId") productId: Int
+    ): Response<DeletionResponseBody>
 }

@@ -266,7 +266,7 @@ class MerchantDashboardViewModel(
                     token = uiState.value.userDetails.token!!,
                     query = null,
                     ownerId = uiState.value.userDetails.userId,
-                    archived = null,
+                    archived = false,
                     startDate = null,
                     endDate = null
                 )

@@ -1,6 +1,7 @@
 package com.escrow.wazipay.ui.screens.users.common.business.businessDetails
 
 import android.os.Build
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
@@ -36,7 +37,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -51,13 +51,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Popup
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.escrow.wazipay.AppViewModelFactory
 import com.escrow.wazipay.R
@@ -67,7 +67,6 @@ import com.escrow.wazipay.data.network.models.user.UserContactData
 import com.escrow.wazipay.data.room.models.Role
 import com.escrow.wazipay.ui.nav.AppNavigation
 import com.escrow.wazipay.ui.screens.users.common.business.LoadBusinessStatus
-import com.escrow.wazipay.ui.screens.users.common.invoice.LoadInvoicesStatus
 import com.escrow.wazipay.ui.theme.WazipayTheme
 import com.escrow.wazipay.utils.screenFontSize
 import com.escrow.wazipay.utils.screenHeight
@@ -89,6 +88,7 @@ fun BusinessDetailsScreenComposable(
     navigateToPreviousScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
     val viewModel: BusinessDetailsViewModel = viewModel(factory = AppViewModelFactory.Factory)
     val uiState by viewModel.uiState.collectAsState()
 
@@ -99,6 +99,27 @@ fun BusinessDetailsScreenComposable(
     var showEditBusinessPopup by rememberSaveable { mutableStateOf(false) }
 
     var selectedProductId by rememberSaveable { mutableStateOf(-1) }
+    var selectedProductName by rememberSaveable { mutableStateOf("") }
+
+    if(uiState.editingStatus == EditingStatus.SUCCESS) {
+        showEditBusinessPopup = false
+        showEditProductPopup = false
+        Toast.makeText(context, "Business updated", Toast.LENGTH_SHORT).show()
+        viewModel.resetStatus()
+    }
+
+    if(uiState.archivingStatus == ArchivingStatus.SUCCESS) {
+        showDeleteBusinessPopup = false
+        Toast.makeText(context, "Business archived", Toast.LENGTH_SHORT).show()
+        viewModel.resetStatus()
+        navigateToPreviousScreen()
+    }
+
+    if(uiState.deletingStatus == DeletingStatus.SUCCESS) {
+        showDeleteProductPopup = false
+        Toast.makeText(context, "Product deleted", Toast.LENGTH_SHORT).show()
+        viewModel.resetStatus()
+    }
 
     val pullRefreshState = rememberPullRefreshState(
         refreshing = uiState.loadBusinessStatus == LoadBusinessStatus.LOADING,
@@ -110,51 +131,60 @@ fun BusinessDetailsScreenComposable(
 
     if(showEditProductPopup) {
         EditProductPopup(
-            productName = "",
+            productName = uiState.productName.ifEmpty { selectedProductName },
             onDismiss = { showEditProductPopup = !showEditProductPopup },
-            onChangeName = {},
+            onChangeName = viewModel::updateProductName,
             onConfirm = {
-                showEditProductPopup = !showEditProductPopup
-            }
+                viewModel.editProduct(productId = selectedProductId)
+            },
+            editingStatus = uiState.editingStatus
         )
     }
 
     if(showDeleteProductPopup) {
         DeleteProductDialog(
-            productName = "",
+            productName = selectedProductName,
             onConfirm = {
-                showDeleteProductPopup = !showDeleteProductPopup
+                viewModel.deleteProduct(productId = selectedProductId)
             },
             onDismiss = {
-                showDeleteProductPopup = !showDeleteProductPopup
-            }
+                if(uiState.deletingStatus != DeletingStatus.LOADING) {
+                    showDeleteProductPopup = !showDeleteProductPopup
+                } else {}
+            },
+            deletingStatus = uiState.deletingStatus
         )
     }
 
     if(showDeleteBusinessPopup) {
         DeleteBusinessDialog(
             businessName = uiState.businessData.name,
-            onConfirm = {
-                showDeleteBusinessPopup = !showDeleteBusinessPopup
-            },
+            onConfirm = viewModel::archiveBusiness,
             onDismiss = {
-                showDeleteBusinessPopup = !showDeleteBusinessPopup
-            }
+                if(uiState.archivingStatus != ArchivingStatus.LOADING) {
+                    showDeleteBusinessPopup = !showDeleteBusinessPopup
+                } else {}
+            },
+            archivingStatus = uiState.archivingStatus
         )
     }
 
     if(showEditBusinessPopup) {
         EditBusinessPopup(
-            businessName = "",
-            businessDescription = "",
+            businessData = uiState.businessData,
+            businessName = uiState.businessName.ifEmpty { uiState.businessData.name },
+            businessDescription = uiState.businessDescription.ifEmpty { uiState.businessData.description },
+            location = uiState.location.ifEmpty { uiState.businessData.location },
             onDismiss = {
-                showEditBusinessPopup = !showEditBusinessPopup
+                if(uiState.editingStatus != EditingStatus.LOADING) {
+                    showEditBusinessPopup = !showEditBusinessPopup
+                } else {}
             },
-            onChangeName = {},
-            onChangeDescription = {},
-            onConfirm = {
-                showEditBusinessPopup = !showEditBusinessPopup
-            }
+            onChangeName = viewModel::updateBusinessName,
+            onChangeDescription = viewModel::updateBusinessDescription,
+            onChangeLocation = viewModel::updateBusinessLocation,
+            onConfirm = viewModel::updateBusiness,
+            editingStatus = uiState.editingStatus
         )
     }
 
@@ -169,17 +199,20 @@ fun BusinessDetailsScreenComposable(
             role = uiState.role,
             businessData = uiState.businessData,
             addProductExpanded = addProductExpanded,
-            onAddProduct = {},
+            onAddProduct = viewModel::addProduct,
+            newProductName = uiState.newProductName,
+            onChangeNewProductName = viewModel::updateNewProductName,
             onExpandAddProduct = {
                 addProductExpanded = !addProductExpanded
             },
-            onEditProduct = {},
-            onShowEditProductPopup = {
-                selectedProductId = it
+            onShowEditProductPopup = {id, name ->
+                selectedProductId = id
+                selectedProductName = name
                 showEditProductPopup = !showEditProductPopup
             },
-            onShowDeleteProductPopup = {
-                selectedProductId = it
+            onShowDeleteProductPopup = { id, name ->
+                selectedProductId = id
+                selectedProductName = name
                 showDeleteProductPopup = !showDeleteProductPopup
             },
             onShowDeleteBusinessPopup = {
@@ -191,7 +224,8 @@ fun BusinessDetailsScreenComposable(
             navigateToOrdersScreenWithArgs = navigateToOrdersScreenWithArgs,
             navigateToCreateOrderScreenWithArgs = navigateToCreateOrderScreenWithArgs,
             navigateToPreviousScreen = navigateToPreviousScreen,
-            loadBusinessStatus = uiState.loadBusinessStatus
+            loadBusinessStatus = uiState.loadBusinessStatus,
+            editingStatus = uiState.editingStatus
         )
     }
 }
@@ -204,19 +238,22 @@ fun BusinessDetailsScreen(
     role: Role,
     businessData: BusinessData,
     addProductExpanded: Boolean,
+    newProductName: String,
+    onChangeNewProductName: (name: String) -> Unit,
     onAddProduct: () -> Unit,
-    onEditProduct: () -> Unit,
     onExpandAddProduct: () -> Unit,
-    onShowEditProductPopup: (productId: Int) -> Unit,
+    onShowEditProductPopup: (productId: Int, productName: String) -> Unit,
     onShowEditBusinessPopup: () -> Unit,
-    onShowDeleteProductPopup: (productId: Int) -> Unit,
+    onShowDeleteProductPopup: (productId: Int, productName: String) -> Unit,
     onShowDeleteBusinessPopup: () -> Unit,
     navigateToOrdersScreenWithArgs: (businessId: String) -> Unit,
     navigateToCreateOrderScreenWithArgs: (businessId: String) -> Unit,
     navigateToPreviousScreen: () -> Unit,
     loadBusinessStatus: LoadBusinessStatus,
+    editingStatus: EditingStatus,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -290,6 +327,20 @@ fun BusinessDetailsScreen(
                     text = businessData.description,
                     fontSize = screenFontSize(x = 14.0).sp
                 )
+                Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.location),
+                        contentDescription = null
+                    )
+                    Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
+                    Text(
+                        text = businessData.location,
+                        fontSize = screenFontSize(x = 14.0).sp
+                    )
+                }
                 Spacer(modifier = Modifier.height(screenHeight(x = 16.0)))
                 Text(
                     text = "Products",
@@ -321,7 +372,7 @@ fun BusinessDetailsScreen(
                             )
                             IconButton(
                                 onClick = {
-                                    onShowEditProductPopup(product.productId)
+                                    onShowEditProductPopup(product.productId, product.name)
                                 },
                                 modifier = Modifier
 //                                    .background(MaterialTheme.colorScheme.primary)
@@ -334,8 +385,9 @@ fun BusinessDetailsScreen(
                             }
                             Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
                             IconButton(
+                                enabled = businessData.products.size > 1,
                                 onClick = {
-                                    onShowDeleteProductPopup(product.productId)
+                                    onShowDeleteProductPopup(product.productId, product.name)
                                 },
                                 modifier = Modifier
 //                                    .background(MaterialTheme.colorScheme.error)
@@ -379,8 +431,8 @@ fun BusinessDetailsScreen(
                                 fontSize = screenFontSize(x = 14.0).sp
                             )
                         },
-                        value = "",
-                        onValueChange = {},
+                        value = newProductName,
+                        onValueChange = onChangeNewProductName,
                         keyboardOptions = KeyboardOptions.Default.copy(
                             imeAction = ImeAction.Done,
                             keyboardType = KeyboardType.Text
@@ -407,12 +459,23 @@ fun BusinessDetailsScreen(
                         }
                         Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
                         Button(
-                            onClick = { /*TODO*/ },
+                            enabled = editingStatus != EditingStatus.LOADING,
+                            onClick = onAddProduct,
                         ) {
-                            Text(
-                                text = "Save",
-                                fontSize = screenFontSize(x = 14.0).sp
-                            )
+                            if(editingStatus == EditingStatus.LOADING) {
+                                Text(
+                                    text = "Loading...",
+                                    fontSize = screenFontSize(x = 14.0).sp
+                                )
+                            } else if(editingStatus == EditingStatus.SUCCESS) {
+                                onExpandAddProduct()
+                                Toast.makeText(context, "Product added", Toast.LENGTH_SHORT).show()
+                            } else {
+                                Text(
+                                    text = "Save",
+                                    fontSize = screenFontSize(x = 14.0).sp
+                                )
+                            }
                         }
                     }
                     Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
@@ -532,6 +595,7 @@ fun EditProductPopup(
     onDismiss: () -> Unit,
     onChangeName: (name: String) -> Unit,
     onConfirm: () -> Unit,
+    editingStatus: EditingStatus,
     modifier: Modifier = Modifier
 ) {
     AlertDialog(
@@ -567,15 +631,28 @@ fun EditProductPopup(
         },
         onDismissRequest = onDismiss,
         confirmButton = {
-            Button(onClick = onConfirm) {
-                Text(
-                    text = "Confirm",
-                    fontSize = screenFontSize(x = 14.0).sp
-                )
+            Button(
+                enabled = editingStatus != EditingStatus.LOADING,
+                onClick = onConfirm
+            ) {
+                if(editingStatus == EditingStatus.LOADING) {
+                    Text(
+                        text = "Loading...",
+                        fontSize = screenFontSize(x = 14.0).sp
+                    )
+                } else {
+                    Text(
+                        text = "Confirm",
+                        fontSize = screenFontSize(x = 14.0).sp
+                    )
+                }
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
+            TextButton(
+                enabled = editingStatus != EditingStatus.LOADING,
+                onClick = onDismiss
+            ) {
                 Text(
                     text = "Cancel",
                     fontSize = screenFontSize(x = 14.0).sp
@@ -589,10 +666,14 @@ fun EditProductPopup(
 fun EditBusinessPopup(
     businessName: String,
     businessDescription: String,
+    businessData: BusinessData,
+    location: String,
     onDismiss: () -> Unit,
     onChangeName: (name: String) -> Unit,
     onChangeDescription: (description: String) -> Unit,
+    onChangeLocation: (location: String) -> Unit,
     onConfirm: () -> Unit,
+    editingStatus: EditingStatus,
     modifier: Modifier = Modifier
 ) {
     AlertDialog(
@@ -645,19 +726,54 @@ fun EditBusinessPopup(
                     modifier = Modifier
                         .fillMaxWidth()
                 )
+                Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
+                TextField(
+                    label = {
+                        Text(
+                            text = "Business location",
+                            fontSize = screenFontSize(x = 14.0).sp
+                        )
+                    },
+                    value = location,
+                    onValueChange = onChangeLocation,
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        imeAction = ImeAction.Done,
+                        keyboardType = KeyboardType.Text
+                    ),
+                    colors = TextFieldDefaults.colors(
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                )
             }
         },
         onDismissRequest = onDismiss,
         confirmButton = {
-            Button(onClick = onConfirm) {
-                Text(
-                    text = "Confirm",
-                    fontSize = screenFontSize(x = 14.0).sp
-                )
+            Button(
+                enabled = (businessName != businessData.name || businessDescription != businessData.description || businessData.location != location) && editingStatus != EditingStatus.LOADING,
+                onClick = onConfirm
+            ) {
+                if(editingStatus == EditingStatus.LOADING) {
+                    Text(
+                        text = "Loading...",
+                        fontSize = screenFontSize(x = 14.0).sp
+                    )
+                } else {
+                    Text(
+                        text = "Confirm",
+                        fontSize = screenFontSize(x = 14.0).sp
+                    )
+                }
+
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
+            TextButton(
+                enabled = editingStatus != EditingStatus.LOADING,
+                onClick = onDismiss
+            ) {
                 Text(
                     text = "Cancel",
                     fontSize = screenFontSize(x = 14.0).sp
@@ -672,6 +788,7 @@ fun DeleteProductDialog(
     productName: String,
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
+    deletingStatus: DeletingStatus,
     modifier: Modifier = Modifier
 ) {
     AlertDialog(
@@ -690,20 +807,33 @@ fun DeleteProductDialog(
         onDismissRequest = onDismiss,
         confirmButton = {
             Button(
+                enabled = deletingStatus != DeletingStatus.LOADING,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.error,
                 ),
                 onClick = onConfirm
             ) {
-                Text(
-                    text = "Confirm",
-                    color = MaterialTheme.colorScheme.onError,
-                    fontSize = screenFontSize(x = 14.0).sp
-                )
+                if(deletingStatus == DeletingStatus.LOADING) {
+                    Text(
+                        text = "Loading...",
+                        color = MaterialTheme.colorScheme.onError,
+                        fontSize = screenFontSize(x = 14.0).sp
+                    )
+                } else {
+                    Text(
+                        text = "Confirm",
+                        color = MaterialTheme.colorScheme.onError,
+                        fontSize = screenFontSize(x = 14.0).sp
+                    )
+                }
+
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
+            TextButton(
+                enabled = deletingStatus != DeletingStatus.LOADING,
+                onClick = onDismiss
+            ) {
                 Text(
                     text = "Cancel",
                     fontSize = screenFontSize(x = 14.0).sp
@@ -718,6 +848,7 @@ fun DeleteBusinessDialog(
     businessName: String,
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
+    archivingStatus: ArchivingStatus,
     modifier: Modifier = Modifier
 ) {
     var checkboxMarked by rememberSaveable {
@@ -760,17 +891,24 @@ fun DeleteBusinessDialog(
         onDismissRequest = onDismiss,
         confirmButton = {
             Button(
-                enabled = checkboxMarked,
+                enabled = checkboxMarked && archivingStatus != ArchivingStatus.LOADING,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.error,
                 ),
                 onClick = onConfirm
             ) {
-                Text(
-                    text = "Confirm",
-                    color = MaterialTheme.colorScheme.onError,
-                    fontSize = screenFontSize(x = 14.0).sp
-                )
+                if(archivingStatus == ArchivingStatus.LOADING) {
+                    Text(
+                        text = "Loading...",
+                        fontSize = screenFontSize(x = 14.0).sp
+                    )
+                } else {
+                    Text(
+                        text = "Confirm",
+                        color = MaterialTheme.colorScheme.onError,
+                        fontSize = screenFontSize(x = 14.0).sp
+                    )
+                }
             }
         },
         dismissButton = {
@@ -803,19 +941,21 @@ fun BusinessDetailsScreenPreview() {
                 addProductExpanded = !addProductExpanded
             },
             onAddProduct = {},
-            onShowEditProductPopup = {
+            onShowEditProductPopup = { _, _ ->
                 showEditProductPopup = !showEditProductPopup
             },
             onShowEditBusinessPopup = {
                 showEditBusinessPopup = !showEditBusinessPopup
             },
             onShowDeleteBusinessPopup = {},
-            onEditProduct = {},
-            onShowDeleteProductPopup = {},
+            newProductName = "",
+            onChangeNewProductName = {},
+            onShowDeleteProductPopup = {_ ,_ ->},
             navigateToOrdersScreenWithArgs = {businessId ->  },
             navigateToCreateOrderScreenWithArgs = {businessId ->  },
             navigateToPreviousScreen = { /*TODO*/ },
-            loadBusinessStatus = LoadBusinessStatus.INITIAL
+            loadBusinessStatus = LoadBusinessStatus.INITIAL,
+            editingStatus = EditingStatus.INITIAL
         )
     }
 }
