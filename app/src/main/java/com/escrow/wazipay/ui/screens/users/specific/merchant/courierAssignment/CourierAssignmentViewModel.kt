@@ -5,9 +5,12 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.escrow.wazipay.data.network.models.courier.CourierAssignmentRequestBody
+import com.escrow.wazipay.data.network.models.courier.CourierPaymentRequest
+import com.escrow.wazipay.data.network.models.transaction.TransactionStatusRequestBody
 import com.escrow.wazipay.data.network.repository.ApiRepository
 import com.escrow.wazipay.data.room.models.UserDetails
 import com.escrow.wazipay.data.room.repository.DBRepository
+import com.escrow.wazipay.ui.screens.users.specific.buyer.businessPayment.InvoiceCreationStatus
 import com.escrow.wazipay.ui.screens.users.specific.buyer.businessPayment.PaymentMethod
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -54,6 +57,9 @@ class CourierAssignmentViewModel(
     }
 
     fun assignCourier() {
+
+        var transactionPending = true
+
         _uiState.update {
             it.copy(
                 loadingStatus = LoadingStatus.LOADING
@@ -62,10 +68,19 @@ class CourierAssignmentViewModel(
         viewModelScope.launch {
             try {
 
+                val courierPaymentRequest = CourierPaymentRequest(
+                    orderId = uiState.value.orderData.id,
+                    courierId = uiState.value.courier.userId,
+                    deliveryCost = uiState.value.amount.toDouble(),
+                    transactionMethod = uiState.value.paymentMethod.name,
+                    phoneNumber = uiState.value.phoneNumber
+                )
+
                 val courierAssignmentRequestBody = CourierAssignmentRequestBody(
                     orderId = uiState.value.orderData.id,
                     courierId = uiState.value.courier.userId,
-                    deliveryCost = uiState.value.amount.toDouble()
+                    deliveryCost = uiState.value.amount.toDouble(),
+                    courierPaymentRequest = courierPaymentRequest
                 )
 
                 val response = apiRepository.assignCourier(
@@ -74,11 +89,55 @@ class CourierAssignmentViewModel(
                 )
 
                 if(response.isSuccessful) {
-                    _uiState.update {
-                        it.copy(
-                            loadingStatus = LoadingStatus.SUCCESS
+
+                    if(uiState.value.paymentMethod == PaymentMethod.MPESA) {
+                        val transactionStatusRequestBody = TransactionStatusRequestBody(
+                            referenceId = response.body()?.data?.paymentDetails?.partnerReferenceID!!,
+                            transactionId = response.body()?.data?.paymentDetails?.transactionID ?: "",
+                            token = response.body()?.data?.paymentDetails?.transactionToken!!
                         )
+
+                        while (transactionPending) {
+                            delay(2000)
+
+                            val transactionStatusResponse = apiRepository.getTransactionStatus(
+                                token = uiState.value.userDetails.token!!,
+                                transactionStatusRequestBody = transactionStatusRequestBody
+                            )
+
+                            _uiState.update {
+                                it.copy(
+                                    paymentStage = transactionStatusResponse.body()?.data?.status ?: "",
+                                    paymentMessage = transactionStatusResponse.body()?.data?.sovNarration ?: ""
+                                )
+                            }
+
+                            transactionPending  = transactionStatusResponse.body()?.data?.status == "PENDING"
+
+                        }
+
+                        if(_uiState.value.paymentStage == "SUCCESSFUL") {
+                            _uiState.update {
+                                it.copy(
+                                    loadingStatus = LoadingStatus.SUCCESS
+                                )
+                            }
+                        } else {
+                            _uiState.update {
+                                it.copy(
+                                    loadingStatus = LoadingStatus.FAIL
+
+                                )
+                            }
+                        }
+                    } else {
+                        _uiState.update {
+                            it.copy(
+                                loadingStatus = LoadingStatus.SUCCESS
+                            )
+                        }
                     }
+
                 } else {
                     _uiState.update {
                         it.copy(

@@ -2,6 +2,7 @@ package com.escrow.wazipay.ui.screens.users.specific.merchant.courierAssignment
 
 import android.os.Build
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -87,6 +88,14 @@ fun CourierAssignmentScreenComposable(
     val viewModel: CourierAssignmentViewModel = viewModel(factory = AppViewModelFactory.Factory)
     val uiState by viewModel.uiState.collectAsState()
 
+    BackHandler(onBack = {
+        if(uiState.loadingStatus == LoadingStatus.LOADING) {
+            Toast.makeText(context, "Please wait...", Toast.LENGTH_SHORT).show()
+        } else {
+            navigateToPreviousScreen()
+        }
+    })
+
     var showConfirmDialog by rememberSaveable {
         mutableStateOf(false)
     }
@@ -148,6 +157,7 @@ fun CourierAssignmentScreenComposable(
             userDetailData = uiState.courier,
             orderData = uiState.orderData,
             paymentMethod = uiState.paymentMethod,
+            paymentStage = uiState.paymentStage,
             currentBalance = formatMoneyValue(uiState.userWalletData.balance),
             phoneNumber = uiState.phoneNumber,
             onChangePhoneNumber = {
@@ -177,6 +187,7 @@ fun CourierAssignmentScreen(
     userDetailData: UserDetailsData,
     orderData: OrderData,
     paymentMethod: PaymentMethod,
+    paymentStage: String,
     currentBalance: String,
     phoneNumber: String,
     onChangePhoneNumber: (number: String) -> Unit,
@@ -504,10 +515,17 @@ fun CourierAssignmentScreen(
                     .fillMaxWidth()
             ) {
                 if(loadingStatus == LoadingStatus.LOADING) {
-                    Text(
-                        text = "Loading...",
-                        fontSize = screenFontSize(x = 14.0).sp
-                    )
+                    if(paymentMethod == PaymentMethod.MPESA) {
+                        Text(
+                            text = "$paymentStage...",
+                            fontSize = screenFontSize(x = 14.0).sp
+                        )
+                    } else {
+                        Text(
+                            text = "Loading...",
+                            fontSize = screenFontSize(x = 14.0).sp
+                        )
+                    }
                 } else {
                     Text(
                         text = "Confirm assignment",
@@ -610,6 +628,7 @@ fun CourierAssignmentScreenPreview() {
             userDetailData = users[0],
             orderData = orders[0],
             paymentMethod = PaymentMethod.WAZIPAY_ESCROW,
+            paymentStage = "STARTING",
             currentBalance = formatMoneyValue(2500.0),
             phoneNumber = "",
             onChangePhoneNumber = {},

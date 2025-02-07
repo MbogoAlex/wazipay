@@ -83,6 +83,7 @@ fun OrderDetailsScreenComposable(
     navigateToPreviousScreen: () -> Unit,
     navigateToDashboardScreen: () -> Unit,
     navigateToCourierSelectionScreen: (orderId: String) -> Unit,
+    navigateToCourierAssignmentScreen: (orderId: String, courierId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -196,7 +197,9 @@ fun OrderDetailsScreenComposable(
                 showCancelOrderDialog = !showCancelOrderDialog
             },
             orderStage = OrderStage.valueOf(uiState.orderData.orderStage),
-            loadOrdersStatus = uiState.loadOrdersStatus
+            courierPaid = uiState.orderData.courierPaid,
+            loadOrdersStatus = uiState.loadOrdersStatus,
+            navigateToCourierAssignmentScreen = navigateToCourierAssignmentScreen
         )
     }
 }
@@ -216,7 +219,9 @@ fun OrderDetailsScreen(
     onCompleteDelivery: () -> Unit,
     loadOrdersStatus: LoadOrdersStatus,
     orderStage: OrderStage,
+    courierPaid: Boolean?,
     onCancelOrder: () -> Unit,
+    navigateToCourierAssignmentScreen: (orderId: String, courierId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -387,9 +392,53 @@ fun OrderDetailsScreen(
                             )
                         }
 
+                        if(courierPaid != null) {
+                            if(!courierPaid) {
+                                Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
+                                Button(
+                                    onClick = {
+                                        navigateToCourierAssignmentScreen(orderData.id.toString(), orderData.courier.id.toString())
+                                    },
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Text(
+                                        text = "Pay courier",
+                                        fontSize = screenFontSize(x = 14.0).sp
+                                    )
+                                }
+                            } else {
+                                Spacer(modifier = Modifier.height(screenHeight(x = 8.0)))
+                                Box(
+                                    modifier = Modifier
+                                        .border(
+                                            width = screenWidth(x = 1.0),
+                                            color = Color.LightGray,
+                                            shape = RoundedCornerShape(screenWidth(x = 16.0))
+                                        )
+//                                        .align(Alignment.End)
+                                ) {
+                                    Row(
+                                        modifier = Modifier
+                                            .padding(screenWidth(x = 8.0))
+                                    ) {
+                                        Text(
+                                            text = "PAID",
+                                            fontSize = screenFontSize(x = 14.0).sp
+                                        )
+                                        Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.verified),
+                                            contentDescription = "Paid"
+                                        )
+                                    }
+                                }
+                            }
+                        }
+
+
                     }
                 } else {
-                    
+
                 }
             }
 //        Spacer(modifier = Modifier.height(screenHeight(x = 32.0)))
@@ -717,9 +766,11 @@ fun OrderDetailsScreenPreview() {
             navigateToDashboardScreen = {},
             navigateToCourierSelectionScreen = {},
             onCompleteDelivery = {},
-            orderStage = OrderStage.PENDING_PICKUP,
+            orderStage = OrderStage.IN_TRANSIT,
             onCancelOrder = {},
-            loadOrdersStatus = LoadOrdersStatus.INITIAL
+            courierPaid = true,
+            loadOrdersStatus = LoadOrdersStatus.INITIAL,
+            navigateToCourierAssignmentScreen = {orderId, courierId ->  }
         )
     }
 }

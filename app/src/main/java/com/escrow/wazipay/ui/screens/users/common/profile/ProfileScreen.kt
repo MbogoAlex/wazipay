@@ -220,7 +220,10 @@ fun ProfileScreen(
                         contentDescription = null
                     )
                     Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
-                    Text(text = verificationStatus.name.lowercase().replace("_", " ").replaceFirstChar { it.uppercase() })
+                    Text(
+                        text = verificationStatus.name.lowercase().replace("_", " ").replaceFirstChar { it.uppercase() },
+                        fontSize = screenFontSize(x = 14.0).sp
+                    )
                     Spacer(modifier = Modifier.width(screenWidth(x = 4.0)))
                     Icon(
                         painter = painterResource(id = R.drawable.verified),

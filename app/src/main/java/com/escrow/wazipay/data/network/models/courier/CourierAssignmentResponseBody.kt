@@ -6,5 +6,5 @@ import kotlinx.serialization.Serializable
 data class CourierAssignmentResponseBody(
     val statusCode: Int,
     val message: String,
-    val data: CourierAssignmentData
+    val data: CourierAssignmentRequestData
 )

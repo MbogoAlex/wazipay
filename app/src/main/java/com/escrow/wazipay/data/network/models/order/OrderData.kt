@@ -16,6 +16,7 @@ data class OrderData(
     val merchant: UserContactData?,
     val buyer: UserContactData?,
     val courier: UserContactData?,
+    val courierPaid: Boolean?,
     val business: BusinessData?,
     val createdAt: String,
     val assignedAt: String?,
