@@ -559,7 +559,10 @@ fun NavigationGraph(
                 },
                 navigateToCourierSelectionScreen = {orderId ->
                     navController.navigate("${CourierSelectionScreenDestination.route}/${orderId}")
-                }
+                },
+                navigateToCourierAssignmentScreen = {orderId, courierId ->
+                    navController.navigate("${CourierAssignmentScreenDestination.route}/${orderId}/${courierId}")
+                },
             )
         }
 

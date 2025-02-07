@@ -78,6 +78,7 @@ class LoginViewModel(
                             dbRepository.updateUser(
                                 userDetails = user.copy(
                                     username = response.body()?.data?.user?.username,
+                                    userId = response.body()?.data?.user?.userId!!,
                                     phoneNumber = response.body()?.data?.user?.phoneNumber,
                                     email = response.body()?.data?.user?.email,
                                     pin = uiState.value.pin,
@@ -90,7 +91,7 @@ class LoginViewModel(
 
 //                        Log.d("passedHere", user.toString())
 
-                        while(user.username == null) {
+                        while(user?.username == null) {
                             delay(1000)
                             user = dbRepository.getUser(userId = response.body()?.data?.user?.userId!!).first()
                         }
